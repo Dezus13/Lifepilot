@@ -16,6 +16,7 @@ const links = [
 export function MainNavigation() {
   return (
     <nav className="mobile-navigation" aria-label="Основная навигация">
+      <p className="navigation-title">Навигация</p>
       {links.map((link) => (
         <Link
           className={link.primary ? "nav-link nav-link-primary" : "nav-link"}
