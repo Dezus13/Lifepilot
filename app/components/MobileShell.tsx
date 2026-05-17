@@ -1,26 +1,23 @@
+import type { ReactNode } from "react";
 import { MainNavigation } from "./MainNavigation";
 
 type MobileShellProps = {
-  title: string;
-  description?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
-export function MobileShell({ title, description, children }: MobileShellProps) {
+export function MobileShell({ children }: MobileShellProps) {
   return (
     <main className="mobile-shell">
-      <header className="mobile-header">
-        <h1 className="mobile-title">{title}</h1>
-        {description ? <p>{description}</p> : null}
-      </header>
-      <section className="mobile-content">
-        {children ?? (
-          <div className="placeholder-panel">
-            <p>Пустой scaffold-экран. Содержимое будет добавлено на следующих этапах.</p>
+      <div className="mobile-frame">
+        <header className="mobile-header">
+          <div>
+            <p className="mobile-kicker">LifePilot</p>
+            <p className="mobile-header-text">Каркас MVP</p>
           </div>
-        )}
-      </section>
-      <MainNavigation />
+        </header>
+        <section className="mobile-content">{children}</section>
+        <MainNavigation />
+      </div>
     </main>
   );
 }

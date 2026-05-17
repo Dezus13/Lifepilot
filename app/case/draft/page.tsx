@@ -1,10 +1,8 @@
-import { MobileShell } from "../../components/MobileShell";
-
 export default function CaseDraftPage() {
   return (
-    <MobileShell
-      title="Немецкий черновик"
-      description="Пустая scaffold-страница для будущего немецкого черновика."
-    />
+    <div className="placeholder-panel">
+      <h1 className="mobile-title">Немецкий черновик</h1>
+      <p>Пустая каркасная страница для будущего немецкого черновика.</p>
+    </div>
   );
 }

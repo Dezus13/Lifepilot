@@ -1,10 +1,8 @@
-import { MobileShell } from "./components/MobileShell";
-
 export default function NotFoundPage() {
   return (
-    <MobileShell
-      title="Страница не найдена"
-      description="Fallback route для неизвестного маршрута."
-    />
+    <div className="placeholder-panel">
+      <h1 className="mobile-title">Страница не найдена</h1>
+      <p>Резервный маршрут для неизвестного адреса.</p>
+    </div>
   );
 }

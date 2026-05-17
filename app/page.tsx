@@ -1,10 +1,8 @@
-import { MobileShell } from "./components/MobileShell";
-
 export default function HomePage() {
   return (
-    <MobileShell
-      title="LifePilot"
-      description="Главный экран MVP scaffold. Здесь позже появится старт нового кейса и последние запросы."
-    />
+    <div className="placeholder-panel">
+      <h1 className="mobile-title">Главная</h1>
+      <p>Главный экран каркаса MVP. Здесь позже появится старт нового кейса и последние запросы.</p>
+    </div>
   );
 }
