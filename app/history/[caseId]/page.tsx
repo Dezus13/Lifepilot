@@ -1,10 +1,8 @@
-import { MobileShell } from "../../components/MobileShell";
-
 export default function HistoryCasePage() {
   return (
-    <MobileShell
-      title="Сохраненный кейс"
-      description="Пустая scaffold-страница для будущего просмотра сохраненного кейса."
-    />
+    <div className="placeholder-panel">
+      <h1 className="mobile-title">Сохраненный кейс</h1>
+      <p>Пустая каркасная страница для будущего просмотра сохраненного кейса.</p>
+    </div>
   );
 }

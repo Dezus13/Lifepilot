@@ -1,10 +1,8 @@
-import { MobileShell } from "../../components/MobileShell";
-
 export default function SafetySettingsPage() {
   return (
-    <MobileShell
-      title="Настройки безопасности"
-      description="Пустая scaffold-страница для будущих настроек безопасности и приватности."
-    />
+    <div className="placeholder-panel">
+      <h1 className="mobile-title">Настройки безопасности</h1>
+      <p>Пустая каркасная страница для будущих настроек безопасности и приватности.</p>
+    </div>
   );
 }

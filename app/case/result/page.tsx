@@ -1,10 +1,8 @@
-import { MobileShell } from "../../components/MobileShell";
-
 export default function CaseResultPage() {
   return (
-    <MobileShell
-      title="Результат анализа"
-      description="Пустая scaffold-страница для будущего объяснения, фактов, предупреждений и плана."
-    />
+    <div className="placeholder-panel">
+      <h1 className="mobile-title">Результат анализа</h1>
+      <p>Пустая каркасная страница для будущего объяснения, фактов, предупреждений и плана.</p>
+    </div>
   );
 }
