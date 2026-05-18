@@ -16,7 +16,7 @@ export default function NewCasePage() {
     const sourceText = text.trim();
 
     if (!sourceText) {
-      setWarning("Вставьте текст письма, документа или ситуации перед анализом.");
+      setWarning("Вставьте текст письма, документа или ситуации, чтобы начать анализ.");
       return;
     }
 
@@ -36,7 +36,7 @@ export default function NewCasePage() {
     <div className="flow-page">
       <div className="flow-heading">
         <h1 className="mobile-title">Новый кейс</h1>
-        <p>Вставьте текст письма, документа или опишите ситуацию. Данные останутся только в браузере.</p>
+        <p>Вставьте текст письма, документа или описания ситуации. Сейчас данные сохраняются только в браузере.</p>
       </div>
 
       <form className="case-form" onSubmit={handleSubmit}>
@@ -53,7 +53,7 @@ export default function NewCasePage() {
               setWarning("");
             }
           }}
-          placeholder="Например: письмо от арендодателя, банка, страховой или госоргана..."
+          placeholder="Например: письмо от арендодателя, банка, страховой или ведомства..."
           rows={10}
           value={text}
         />

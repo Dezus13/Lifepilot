@@ -61,7 +61,7 @@ function getShortAnalysis(sourceText: string) {
   const cleanText = sourceText.replace(/\s+/g, " ").trim();
 
   if (cleanText.length <= 140) {
-    return `Текст похож на запрос или короткое письмо: "${cleanText}"`;
+    return `Текст выглядит как короткое письмо или описание ситуации: "${cleanText}"`;
   }
 
   return `${cleanText.slice(0, 140)}...`;
@@ -88,7 +88,7 @@ export default function CaseResultPage() {
     return (
       <div className="flow-page">
         <h1 className="mobile-title">Результат</h1>
-        <p>Загружаем сохраненный текст...</p>
+        <p>Загружаем текст из браузера...</p>
       </div>
     );
   }
@@ -98,10 +98,10 @@ export default function CaseResultPage() {
       <div className="flow-page">
         <div className="flow-heading">
           <h1 className="mobile-title">Результат</h1>
-          <p>Пока нет текста для анализа. Создайте новый кейс, чтобы пройти flow заново.</p>
+          <p>Пока нет текста для анализа. Начните новый кейс, чтобы пройти сценарий заново.</p>
         </div>
         <Link className="button primary-action" href="/case/new">
-          Создать кейс
+          Новый кейс
         </Link>
       </div>
     );
@@ -111,7 +111,7 @@ export default function CaseResultPage() {
     <div className="flow-page">
       <div className="flow-heading">
         <h1 className="mobile-title">Результат</h1>
-        <p>Демо-результат сформирован локально. Проверьте факты перед любыми действиями.</p>
+        <p>Результат сформирован локально для учебного MVP. Проверьте факты перед любыми действиями.</p>
       </div>
 
       <section className="result-card result-card-hero">
@@ -129,7 +129,7 @@ export default function CaseResultPage() {
         <ul className="clean-list">
           <li>Проверьте имена, даты, суммы и сроки в исходном тексте.</li>
           <li>Не отправляйте ответ автоматически, если есть угроза штрафа, долга или расторжения договора.</li>
-          <li>Для официального письма используйте немецкий черновик как основу и адаптируйте детали.</li>
+          <li>Используйте немецкий черновик только как основу и адаптируйте детали вручную.</li>
         </ul>
       </section>
 

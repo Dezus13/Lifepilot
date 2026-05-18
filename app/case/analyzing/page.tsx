@@ -28,10 +28,10 @@ export default function CaseAnalyzingPage() {
       <div className="loader-ring" aria-hidden="true" />
       <div className="flow-heading">
         <h1 className="mobile-title">Анализ</h1>
-        <p>Разбираем текст и готовим краткий результат. Это демо-анализ без отправки данных на сервер.</p>
+        <p>Разбираем текст и готовим краткий результат. Данные не отправляются на внешний сервис.</p>
       </div>
       <div className="status-card">
-        <strong>Идет обработка</strong>
+        <strong>Идет анализ</strong>
         <span>Обычно это занимает пару секунд.</span>
       </div>
     </div>
