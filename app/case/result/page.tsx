@@ -114,17 +114,17 @@ export default function CaseResultPage() {
         <p>Демо-результат сформирован локально. Проверьте факты перед любыми действиями.</p>
       </div>
 
-      <section className="result-card">
+      <section className="result-card result-card-hero">
         <span className="section-label">Краткий анализ</span>
         <p>{getShortAnalysis(currentCase.sourceText)}</p>
       </section>
 
       <section className={riskLevel === "Повышенный" ? "result-card warning-card" : "result-card"}>
         <span className="section-label">Уровень риска</span>
-        <p>{riskLevel}</p>
+        <p className="risk-value">{riskLevel}</p>
       </section>
 
-      <section className="result-card">
+      <section className="result-card recommendations-card">
         <span className="section-label">Рекомендации</span>
         <ul className="clean-list">
           <li>Проверьте имена, даты, суммы и сроки в исходном тексте.</li>

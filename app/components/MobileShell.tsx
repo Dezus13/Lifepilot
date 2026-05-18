@@ -11,10 +11,16 @@ export function MobileShell({ children }: MobileShellProps) {
       <div className="mobile-frame">
         <header className="mobile-header">
           <div className="mobile-brand">
-            <p className="mobile-kicker">LifePilot</p>
-            <p className="mobile-header-text">Помощник для писем и документов</p>
+            <span className="mobile-brand-mark">LP</span>
+            <div>
+              <p className="mobile-kicker">LifePilot</p>
+              <p className="mobile-header-text">Письма и документы</p>
+            </div>
           </div>
-          <span className="mobile-stage">MVP</span>
+          <div className="mobile-header-meta">
+            <span className="mobile-stage">MVP</span>
+            <span className="mobile-privacy">local</span>
+          </div>
         </header>
         <section className="mobile-content">{children}</section>
         <MainNavigation />
