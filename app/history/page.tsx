@@ -7,27 +7,55 @@ import { useEffect, useState } from "react";
 const currentCaseKey = "lifepilot.currentCase";
 const caseHistoryKey = "lifepilot.caseHistory";
 
+type RiskLevel = "low" | "medium" | "high";
+
 type StoredCase = {
   id: string;
   sourceText: string;
+  riskLevel?: RiskLevel;
   status?: string;
   updatedAt: string;
 };
 
-const riskWords = [
+const highRiskWords = [
   "kündigung",
-  "frist",
-  "mahnung",
   "gericht",
   "inkasso",
-  "zahlung",
   "schulden",
   "высел",
   "суд",
   "штраф",
   "долг",
-  "срок"
+  "расторж",
+  "отказ",
+  "блокиров"
 ];
+
+const mediumRiskWords = [
+  "frist",
+  "mahnung",
+  "zahlung",
+  "betrag",
+  "unterlagen",
+  "versicherung",
+  "bank",
+  "vermieter",
+  "behörde",
+  "срок",
+  "сумм",
+  "оплат",
+  "документ",
+  "страх",
+  "банк",
+  "аренд",
+  "ведом"
+];
+
+const riskLabels: Record<RiskLevel, string> = {
+  low: "Низкий",
+  medium: "Средний",
+  high: "Высокий"
+};
 
 function readCaseHistory() {
   const rawHistory = localStorage.getItem(caseHistoryKey);
@@ -45,11 +73,18 @@ function readCaseHistory() {
   }
 }
 
-function getRiskLevel(sourceText: string) {
+function getRiskLevel(sourceText: string): RiskLevel {
   const normalizedText = sourceText.toLowerCase();
-  const hasRiskWord = riskWords.some((word) => normalizedText.includes(word));
 
-  return hasRiskWord ? "Повышенный" : "Средний";
+  if (highRiskWords.some((word) => normalizedText.includes(word))) {
+    return "high";
+  }
+
+  if (mediumRiskWords.some((word) => normalizedText.includes(word))) {
+    return "medium";
+  }
+
+  return "low";
 }
 
 function getCaseTitle(sourceText: string) {
@@ -101,6 +136,7 @@ export default function HistoryPage() {
       currentCaseKey,
       JSON.stringify({
         sourceText: historyCase.sourceText,
+        riskLevel: historyCase.riskLevel ?? getRiskLevel(historyCase.sourceText),
         status: historyCase.status ?? "создан",
         updatedAt: historyCase.updatedAt
       })
@@ -146,7 +182,7 @@ export default function HistoryPage() {
 
       <div className="history-list">
         {history.map((historyCase) => {
-          const riskLevel = getRiskLevel(historyCase.sourceText);
+          const riskLevel = historyCase.riskLevel ?? getRiskLevel(historyCase.sourceText);
 
           return (
             <article className="history-card" key={historyCase.id}>
@@ -159,8 +195,8 @@ export default function HistoryPage() {
               </div>
 
               <div className="history-card-footer">
-                <span className={riskLevel === "Повышенный" ? "history-risk history-risk-warning" : "history-risk"}>
-                  Риск: {riskLevel}
+                <span className={`risk-badge risk-badge-${riskLevel}`}>
+                  Риск: {riskLabels[riskLevel]}
                 </span>
                 <button className="button button-compact" type="button" onClick={() => openResult(historyCase)}>
                   Открыть результат

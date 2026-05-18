@@ -638,13 +638,49 @@ a {
     linear-gradient(180deg, rgba(255, 250, 236, 0.92) 0%, rgba(255, 248, 230, 0.76) 100%);
 }
 
-.risk-value {
+.risk-card-low {
+  border-color: rgba(15, 118, 110, 0.18);
+  background:
+    linear-gradient(180deg, rgba(245, 252, 250, 0.92) 0%, rgba(228, 243, 241, 0.64) 100%);
+}
+
+.risk-card-medium {
+  border-color: var(--warning-line);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 236, 0.92) 0%, rgba(255, 248, 230, 0.76) 100%);
+}
+
+.risk-card-high {
+  border-color: rgba(185, 70, 70, 0.34);
+  background:
+    linear-gradient(180deg, rgba(255, 246, 244, 0.94) 0%, rgba(255, 238, 234, 0.72) 100%);
+}
+
+.risk-badge {
   width: fit-content;
   border-radius: 999px;
-  padding: 7px 11px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.risk-badge-low {
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  color: var(--accent);
+  background: rgba(228, 243, 241, 0.82);
+}
+
+.risk-badge-medium {
+  border: 1px solid var(--warning-line);
   color: var(--warning-text);
   background: rgba(234, 210, 138, 0.3);
-  font-weight: 900;
+}
+
+.risk-badge-high {
+  border: 1px solid rgba(185, 70, 70, 0.3);
+  color: #8f2525;
+  background: rgba(255, 229, 225, 0.84);
 }
 
 .recommendations-card {

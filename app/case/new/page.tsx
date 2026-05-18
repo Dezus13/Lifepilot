@@ -7,12 +7,63 @@ const currentCaseKey = "lifepilot.currentCase";
 const caseHistoryKey = "lifepilot.caseHistory";
 const maxHistoryItems = 10;
 
+type RiskLevel = "low" | "medium" | "high";
+
 type StoredCase = {
   id: string;
   sourceText: string;
+  riskLevel: RiskLevel;
   status: string;
   updatedAt: string;
 };
+
+const highRiskWords = [
+  "kündigung",
+  "gericht",
+  "inkasso",
+  "schulden",
+  "высел",
+  "суд",
+  "штраф",
+  "долг",
+  "расторж",
+  "отказ",
+  "блокиров"
+];
+
+const mediumRiskWords = [
+  "frist",
+  "mahnung",
+  "zahlung",
+  "betrag",
+  "unterlagen",
+  "versicherung",
+  "bank",
+  "vermieter",
+  "behörde",
+  "срок",
+  "сумм",
+  "оплат",
+  "документ",
+  "страх",
+  "банк",
+  "аренд",
+  "ведом"
+];
+
+function getRiskLevel(sourceText: string): RiskLevel {
+  const normalizedText = sourceText.toLowerCase();
+
+  if (highRiskWords.some((word) => normalizedText.includes(word))) {
+    return "high";
+  }
+
+  if (mediumRiskWords.some((word) => normalizedText.includes(word))) {
+    return "medium";
+  }
+
+  return "low";
+}
 
 function readCaseHistory() {
   const rawHistory = localStorage.getItem(caseHistoryKey);
@@ -57,6 +108,7 @@ export default function NewCasePage() {
     const caseData = {
       id: `${Date.now()}`,
       sourceText,
+      riskLevel: getRiskLevel(sourceText),
       status: "создан",
       updatedAt: new Date().toISOString()
     };
