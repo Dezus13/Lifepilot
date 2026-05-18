@@ -3,13 +3,13 @@ export default function CaseDraftPage() {
     <div className="flow-page">
       <div className="flow-heading">
         <h1 className="mobile-title">Черновик</h1>
-        <p>Пример немецкого ответа для проверки и ручной адаптации.</p>
+        <p>Аккуратный пример немецкого ответа. Его нужно проверить и адаптировать вручную.</p>
       </div>
 
       <section className="result-card draft-card">
         <div className="draft-card-header">
-          <span className="section-label">Beispielantwort</span>
-          <span className="draft-tone">neutral</span>
+          <span className="section-label">Пример ответа</span>
+          <span className="draft-tone">нейтральный тон</span>
         </div>
         <p>Sehr geehrte Damen und Herren,</p>
         <p>
@@ -26,7 +26,7 @@ export default function CaseDraftPage() {
       </section>
 
       <p className="inline-warning">
-        Это пример черновика, а не юридическая консультация. Перед отправкой замените плейсхолдеры и проверьте смысл.
+        Это пример черновика, а не юридическая консультация. Перед отправкой замените данные и проверьте смысл.
       </p>
     </div>
   );

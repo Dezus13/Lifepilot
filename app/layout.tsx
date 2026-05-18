@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "LifePilot",
-  description: "Mobile-first AI помощник для писем и документов"
+  description: "Mobile-first помощник для писем и документов"
 };
 
 export const viewport: Viewport = {

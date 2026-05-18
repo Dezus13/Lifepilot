@@ -16,7 +16,7 @@ const quickActions = [
   {
     href: "/settings/safety",
     label: "Безопасность",
-    description: "Проверить ограничения MVP",
+    description: "Проверить правила проекта",
     icon: "◆"
   }
 ];
@@ -39,12 +39,12 @@ export default function HomePage() {
     <div className="home-dashboard">
       <section className="home-hero" aria-labelledby="home-title">
         <div className="home-hero-copy">
-          <span className="home-eyebrow">Учебный MVP · local first</span>
+          <span className="home-eyebrow">Учебный MVP · данные в браузере</span>
           <h1 className="mobile-title" id="home-title">
-            Разберите письмо без лишнего шума
+            Понятный старт для писем и документов
           </h1>
           <p>
-            LifePilot помогает быстро понять текст, оценить риск и подготовить аккуратный черновик ответа.
+            LifePilot помогает разобрать текст, увидеть возможный риск и подготовить черновик ответа для ручной проверки.
           </p>
         </div>
 
@@ -57,7 +57,7 @@ export default function HomePage() {
         <div className="overview-tile">
           <span>Кейсы</span>
           <strong>2</strong>
-          <small>mock данные</small>
+          <small>пример</small>
         </div>
         <div className="overview-tile overview-tile-warning">
           <span>Риск</span>
@@ -66,15 +66,15 @@ export default function HomePage() {
         </div>
         <div className="overview-tile">
           <span>Хранение</span>
-          <strong>Local</strong>
-          <small>без backend</small>
+          <strong>Локально</strong>
+          <small>в браузере</small>
         </div>
       </section>
 
       <section className="dashboard-section">
         <div className="section-heading">
           <h2>Быстрые действия</h2>
-          <p>Основные шаги MVP в один тап.</p>
+          <p>Основные шаги текущего MVP.</p>
         </div>
 
         <div className="quick-actions">
@@ -95,7 +95,7 @@ export default function HomePage() {
       <section className="dashboard-section">
         <div className="section-heading">
           <h2>Последние кейсы</h2>
-          <p>Пример того, как будет выглядеть история.</p>
+          <p>Пример карточек для будущей истории.</p>
         </div>
 
         <div className="mock-case-list">
