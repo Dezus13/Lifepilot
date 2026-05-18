@@ -5,26 +5,80 @@ import { useEffect, useMemo, useState } from "react";
 
 const currentCaseKey = "lifepilot.currentCase";
 
+type RiskLevel = "low" | "medium" | "high";
+
 type CurrentCase = {
   sourceText: string;
+  riskLevel?: RiskLevel;
   status: string;
   updatedAt: string;
 };
 
-const riskWords = [
+const highRiskWords = [
   "kündigung",
-  "frist",
-  "mahnung",
   "gericht",
   "inkasso",
-  "zahlung",
   "schulden",
   "высел",
   "суд",
   "штраф",
   "долг",
-  "срок"
+  "расторж",
+  "отказ",
+  "блокиров"
 ];
+
+const mediumRiskWords = [
+  "frist",
+  "mahnung",
+  "zahlung",
+  "betrag",
+  "unterlagen",
+  "versicherung",
+  "bank",
+  "vermieter",
+  "behörde",
+  "срок",
+  "сумм",
+  "оплат",
+  "документ",
+  "страх",
+  "банк",
+  "аренд",
+  "ведом"
+];
+
+const riskContent: Record<
+  RiskLevel,
+  {
+    label: string;
+    explanation: string;
+    recommendations: string[];
+  }
+> = {
+  low: {
+    label: "Низкий",
+    explanation: "В тексте нет явных признаков срочных санкций, долга или серьезного спора.",
+    recommendations: ["Проверьте имена, даты и смысл письма.", "Сохраните текст, если он может понадобиться позже."]
+  },
+  medium: {
+    label: "Средний",
+    explanation: "В тексте есть срок, сумма, запрос документов или формальное требование.",
+    recommendations: [
+      "Проверьте сроки, суммы и список требуемых документов.",
+      "Подготовьте ответ только после ручной проверки деталей."
+    ]
+  },
+  high: {
+    label: "Высокий",
+    explanation: "В тексте есть признаки штрафа, долга, расторжения, отказа или другого серьезного последствия.",
+    recommendations: [
+      "Не отправляйте черновик автоматически.",
+      "Проверьте документы и сроки особенно внимательно.",
+      "При сомнении обратитесь к специалисту."
+    ]
+  }
+};
 
 function readCurrentCase(): CurrentCase | null {
   const rawCase = localStorage.getItem(currentCaseKey);
@@ -42,6 +96,7 @@ function readCurrentCase(): CurrentCase | null {
 
     return {
       sourceText: parsedCase.sourceText,
+      riskLevel: parsedCase.riskLevel,
       status: parsedCase.status ?? "проанализирован",
       updatedAt: parsedCase.updatedAt ?? new Date().toISOString()
     };
@@ -50,11 +105,18 @@ function readCurrentCase(): CurrentCase | null {
   }
 }
 
-function getRiskLevel(sourceText: string) {
+function getRiskLevel(sourceText: string): RiskLevel {
   const normalizedText = sourceText.toLowerCase();
-  const hasRiskWord = riskWords.some((word) => normalizedText.includes(word));
 
-  return hasRiskWord ? "Повышенный" : "Средний";
+  if (highRiskWords.some((word) => normalizedText.includes(word))) {
+    return "high";
+  }
+
+  if (mediumRiskWords.some((word) => normalizedText.includes(word))) {
+    return "medium";
+  }
+
+  return "low";
 }
 
 function getShortAnalysis(sourceText: string) {
@@ -78,11 +140,13 @@ export default function CaseResultPage() {
 
   const riskLevel = useMemo(() => {
     if (!currentCase) {
-      return "";
+      return "low";
     }
 
-    return getRiskLevel(currentCase.sourceText);
+    return currentCase.riskLevel ?? getRiskLevel(currentCase.sourceText);
   }, [currentCase]);
+
+  const riskInfo = riskContent[riskLevel];
 
   if (!isLoaded) {
     return (
@@ -122,12 +186,13 @@ export default function CaseResultPage() {
         <p>{getShortAnalysis(currentCase.sourceText)}</p>
       </section>
 
-      <section className={riskLevel === "Повышенный" ? "result-card warning-card" : "result-card"}>
+      <section className={`result-card risk-card risk-card-${riskLevel}`}>
         <div className="result-card-header">
           <span className="section-label">Уровень риска</span>
           <span className="result-meta">проверить</span>
         </div>
-        <p className="risk-value">{riskLevel}</p>
+        <p className={`risk-badge risk-badge-${riskLevel}`}>{riskInfo.label}</p>
+        <p>{riskInfo.explanation}</p>
       </section>
 
       <section className="result-card recommendations-card">
@@ -136,9 +201,9 @@ export default function CaseResultPage() {
           <span className="result-meta">следующие шаги</span>
         </div>
         <ul className="clean-list">
-          <li>Проверьте имена, даты, суммы и сроки в исходном тексте.</li>
-          <li>Не отправляйте ответ автоматически, если есть угроза штрафа, долга или расторжения договора.</li>
-          <li>Используйте немецкий черновик только как основу и адаптируйте детали вручную.</li>
+          {riskInfo.recommendations.map((recommendation) => (
+            <li key={recommendation}>{recommendation}</li>
+          ))}
         </ul>
       </section>
 
