@@ -3,7 +3,7 @@ export default function CaseDraftPage() {
     <div className="flow-page">
       <div className="flow-heading">
         <h1 className="mobile-title">Черновик</h1>
-        <p>Аккуратный пример немецкого ответа. Его нужно проверить и адаптировать вручную.</p>
+        <p>Простой пример немецкого ответа. Его нужно проверить и адаптировать вручную.</p>
       </div>
 
       <section className="result-card draft-card">

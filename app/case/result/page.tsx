@@ -111,21 +111,30 @@ export default function CaseResultPage() {
     <div className="flow-page">
       <div className="flow-heading">
         <h1 className="mobile-title">Результат</h1>
-        <p>Результат сформирован локально для учебного MVP. Проверьте факты перед любыми действиями.</p>
+        <p>Результат сформирован локально. Проверьте факты перед любыми действиями.</p>
       </div>
 
       <section className="result-card result-card-hero">
-        <span className="section-label">Краткий анализ</span>
+        <div className="result-card-header">
+          <span className="section-label">Краткий анализ</span>
+          <span className="result-meta">локально</span>
+        </div>
         <p>{getShortAnalysis(currentCase.sourceText)}</p>
       </section>
 
       <section className={riskLevel === "Повышенный" ? "result-card warning-card" : "result-card"}>
-        <span className="section-label">Уровень риска</span>
+        <div className="result-card-header">
+          <span className="section-label">Уровень риска</span>
+          <span className="result-meta">проверить</span>
+        </div>
         <p className="risk-value">{riskLevel}</p>
       </section>
 
       <section className="result-card recommendations-card">
-        <span className="section-label">Рекомендации</span>
+        <div className="result-card-header">
+          <span className="section-label">Рекомендации</span>
+          <span className="result-meta">следующие шаги</span>
+        </div>
         <ul className="clean-list">
           <li>Проверьте имена, даты, суммы и сроки в исходном тексте.</li>
           <li>Не отправляйте ответ автоматически, если есть угроза штрафа, долга или расторжения договора.</li>

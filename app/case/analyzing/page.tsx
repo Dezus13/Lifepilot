@@ -5,6 +5,8 @@ import { useEffect } from "react";
 
 const currentCaseKey = "lifepilot.currentCase";
 
+const analysisSteps = ["Чтение текста", "Оценка риска", "Подготовка результата"];
+
 export default function CaseAnalyzingPage() {
   const router = useRouter();
 
@@ -28,11 +30,22 @@ export default function CaseAnalyzingPage() {
       <div className="loader-ring" aria-hidden="true" />
       <div className="flow-heading">
         <h1 className="mobile-title">Анализ</h1>
-        <p>Разбираем текст и готовим краткий результат. Данные не отправляются на внешний сервис.</p>
+        <p>Обрабатываем текст локально</p>
       </div>
-      <div className="status-card">
-        <strong>Идет анализ</strong>
-        <span>Обычно это занимает пару секунд.</span>
+
+      <div className="status-card analysis-card">
+        <div className="analysis-progress" aria-hidden="true">
+          <span />
+        </div>
+        <ol className="analysis-steps">
+          {analysisSteps.map((step) => (
+            <li key={step}>
+              <span aria-hidden="true" />
+              {step}
+            </li>
+          ))}
+        </ol>
+        <p>Через пару секунд откроется результат.</p>
       </div>
     </div>
   );
