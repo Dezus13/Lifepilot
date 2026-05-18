@@ -1,16 +1,16 @@
 import Link from "next/link";
 
 const links = [
-  { href: "/", label: "Главная", description: "Стартовый экран" },
-  { href: "/onboarding", label: "Знакомство", description: "Границы продукта" },
-  { href: "/case/new", label: "Новый кейс", description: "Создание кейса", primary: true },
-  { href: "/case/analyzing", label: "Анализ", description: "Состояние обработки" },
-  { href: "/case/result", label: "Результат", description: "Объяснение и план" },
-  { href: "/case/draft", label: "Черновик", description: "Немецкий ответ" },
-  { href: "/case/high-risk", label: "Риск", description: "Предупреждение" },
-  { href: "/history", label: "История", description: "Сохраненные кейсы" },
-  { href: "/settings/safety", label: "Безопасность", description: "Настройки MVP" },
-  { href: "/error", label: "Ошибка", description: "Резервный экран" }
+  { href: "/", label: "Главная", description: "Стартовый экран", icon: "home" },
+  { href: "/onboarding", label: "Знакомство", description: "Границы продукта", icon: "info" },
+  { href: "/case/new", label: "Новый кейс", description: "Создание кейса", icon: "plus", primary: true },
+  { href: "/case/analyzing", label: "Анализ", description: "Состояние обработки", icon: "scan" },
+  { href: "/case/result", label: "Результат", description: "Объяснение и план", icon: "result" },
+  { href: "/case/draft", label: "Черновик", description: "Немецкий ответ", icon: "draft" },
+  { href: "/case/high-risk", label: "Риск", description: "Предупреждение", icon: "risk" },
+  { href: "/history", label: "История", description: "Сохраненные кейсы", icon: "history" },
+  { href: "/settings/safety", label: "Безопасность", description: "Настройки MVP", icon: "shield" },
+  { href: "/error", label: "Ошибка", description: "Резервный экран", icon: "error" }
 ];
 
 export function MainNavigation() {
@@ -23,8 +23,11 @@ export function MainNavigation() {
           href={link.href}
           key={link.href}
         >
-          <span>{link.label}</span>
-          <small>{link.description}</small>
+          <span className={`nav-icon nav-icon-${link.icon}`} aria-hidden="true" />
+          <span className="nav-link-copy">
+            <span>{link.label}</span>
+            <small>{link.description}</small>
+          </span>
         </Link>
       ))}
     </nav>
