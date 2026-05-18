@@ -4,6 +4,40 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 const currentCaseKey = "lifepilot.currentCase";
+const caseHistoryKey = "lifepilot.caseHistory";
+const maxHistoryItems = 10;
+
+type StoredCase = {
+  id: string;
+  sourceText: string;
+  status: string;
+  updatedAt: string;
+};
+
+function readCaseHistory() {
+  const rawHistory = localStorage.getItem(caseHistoryKey);
+
+  if (!rawHistory) {
+    return [];
+  }
+
+  try {
+    const parsedHistory = JSON.parse(rawHistory) as StoredCase[];
+
+    return Array.isArray(parsedHistory) ? parsedHistory : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCaseToHistory(caseData: StoredCase) {
+  const nextHistory = [
+    caseData,
+    ...readCaseHistory().filter((historyCase) => historyCase.id !== caseData.id)
+  ].slice(0, maxHistoryItems);
+
+  localStorage.setItem(caseHistoryKey, JSON.stringify(nextHistory));
+}
 
 export default function NewCasePage() {
   const router = useRouter();
@@ -20,14 +54,15 @@ export default function NewCasePage() {
       return;
     }
 
-    localStorage.setItem(
-      currentCaseKey,
-      JSON.stringify({
-        sourceText,
-        status: "создан",
-        updatedAt: new Date().toISOString()
-      })
-    );
+    const caseData = {
+      id: `${Date.now()}`,
+      sourceText,
+      status: "создан",
+      updatedAt: new Date().toISOString()
+    };
+
+    localStorage.setItem(currentCaseKey, JSON.stringify(caseData));
+    saveCaseToHistory(caseData);
 
     router.push("/case/analyzing");
   }
