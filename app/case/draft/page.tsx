@@ -7,7 +7,10 @@ export default function CaseDraftPage() {
       </div>
 
       <section className="result-card draft-card">
-        <span className="section-label">Beispielantwort</span>
+        <div className="draft-card-header">
+          <span className="section-label">Beispielantwort</span>
+          <span className="draft-tone">neutral</span>
+        </div>
         <p>Sehr geehrte Damen und Herren,</p>
         <p>
           vielen Dank für Ihre Nachricht. Ich habe Ihr Schreiben erhalten und möchte die genannten Punkte
