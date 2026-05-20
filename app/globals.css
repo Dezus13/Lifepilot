@@ -478,6 +478,55 @@ a {
   box-shadow: 0 0 0 1px rgba(15, 118, 110, 0.16), 0 18px 44px rgba(15, 118, 110, 0.12);
 }
 
+.category-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.category-option {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+
+.category-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.category-option span {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(225, 231, 229, 0.9);
+  border-radius: 8px;
+  padding: 9px 10px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.2;
+  text-align: center;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+
+.category-option input:checked + span {
+  border-color: rgba(15, 118, 110, 0.42);
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  box-shadow: 0 10px 24px rgba(15, 118, 110, 0.1);
+}
+
+.category-option input:focus-visible + span {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
 .inline-warning {
   border: 1px solid var(--warning-line);
   border-radius: 8px;
@@ -681,6 +730,18 @@ a {
   border: 1px solid rgba(185, 70, 70, 0.3);
   color: #8f2525;
   background: rgba(255, 229, 225, 0.84);
+}
+
+.category-chip {
+  width: fit-content;
+  border: 1px solid rgba(15, 118, 110, 0.14);
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: var(--accent-strong);
+  background: rgba(228, 243, 241, 0.78);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
 }
 
 .recommendations-card {
@@ -960,6 +1021,13 @@ a {
 .history-card-footer {
   display: grid;
   gap: 12px;
+}
+
+.history-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
 }
 
 .history-card h2,

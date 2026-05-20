@@ -8,14 +8,18 @@ const caseHistoryKey = "lifepilot.caseHistory";
 const maxHistoryItems = 10;
 
 type RiskLevel = "low" | "medium" | "high";
+type CaseCategory = "Жильё" | "Банк" | "Страховка" | "Госорган" | "Работа" | "Другое";
 
 type StoredCase = {
   id: string;
   sourceText: string;
+  category: CaseCategory;
   riskLevel: RiskLevel;
   status: string;
   updatedAt: string;
 };
+
+const caseCategories: CaseCategory[] = ["Жильё", "Банк", "Страховка", "Госорган", "Работа", "Другое"];
 
 const highRiskWords = [
   "kündigung",
@@ -93,6 +97,7 @@ function saveCaseToHistory(caseData: StoredCase) {
 export default function NewCasePage() {
   const router = useRouter();
   const [text, setText] = useState("");
+  const [category, setCategory] = useState<CaseCategory>("Другое");
   const [warning, setWarning] = useState("");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -108,6 +113,7 @@ export default function NewCasePage() {
     const caseData = {
       id: `${Date.now()}`,
       sourceText,
+      category,
       riskLevel: getRiskLevel(sourceText),
       status: "создан",
       updatedAt: new Date().toISOString()
@@ -127,6 +133,26 @@ export default function NewCasePage() {
       </div>
 
       <form className="case-form" onSubmit={handleSubmit}>
+        <div className="case-input-group">
+          <span className="field-label" id="case-category-label">
+            Категория
+          </span>
+          <div className="category-options" role="radiogroup" aria-labelledby="case-category-label">
+            {caseCategories.map((caseCategory) => (
+              <label className="category-option" key={caseCategory}>
+                <input
+                  checked={category === caseCategory}
+                  name="case-category"
+                  onChange={() => setCategory(caseCategory)}
+                  type="radio"
+                  value={caseCategory}
+                />
+                <span>{caseCategory}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
         <div className="case-input-group">
           <label className="field-label" htmlFor="case-text">
             Текст для анализа
@@ -152,7 +178,7 @@ export default function NewCasePage() {
 
         {warning ? <p className="inline-warning">{warning}</p> : null}
 
-        <p className="case-storage-note">Текст сохранится локально только после нажатия кнопки.</p>
+        <p className="case-storage-note">Текст и категория сохранятся локально только после нажатия кнопки.</p>
 
         <button className="button primary-action" type="submit">
           Анализировать

@@ -6,13 +6,17 @@ import { useEffect, useMemo, useState } from "react";
 const currentCaseKey = "lifepilot.currentCase";
 
 type RiskLevel = "low" | "medium" | "high";
+type CaseCategory = "Жильё" | "Банк" | "Страховка" | "Госорган" | "Работа" | "Другое";
 
 type CurrentCase = {
   sourceText: string;
+  category: CaseCategory;
   riskLevel?: RiskLevel;
   status: string;
   updatedAt: string;
 };
+
+const fallbackCategory: CaseCategory = "Другое";
 
 const highRiskWords = [
   "kündigung",
@@ -96,6 +100,7 @@ function readCurrentCase(): CurrentCase | null {
 
     return {
       sourceText: parsedCase.sourceText,
+      category: parsedCase.category ?? fallbackCategory,
       riskLevel: parsedCase.riskLevel,
       status: parsedCase.status ?? "проанализирован",
       updatedAt: parsedCase.updatedAt ?? new Date().toISOString()
@@ -183,6 +188,7 @@ export default function CaseResultPage() {
           <span className="section-label">Краткий анализ</span>
           <span className="result-meta">локально</span>
         </div>
+        <span className="category-chip">Категория: {currentCase.category}</span>
         <p>{getShortAnalysis(currentCase.sourceText)}</p>
       </section>
 

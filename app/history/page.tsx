@@ -8,14 +8,18 @@ const currentCaseKey = "lifepilot.currentCase";
 const caseHistoryKey = "lifepilot.caseHistory";
 
 type RiskLevel = "low" | "medium" | "high";
+type CaseCategory = "Жильё" | "Банк" | "Страховка" | "Госорган" | "Работа" | "Другое";
 
 type StoredCase = {
   id: string;
   sourceText: string;
+  category?: CaseCategory;
   riskLevel?: RiskLevel;
   status?: string;
   updatedAt: string;
 };
+
+const fallbackCategory: CaseCategory = "Другое";
 
 const highRiskWords = [
   "kündigung",
@@ -136,6 +140,7 @@ export default function HistoryPage() {
       currentCaseKey,
       JSON.stringify({
         sourceText: historyCase.sourceText,
+        category: historyCase.category ?? fallbackCategory,
         riskLevel: historyCase.riskLevel ?? getRiskLevel(historyCase.sourceText),
         status: historyCase.status ?? "создан",
         updatedAt: historyCase.updatedAt
@@ -183,6 +188,7 @@ export default function HistoryPage() {
       <div className="history-list">
         {history.map((historyCase) => {
           const riskLevel = historyCase.riskLevel ?? getRiskLevel(historyCase.sourceText);
+          const category = historyCase.category ?? fallbackCategory;
 
           return (
             <article className="history-card" key={historyCase.id}>
@@ -195,9 +201,12 @@ export default function HistoryPage() {
               </div>
 
               <div className="history-card-footer">
-                <span className={`risk-badge risk-badge-${riskLevel}`}>
-                  Риск: {riskLabels[riskLevel]}
-                </span>
+                <div className="history-card-badges">
+                  <span className="category-chip">Категория: {category}</span>
+                  <span className={`risk-badge risk-badge-${riskLevel}`}>
+                    Риск: {riskLabels[riskLevel]}
+                  </span>
+                </div>
                 <button className="button button-compact" type="button" onClick={() => openResult(historyCase)}>
                   Открыть результат
                 </button>
