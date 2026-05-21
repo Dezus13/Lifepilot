@@ -3,57 +3,22 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getRiskLevel, type CaseCategory, type LocalAnalysis, type RiskLevel } from "../../lib/analysis-rules";
 
 const currentCaseKey = "lifepilot.currentCase";
 const caseHistoryKey = "lifepilot.caseHistory";
-
-type RiskLevel = "low" | "medium" | "high";
-type CaseCategory = "Жильё" | "Банк" | "Страховка" | "Госорган" | "Работа" | "Другое";
 
 type StoredCase = {
   id: string;
   sourceText: string;
   category?: CaseCategory;
   riskLevel?: RiskLevel;
+  analysis?: LocalAnalysis;
   status?: string;
   updatedAt: string;
 };
 
 const fallbackCategory: CaseCategory = "Другое";
-
-const highRiskWords = [
-  "kündigung",
-  "gericht",
-  "inkasso",
-  "schulden",
-  "высел",
-  "суд",
-  "штраф",
-  "долг",
-  "расторж",
-  "отказ",
-  "блокиров"
-];
-
-const mediumRiskWords = [
-  "frist",
-  "mahnung",
-  "zahlung",
-  "betrag",
-  "unterlagen",
-  "versicherung",
-  "bank",
-  "vermieter",
-  "behörde",
-  "срок",
-  "сумм",
-  "оплат",
-  "документ",
-  "страх",
-  "банк",
-  "аренд",
-  "ведом"
-];
 
 const riskLabels: Record<RiskLevel, string> = {
   low: "Низкий",
@@ -75,20 +40,6 @@ function readCaseHistory() {
   } catch {
     return [];
   }
-}
-
-function getRiskLevel(sourceText: string): RiskLevel {
-  const normalizedText = sourceText.toLowerCase();
-
-  if (highRiskWords.some((word) => normalizedText.includes(word))) {
-    return "high";
-  }
-
-  if (mediumRiskWords.some((word) => normalizedText.includes(word))) {
-    return "medium";
-  }
-
-  return "low";
 }
 
 function getCaseTitle(sourceText: string) {
@@ -142,6 +93,7 @@ export default function HistoryPage() {
         sourceText: historyCase.sourceText,
         category: historyCase.category ?? fallbackCategory,
         riskLevel: historyCase.riskLevel ?? getRiskLevel(historyCase.sourceText),
+        analysis: historyCase.analysis,
         status: historyCase.status ?? "создан",
         updatedAt: historyCase.updatedAt
       })
@@ -182,7 +134,7 @@ export default function HistoryPage() {
     <div className="flow-page">
       <div className="flow-heading">
         <h1 className="mobile-title">История</h1>
-        <p>Последние кейсы хранятся локально в браузере. Показываем до 10 записей.</p>
+        <p>Все сохраненные кейсы хранятся локально в браузере.</p>
       </div>
 
       <div className="history-list">

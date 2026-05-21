@@ -2,86 +2,26 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { createLocalAnalysis, type CaseCategory, type LocalAnalysis, type RiskLevel } from "../../../lib/analysis-rules";
 
 const currentCaseKey = "lifepilot.currentCase";
 
-type RiskLevel = "low" | "medium" | "high";
-type CaseCategory = "Жильё" | "Банк" | "Страховка" | "Госорган" | "Работа" | "Другое";
-
 type CurrentCase = {
+  id?: string;
   sourceText: string;
   category: CaseCategory;
   riskLevel?: RiskLevel;
+  analysis?: LocalAnalysis;
   status: string;
   updatedAt: string;
 };
 
 const fallbackCategory: CaseCategory = "Другое";
 
-const highRiskWords = [
-  "kündigung",
-  "gericht",
-  "inkasso",
-  "schulden",
-  "высел",
-  "суд",
-  "штраф",
-  "долг",
-  "расторж",
-  "отказ",
-  "блокиров"
-];
-
-const mediumRiskWords = [
-  "frist",
-  "mahnung",
-  "zahlung",
-  "betrag",
-  "unterlagen",
-  "versicherung",
-  "bank",
-  "vermieter",
-  "behörde",
-  "срок",
-  "сумм",
-  "оплат",
-  "документ",
-  "страх",
-  "банк",
-  "аренд",
-  "ведом"
-];
-
-const riskContent: Record<
-  RiskLevel,
-  {
-    label: string;
-    explanation: string;
-    recommendations: string[];
-  }
-> = {
-  low: {
-    label: "Низкий",
-    explanation: "В тексте нет явных признаков срочных санкций, долга или серьезного спора.",
-    recommendations: ["Проверьте имена, даты и смысл письма.", "Сохраните текст, если он может понадобиться позже."]
-  },
-  medium: {
-    label: "Средний",
-    explanation: "В тексте есть срок, сумма, запрос документов или формальное требование.",
-    recommendations: [
-      "Проверьте сроки, суммы и список требуемых документов.",
-      "Подготовьте ответ только после ручной проверки деталей."
-    ]
-  },
-  high: {
-    label: "Высокий",
-    explanation: "В тексте есть признаки штрафа, долга, расторжения, отказа или другого серьезного последствия.",
-    recommendations: [
-      "Не отправляйте черновик автоматически.",
-      "Проверьте документы и сроки особенно внимательно.",
-      "При сомнении обратитесь к специалисту."
-    ]
-  }
+const riskLabels: Record<RiskLevel, string> = {
+  low: "Низкий",
+  medium: "Средний",
+  high: "Высокий"
 };
 
 function readCurrentCase(): CurrentCase | null {
@@ -99,9 +39,11 @@ function readCurrentCase(): CurrentCase | null {
     }
 
     return {
+      id: parsedCase.id,
       sourceText: parsedCase.sourceText,
       category: parsedCase.category ?? fallbackCategory,
       riskLevel: parsedCase.riskLevel,
+      analysis: parsedCase.analysis,
       status: parsedCase.status ?? "проанализирован",
       updatedAt: parsedCase.updatedAt ?? new Date().toISOString()
     };
@@ -110,25 +52,11 @@ function readCurrentCase(): CurrentCase | null {
   }
 }
 
-function getRiskLevel(sourceText: string): RiskLevel {
-  const normalizedText = sourceText.toLowerCase();
-
-  if (highRiskWords.some((word) => normalizedText.includes(word))) {
-    return "high";
-  }
-
-  if (mediumRiskWords.some((word) => normalizedText.includes(word))) {
-    return "medium";
-  }
-
-  return "low";
-}
-
-function getShortAnalysis(sourceText: string) {
+function getShortPreview(sourceText: string) {
   const cleanText = sourceText.replace(/\s+/g, " ").trim();
 
   if (cleanText.length <= 140) {
-    return `Текст выглядит как короткое письмо или описание ситуации: "${cleanText}"`;
+    return cleanText;
   }
 
   return `${cleanText.slice(0, 140)}...`;
@@ -143,15 +71,19 @@ export default function CaseResultPage() {
     setIsLoaded(true);
   }, []);
 
-  const riskLevel = useMemo(() => {
+  const analysis = useMemo(() => {
     if (!currentCase) {
-      return "low";
+      return null;
     }
 
-    return currentCase.riskLevel ?? getRiskLevel(currentCase.sourceText);
+    if (currentCase.analysis?.extractedData?.requiredAction !== undefined) {
+      return currentCase.analysis;
+    }
+
+    return createLocalAnalysis(currentCase.sourceText);
   }, [currentCase]);
 
-  const riskInfo = riskContent[riskLevel];
+  const riskLevel = analysis?.riskLevel ?? currentCase?.riskLevel ?? "low";
 
   if (!isLoaded) {
     return (
@@ -162,7 +94,7 @@ export default function CaseResultPage() {
     );
   }
 
-  if (!currentCase) {
+  if (!currentCase || !analysis) {
     return (
       <div className="flow-page">
         <div className="flow-heading">
@@ -180,16 +112,16 @@ export default function CaseResultPage() {
     <div className="flow-page">
       <div className="flow-heading">
         <h1 className="mobile-title">Результат</h1>
-        <p>Результат сформирован локально. Проверьте факты перед любыми действиями.</p>
+        <p>Анализ сформирован локально по ключевым словам. Проверьте факты перед любыми действиями.</p>
       </div>
 
       <section className="result-card result-card-hero">
         <div className="result-card-header">
-          <span className="section-label">Краткий анализ</span>
+          <span className="section-label">Краткое объяснение</span>
           <span className="result-meta">локально</span>
         </div>
-        <span className="category-chip">Категория: {currentCase.category}</span>
-        <p>{getShortAnalysis(currentCase.sourceText)}</p>
+        <span className="category-chip">Категория: {analysis.category}</span>
+        <p>{analysis.explanation}</p>
       </section>
 
       <section className={`result-card risk-card risk-card-${riskLevel}`}>
@@ -197,20 +129,98 @@ export default function CaseResultPage() {
           <span className="section-label">Уровень риска</span>
           <span className="result-meta">проверить</span>
         </div>
-        <p className={`risk-badge risk-badge-${riskLevel}`}>{riskInfo.label}</p>
-        <p>{riskInfo.explanation}</p>
+        <p className={`risk-badge risk-badge-${riskLevel}`}>{riskLabels[riskLevel]}</p>
+        <p>{analysis.riskReason}</p>
       </section>
+
+      <section className={`result-card risk-card risk-card-${riskLevel}`}>
+        <div className="result-card-header">
+          <span className="section-label">Почему определен этот риск</span>
+          <span className="result-meta">причина</span>
+        </div>
+        <p>Обнаружены слова:</p>
+        {analysis.riskKeywords.length > 0 ? (
+          <div className="history-card-badges">
+            {analysis.riskKeywords.map((keyword) => (
+              <span className="category-chip" key={keyword}>
+                {keyword}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p>не найдено</p>
+        )}
+        <p>Причина: {analysis.riskReason}</p>
+      </section>
+
+      {analysis.extractedData.isDeadlineSoon ? (
+        <section className="result-card warning-card">
+          <div className="result-card-header">
+            <span className="section-label">Предупреждение о сроке</span>
+            <span className="result-meta">важно</span>
+          </div>
+          <p>⚠ Срок найден: {analysis.extractedData.deadline}</p>
+        </section>
+      ) : null}
 
       <section className="result-card recommendations-card">
         <div className="result-card-header">
-          <span className="section-label">Рекомендации</span>
+          <span className="section-label">Что делать сейчас</span>
           <span className="result-meta">следующие шаги</span>
         </div>
         <ul className="clean-list">
-          {riskInfo.recommendations.map((recommendation) => (
+          {analysis.recommendedActions.map((recommendation) => (
             <li key={recommendation}>{recommendation}</li>
           ))}
         </ul>
+      </section>
+
+      <section className="result-card">
+        <div className="result-card-header">
+          <span className="section-label">Извлеченные данные</span>
+          <span className="result-meta">локально</span>
+        </div>
+        <ul className="clean-list">
+          <li>Категория: {analysis.category}</li>
+          <li>Тип документа: {analysis.extractedData.documentType ?? "не найден"}</li>
+          <li>Организация: {analysis.extractedData.organization ?? "не найдена"}</li>
+          <li>Требуемое действие: {analysis.extractedData.requiredAction ?? "не найдено"}</li>
+          <li>Срок: {analysis.extractedData.deadline ?? "не найден"}</li>
+          <li>Сумма: {analysis.extractedData.amount ?? "не найдена"}</li>
+          <li>
+            Последствия:{" "}
+            {analysis.extractedData.consequences.length > 0
+              ? analysis.extractedData.consequences.join(", ")
+              : "не найдено"}
+          </li>
+          <li>Риск: {riskLabels[analysis.riskLevel]}</li>
+        </ul>
+      </section>
+
+      <section className="result-card">
+        <div className="result-card-header">
+          <span className="section-label">Найденные ключевые слова</span>
+          <span className="result-meta">локально</span>
+        </div>
+        {analysis.foundKeywords && analysis.foundKeywords.length > 0 ? (
+          <div className="history-card-badges">
+            {analysis.foundKeywords.map((keyword) => (
+              <span className="category-chip" key={keyword}>
+                {keyword}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p>Ключевые слова из текущих правил не найдены.</p>
+        )}
+      </section>
+
+      <section className="result-card">
+        <div className="result-card-header">
+          <span className="section-label">Исходный текст</span>
+          <span className="result-meta">preview</span>
+        </div>
+        <p>{getShortPreview(currentCase.sourceText)}</p>
       </section>
 
       <Link className="button primary-action" href="/case/draft">

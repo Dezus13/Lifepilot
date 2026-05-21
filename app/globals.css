@@ -965,12 +965,12 @@ a {
   line-height: 1.35;
 }
 
-.mock-case-list {
+.home-case-list {
   display: grid;
   gap: 10px;
 }
 
-.mock-case-card {
+.home-case-card {
   display: grid;
   gap: 12px;
   border: 1px solid rgba(225, 231, 229, 0.78);
@@ -983,18 +983,18 @@ a {
   backdrop-filter: blur(18px) saturate(145%);
 }
 
-.mock-case-card h3,
-.mock-case-card p {
+.home-case-card h3,
+.home-case-card p {
   margin: 0;
 }
 
-.mock-case-card h3 {
+.home-case-card h3 {
   color: var(--text);
   font-size: 16px;
   line-height: 1.25;
 }
 
-.mock-case-card p {
+.home-case-card p {
   margin-top: 5px;
   font-size: 13px;
 }
