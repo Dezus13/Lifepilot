@@ -1,12 +1,25 @@
 export type RiskLevel = "low" | "medium" | "high";
 export type CaseCategory = "Жильё" | "Банк" | "Страховка" | "Госорган" | "Работа" | "Документы" | "Другое";
+export type DocumentImportance = "Information" | "Termin" | "Dokumentenanforderung" | "Rechnung" | "Mahnung" | "Kündigung";
+export type PriorityLevel = "critical" | "high" | "medium" | "low";
+export type DeadlineStatus = "overdue" | "urgent" | "upcoming" | "normal" | "unknown";
+
+export type ContactData = {
+  emails: string[];
+  phones: string[];
+  websites: string[];
+};
 
 export type ExtractedData = {
   documentType: string | null;
+  documentImportance: DocumentImportance | null;
   organization: string | null;
+  caseNumber: string | null;
   requiredAction: string | null;
   deadline: string | null;
+  deadlines: string[];
   amount: string | null;
+  contacts: ContactData;
   consequences: string[];
   isDeadlineSoon: boolean;
 };
@@ -18,8 +31,39 @@ export type LocalAnalysis = {
   riskKeywords: string[];
   riskReason: string;
   explanation: string;
+  prioritySummary: string;
+  priorityLevel: PriorityLevel;
+  deadlineStatus: DeadlineStatus;
+  daysRemaining: number | null;
+  deadlineMessage: string;
+  actionPlan: string[];
   recommendedActions: string[];
   extractedData: ExtractedData;
+};
+
+export type ActionPlanInput = {
+  organization: string | null;
+  documentType: DocumentImportance | string | null;
+  riskLevel: RiskLevel;
+  deadline: string | null;
+  consequences: string[];
+};
+
+export type PrioritySummaryInput = {
+  organization: string | null;
+  documentType: DocumentImportance | string | null;
+  requiredAction: string | null;
+  deadlines: string[];
+  amount: string | null;
+  consequences: string[];
+  riskLevel: RiskLevel;
+};
+
+export type DeadlineStatusResult = {
+  status: DeadlineStatus;
+  daysRemaining: number | null;
+  deadlineMessage: string;
+  deadline: string | null;
 };
 
 const categoryKeywordGroups: Array<{
@@ -48,23 +92,26 @@ const organizationRules: Array<{
   { organization: "Finanzamt", keywords: ["finanzamt"] },
   { organization: "Wiener Wohnen", keywords: ["wiener wohnen"] },
   { organization: "Versicherung", keywords: ["versicherung"] },
+  { organization: "Arbeitgeber", keywords: ["arbeitgeber", "dienstgeber"] },
   { organization: "арендодатель", keywords: ["vermieter"] },
   { organization: "страховая", keywords: ["versicherung", "polizze"] },
   { organization: "кооператив", keywords: ["genossenschaft"] },
-  { organization: "госорган", keywords: ["behörde", "amt"] },
-  { organization: "работодатель", keywords: ["dienstgeber"] }
+  { organization: "госорган", keywords: ["behörde", "amt"] }
 ];
 
-const documentTypeRules: Array<{
-  documentType: string;
+const documentImportanceRules: Array<{
+  documentImportance: DocumentImportance;
   keywords: string[];
 }> = [
-  { documentType: "Mahnung", keywords: ["mahnung"] },
-  { documentType: "Rechnung", keywords: ["rechnung"] },
-  { documentType: "Kündigung", keywords: ["kündigung"] },
-  { documentType: "Informationsschreiben", keywords: ["informationsschreiben", "information", "mitteilung"] },
-  { documentType: "Anforderung von Unterlagen", keywords: ["anforderung von unterlagen", "anforderung", "unterlagen"] },
-  { documentType: "Terminmitteilung", keywords: ["terminmitteilung", "termin"] }
+  { documentImportance: "Kündigung", keywords: ["kündigung", "kuendigung", "vertragsauflösung", "vertragsaufloesung"] },
+  { documentImportance: "Mahnung", keywords: ["mahnung", "zahlungsaufforderung", "verzug"] },
+  { documentImportance: "Rechnung", keywords: ["rechnung", "honorarnote", "zahlbetrag"] },
+  {
+    documentImportance: "Dokumentenanforderung",
+    keywords: ["anforderung von unterlagen", "unterlagen", "nachweis", "nachweise", "einreichen", "vorlegen"]
+  },
+  { documentImportance: "Termin", keywords: ["terminmitteilung", "termin", "vorsprache", "erscheinen"] },
+  { documentImportance: "Information", keywords: ["informationsschreiben", "information", "mitteilung", "hinweis"] }
 ];
 
 const requiredActionRules: Array<{
@@ -84,6 +131,7 @@ const consequenceRules: Array<{
 }> = [
   { consequence: "прекращение выплаты", keywords: ["einstellung", "leistung", "bezug", "zahlung eingestellt"] },
   { consequence: "штраф", keywords: ["strafe", "sanktion", "verwaltungsstrafe"] },
+  { consequence: "инкассо", keywords: ["inkasso", "inkassobüro", "inkassobuero"] },
   { consequence: "расторжение договора", keywords: ["kündigung", "kuendigung", "vertrag", "mietvertrag"] },
   { consequence: "просрочка", keywords: ["mahnung", "verzug", "verspätung", "verspaetung", "frist versäumt", "frist versaeumt"] },
   { consequence: "дополнительная проверка", keywords: ["prüfung", "pruefung", "überprüfung", "ueberpruefung", "nachprüfung", "nachpruefung"] }
@@ -123,6 +171,14 @@ function findKeywords(sourceText: string, keywords: string[]) {
 
 function unique(items: string[]) {
   return Array.from(new Set(items));
+}
+
+function cleanExtractedValue(value: string) {
+  return value
+    .replace(/\s+/g, " ")
+    .replace(/\s(?:bitte|wir|sie|ihre|ihr|der|die|das|vom|am|frist|termin|datum)\b.*$/i, "")
+    .replace(/[.,;:)\]]+$/g, "")
+    .trim();
 }
 
 function classifyCategory(sourceText: string): { category: CaseCategory; foundKeywords: string[] } {
@@ -170,10 +226,30 @@ function detectOrganization(sourceText: string) {
   return matchedRule?.organization ?? null;
 }
 
-function detectDocumentType(sourceText: string) {
-  const matchedRule = documentTypeRules.find((rule) => findKeywords(sourceText, rule.keywords).length > 0);
+export function detectDocumentImportance(sourceText: string): DocumentImportance | null {
+  const matchedRule = documentImportanceRules.find((rule) => findKeywords(sourceText, rule.keywords).length > 0);
 
-  return matchedRule?.documentType ?? null;
+  return matchedRule?.documentImportance ?? null;
+}
+
+function detectDocumentType(sourceText: string) {
+  return detectDocumentImportance(sourceText);
+}
+
+export function detectCaseNumber(sourceText: string) {
+  const caseNumberPattern =
+    /\b(?:geschäftszahl|geschaeftszahl|aktenzeichen|referenznummer|kundennummer|fallnummer)\s*(?:nr\.?|nummer)?\s*[:#-]?\s*([^\n\r,;]{2,60})/gi;
+  const matches = Array.from(sourceText.matchAll(caseNumberPattern));
+
+  for (const match of matches) {
+    const value = cleanExtractedValue(match[1] ?? "");
+
+    if (value) {
+      return value;
+    }
+  }
+
+  return null;
 }
 
 function detectRequiredAction(sourceText: string) {
@@ -219,19 +295,30 @@ function parseDate(value: string) {
   };
 }
 
-function detectDeadline(sourceText: string) {
+function detectDeadlineEntries(sourceText: string) {
   const datePattern = /\b\d{1,2}[./-]\d{1,2}[./-](?:\d{2}|\d{4})\b/g;
   const dates = sourceText.match(datePattern) ?? [];
+  const deadlineEntries: Array<{ date: Date; formatted: string }> = [];
+  const seenDates = new Set<string>();
 
   for (const dateText of dates) {
     const parsedDate = parseDate(dateText);
 
-    if (parsedDate) {
-      return parsedDate;
+    if (parsedDate && !seenDates.has(parsedDate.formatted)) {
+      deadlineEntries.push(parsedDate);
+      seenDates.add(parsedDate.formatted);
     }
   }
 
-  return null;
+  return deadlineEntries;
+}
+
+export function detectMultipleDeadlines(sourceText: string) {
+  return detectDeadlineEntries(sourceText).map((deadline) => deadline.formatted);
+}
+
+function detectDeadline(sourceText: string) {
+  return detectDeadlineEntries(sourceText)[0] ?? null;
 }
 
 function isDeadlineSoon(deadline: Date | null) {
@@ -245,6 +332,113 @@ function isDeadlineSoon(deadline: Date | null) {
   const diffInDays = Math.ceil((deadlineStart.getTime() - todayStart.getTime()) / (1000 * 60 * 60 * 24));
 
   return diffInDays >= 0 && diffInDays <= 14;
+}
+
+function findNearestDeadline(deadlines: string[]) {
+  const parsedDeadlines = deadlines
+    .map((deadlineText) => parseDate(deadlineText))
+    .filter((deadline): deadline is { date: Date; formatted: string } => Boolean(deadline))
+    .sort((firstDeadline, secondDeadline) => firstDeadline.date.getTime() - secondDeadline.date.getTime());
+
+  return parsedDeadlines[0] ?? null;
+}
+
+function getTodayStart() {
+  const today = new Date();
+
+  return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+}
+
+function getDayWord(days: number) {
+  const normalizedDays = Math.abs(days);
+  const lastTwoDigits = normalizedDays % 100;
+  const lastDigit = normalizedDays % 10;
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
+    return "дней";
+  }
+
+  if (lastDigit === 1) {
+    return "день";
+  }
+
+  if (lastDigit >= 2 && lastDigit <= 4) {
+    return "дня";
+  }
+
+  return "дней";
+}
+
+function findRelevantDeadline(deadlines: string[]) {
+  const todayStart = getTodayStart();
+  const parsedDeadlines = deadlines
+    .map((deadlineText) => parseDate(deadlineText))
+    .filter((deadline): deadline is { date: Date; formatted: string } => Boolean(deadline));
+  const futureDeadlines = parsedDeadlines
+    .filter((deadline) => deadline.date.getTime() >= todayStart.getTime())
+    .sort((firstDeadline, secondDeadline) => firstDeadline.date.getTime() - secondDeadline.date.getTime());
+
+  if (futureDeadlines[0]) {
+    return futureDeadlines[0];
+  }
+
+  return parsedDeadlines.sort((firstDeadline, secondDeadline) => secondDeadline.date.getTime() - firstDeadline.date.getTime())[0] ?? null;
+}
+
+export function buildDeadlineStatus(deadlineInput: string | string[] | null): DeadlineStatusResult {
+  const deadlines = Array.isArray(deadlineInput) ? deadlineInput : deadlineInput ? [deadlineInput] : [];
+  const deadline = findRelevantDeadline(deadlines);
+
+  if (!deadline) {
+    return {
+      status: "unknown",
+      daysRemaining: null,
+      deadlineMessage: "Срок не найден",
+      deadline: null
+    };
+  }
+
+  const diffInDays = Math.ceil((deadline.date.getTime() - getTodayStart().getTime()) / (1000 * 60 * 60 * 24));
+
+  if (diffInDays < 0) {
+    const overdueDays = Math.abs(diffInDays);
+
+    return {
+      status: "overdue",
+      daysRemaining: diffInDays,
+      deadlineMessage: `Срок истёк ${overdueDays} ${getDayWord(overdueDays)} назад`,
+      deadline: deadline.formatted
+    };
+  }
+
+  if (diffInDays <= 3) {
+    return {
+      status: "urgent",
+      daysRemaining: diffInDays,
+      deadlineMessage: diffInDays === 0 ? "Срок сегодня" : `Осталось ${diffInDays} ${getDayWord(diffInDays)}`,
+      deadline: deadline.formatted
+    };
+  }
+
+  if (diffInDays <= 14) {
+    return {
+      status: "upcoming",
+      daysRemaining: diffInDays,
+      deadlineMessage: `Осталось ${diffInDays} ${getDayWord(diffInDays)}`,
+      deadline: deadline.formatted
+    };
+  }
+
+  return {
+    status: "normal",
+    daysRemaining: diffInDays,
+    deadlineMessage: `Осталось ${diffInDays} ${getDayWord(diffInDays)}`,
+    deadline: deadline.formatted
+  };
+}
+
+function hasSoonDeadline(deadlines: string[]) {
+  return deadlines.some((deadlineText) => isDeadlineSoon(parseDate(deadlineText)?.date ?? null));
 }
 
 function formatAmount(rawAmount: string) {
@@ -261,6 +455,49 @@ function detectAmount(sourceText: string) {
   return match?.[0] ? formatAmount(match[0]) : null;
 }
 
+function cleanWebsite(value: string) {
+  return value.replace(/[.,;:)\]]+$/g, "").trim();
+}
+
+function cleanPhone(value: string) {
+  return value.replace(/\s+/g, " ").replace(/[.,;:]$/g, "").trim();
+}
+
+function isLikelyPhone(value: string) {
+  const digitCount = value.replace(/\D/g, "").length;
+  const trimmedValue = value.trim();
+  const dateLikePattern = /^(?:\d{1,2}[./-]\d{1,2}[./-](?:\d{2}|\d{4})|\d{4}[./-]\d{1,2}[./-]\d{1,2})$/;
+
+  return digitCount >= 7 && !dateLikePattern.test(trimmedValue);
+}
+
+export function detectContactData(sourceText: string): ContactData {
+  const emailPattern = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
+  const emails = unique((sourceText.match(emailPattern) ?? []).map((email) => email.toLowerCase()));
+  const textWithoutEmails = sourceText.replace(emailPattern, " ");
+  const phoneMatches = [
+    ...Array.from(
+      textWithoutEmails.matchAll(/\b(?:telefon|tel\.?|mobil|handy|phone|fax)\s*[:.]?\s*((?:\+|00)?\d[\d\s()./-]{5,}\d)/gi),
+      (match) => match[1] ?? ""
+    ),
+    ...(textWithoutEmails.match(/\b(?:\+|00)\d[\d\s()./-]{5,}\d\b/g) ?? [])
+  ];
+  const phones = unique(phoneMatches.map(cleanPhone).filter(isLikelyPhone));
+  const websitePattern =
+    /\b(?:https?:\/\/|www\.)[^\s<>"']+|\b(?:[a-z0-9-]+\.)+(?:at|de|com|org|net|eu)\b(?:\/[^\s<>"']*)?/gi;
+  const websites = unique(
+    (textWithoutEmails.match(websitePattern) ?? [])
+      .map(cleanWebsite)
+      .filter((website) => website.length > 0)
+  );
+
+  return {
+    emails,
+    phones,
+    websites
+  };
+}
+
 function buildRecommendations(category: CaseCategory, riskLevel: RiskLevel, organization: string | null) {
   const recommendations = [...categoryRecommendations[category], ...riskRecommendations[riskLevel]];
 
@@ -271,21 +508,194 @@ function buildRecommendations(category: CaseCategory, riskLevel: RiskLevel, orga
   return unique(recommendations);
 }
 
+function buildDeadlineStep(deadline: string | null) {
+  return deadline ? `Проверить срок ${deadline} и поставить напоминание.` : "Проверить, указан ли в документе срок ответа или действия.";
+}
+
+function buildDocumentTypeStep(documentType: ActionPlanInput["documentType"]) {
+  if (documentType === "Mahnung" || documentType === "Rechnung") {
+    return "Сверить сумму, назначение платежа и реквизиты перед любой оплатой.";
+  }
+
+  if (documentType === "Kündigung") {
+    return "Проверить дату прекращения договора и не признавать спорные пункты без ручной проверки.";
+  }
+
+  if (documentType === "Dokumentenanforderung") {
+    return "Составить список требуемых Unterlagen или Nachweise и отметить, каких документов не хватает.";
+  }
+
+  if (documentType === "Termin") {
+    return "Проверить дату, время, адрес термина и возможность переноса, если прийти нельзя.";
+  }
+
+  return "Коротко выписать, что именно сообщает документ и требуется ли ответ.";
+}
+
+function buildOrganizationSteps(organization: string | null) {
+  if (organization === "AMS") {
+    return [
+      "Проверить eAMS, Frist и список Nachweise, которые нужно подать.",
+      "Подготовить документы для AMS и сохранить подтверждение отправки."
+    ];
+  }
+
+  if (organization === "MA40") {
+    return [
+      "Сверить Geschäftszahl или Aktenzeichen MA40 с документом.",
+      "Подготовить требуемые Unterlagen и отправлять их только по указанному каналу MA40."
+    ];
+  }
+
+  if (organization === "ÖGK") {
+    return [
+      "Проверить номер страхования, период и причину письма от ÖGK.",
+      "Подготовить медицинские или страховые подтверждения, если они запрошены."
+    ];
+  }
+
+  if (organization === "Wiener Wohnen") {
+    return [
+      "Сверить Mietvertrag, адрес квартиры, сумму и период, о котором пишет Wiener Wohnen.",
+      "Сохранить письмо и подготовить письменный ответ, если есть спор по оплате или договору."
+    ];
+  }
+
+  if (organization === "Versicherung" || organization === "страховая") {
+    return [
+      "Проверить номер полиса или Schadenfall и дату события.",
+      "Собрать подтверждения, счета или фотографии, которые просит страховая."
+    ];
+  }
+
+  if (organization === "Arbeitgeber") {
+    return [
+      "Сверить письмо с Arbeitsvertrag, графиком, зарплатой или сроком ответа.",
+      "Отвечать письменно и сохранить копию ответа работодателю."
+    ];
+  }
+
+  return ["Сверить отправителя, номер документа и цель письма перед ответом."];
+}
+
+function buildConsequenceStep(consequences: string[]) {
+  if (consequences.length === 0) {
+    return "Если последствия не указаны явно, не додумывать их и проверить только факты из текста.";
+  }
+
+  return `Отдельно проверить возможные последствия: ${consequences.join(", ")}.`;
+}
+
+function buildRiskStep(riskLevel: RiskLevel) {
+  if (riskLevel === "high") {
+    return "Перед отправкой ответа или оплатой вручную проверить документ и при сомнении обратиться к специалисту.";
+  }
+
+  if (riskLevel === "medium") {
+    return "Перед ответом сверить сроки, суммы, личные данные и список документов.";
+  }
+
+  return "Сохранить кейс в истории и использовать план как чек-лист для спокойной проверки.";
+}
+
+export function buildActionPlan(input: ActionPlanInput) {
+  return unique([
+    buildDeadlineStep(input.deadline),
+    buildDocumentTypeStep(input.documentType),
+    ...buildOrganizationSteps(input.organization),
+    buildConsequenceStep(input.consequences),
+    buildRiskStep(input.riskLevel)
+  ]).slice(0, 6);
+}
+
+export function determinePriorityLevel(input: PrioritySummaryInput): PriorityLevel {
+  const consequencesText = input.consequences.join(" ").toLowerCase();
+  const hasCriticalConsequence =
+    consequencesText.includes("прекращение выплаты") ||
+    consequencesText.includes("инкассо") ||
+    consequencesText.includes("штраф");
+
+  if (input.documentType === "Kündigung" || hasCriticalConsequence || hasSoonDeadline(input.deadlines)) {
+    return "critical";
+  }
+
+  if (
+    input.deadlines.length > 0 ||
+    input.documentType === "Mahnung" ||
+    input.documentType === "Rechnung" ||
+    input.documentType === "Dokumentenanforderung" ||
+    input.requiredAction === "оплатить сумму" ||
+    input.requiredAction === "предоставить документы" ||
+    input.riskLevel === "high"
+  ) {
+    return "high";
+  }
+
+  if (
+    input.documentType === "Termin" ||
+    input.requiredAction === "явиться на термин" ||
+    input.requiredAction === "подтвердить данные" ||
+    input.riskLevel === "medium"
+  ) {
+    return "medium";
+  }
+
+  return "low";
+}
+
+export function buildPrioritySummary(input: PrioritySummaryInput) {
+  const nearestDeadline = findNearestDeadline(input.deadlines)?.formatted ?? null;
+  const documentLabel = input.documentType ? `Документ типа ${input.documentType}` : "Документ";
+  const organizationText = input.organization ? ` от ${input.organization}` : "";
+  const actionText = input.requiredAction ? ` требует: ${input.requiredAction}` : " не содержит явного срочного действия";
+  const deadlineText = nearestDeadline ? ` до ${nearestDeadline}` : "";
+  const amountText = input.amount ? ` Найдена сумма ${input.amount}.` : "";
+  const consequenceText =
+    input.consequences.length > 0
+      ? ` При пропуске или ошибке возможно: ${input.consequences[0]}.`
+      : " Главное последствие не найдено.";
+
+  return `${documentLabel}${organizationText}${actionText}${deadlineText}.${amountText}${consequenceText}`;
+}
+
 export function createLocalAnalysis(sourceText: string): LocalAnalysis {
   const categoryResult = classifyCategory(sourceText);
   const riskResult = classifyRisk(sourceText);
   const organization = detectOrganization(sourceText);
-  const deadline = detectDeadline(sourceText);
+  const deadlineEntries = detectDeadlineEntries(sourceText);
+  const deadline = deadlineEntries[0] ?? detectDeadline(sourceText);
+  const documentImportance = detectDocumentImportance(sourceText);
   const extractedData: ExtractedData = {
-    documentType: detectDocumentType(sourceText),
+    documentType: documentImportance ?? detectDocumentType(sourceText),
+    documentImportance,
     organization,
+    caseNumber: detectCaseNumber(sourceText),
     requiredAction: detectRequiredAction(sourceText),
     deadline: deadline?.formatted ?? null,
+    deadlines: deadlineEntries.map((deadlineEntry) => deadlineEntry.formatted),
     amount: detectAmount(sourceText),
+    contacts: detectContactData(sourceText),
     consequences: detectConsequences(sourceText),
-    isDeadlineSoon: isDeadlineSoon(deadline?.date ?? null)
+    isDeadlineSoon: deadlineEntries.some((deadlineEntry) => isDeadlineSoon(deadlineEntry.date))
   };
   const foundKeywords = unique([...categoryResult.foundKeywords, ...riskResult.foundKeywords]);
+  const actionPlan = buildActionPlan({
+    organization,
+    documentType: extractedData.documentImportance ?? extractedData.documentType,
+    riskLevel: riskResult.riskLevel,
+    deadline: extractedData.deadline,
+    consequences: extractedData.consequences
+  });
+  const priorityInput: PrioritySummaryInput = {
+    organization,
+    documentType: extractedData.documentImportance ?? extractedData.documentType,
+    requiredAction: extractedData.requiredAction,
+    deadlines: extractedData.deadlines,
+    amount: extractedData.amount,
+    consequences: extractedData.consequences,
+    riskLevel: riskResult.riskLevel
+  };
+  const deadlineStatusResult = buildDeadlineStatus(extractedData.deadlines.length > 0 ? extractedData.deadlines : extractedData.deadline);
 
   return {
     category: categoryResult.category,
@@ -294,7 +704,13 @@ export function createLocalAnalysis(sourceText: string): LocalAnalysis {
     riskKeywords: riskResult.foundKeywords,
     riskReason: riskReasons[riskResult.riskLevel],
     explanation: `${riskReasons[riskResult.riskLevel]} Категория определена как "${categoryResult.category}".`,
-    recommendedActions: buildRecommendations(categoryResult.category, riskResult.riskLevel, organization),
+    prioritySummary: buildPrioritySummary(priorityInput),
+    priorityLevel: determinePriorityLevel(priorityInput),
+    deadlineStatus: deadlineStatusResult.status,
+    daysRemaining: deadlineStatusResult.daysRemaining,
+    deadlineMessage: deadlineStatusResult.deadlineMessage,
+    actionPlan,
+    recommendedActions: actionPlan.length > 0 ? actionPlan : buildRecommendations(categoryResult.category, riskResult.riskLevel, organization),
     extractedData
   };
 }

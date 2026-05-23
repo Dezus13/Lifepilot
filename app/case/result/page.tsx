@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { createLocalAnalysis, type CaseCategory, type LocalAnalysis, type RiskLevel } from "../../../lib/analysis-rules";
+import {
+  createLocalAnalysis,
+  type CaseCategory,
+  type DeadlineStatus,
+  type LocalAnalysis,
+  type PriorityLevel,
+  type RiskLevel
+} from "../../../lib/analysis-rules";
 
 const currentCaseKey = "lifepilot.currentCase";
 
@@ -23,6 +30,29 @@ const riskLabels: Record<RiskLevel, string> = {
   medium: "Средний",
   high: "Высокий"
 };
+
+const riskFactLabels: Record<RiskLevel, string> = {
+  low: "Niedrig",
+  medium: "Mittel",
+  high: "Hoch"
+};
+
+const priorityLabels: Record<PriorityLevel, string> = {
+  critical: "Critical",
+  high: "High",
+  medium: "Medium",
+  low: "Low"
+};
+
+const deadlineStatusLabels: Record<DeadlineStatus, string> = {
+  overdue: "overdue",
+  urgent: "urgent",
+  upcoming: "upcoming",
+  normal: "normal",
+  unknown: "unknown"
+};
+
+const notFoundText = "Nicht gefunden";
 
 function readCurrentCase(): CurrentCase | null {
   const rawCase = localStorage.getItem(currentCaseKey);
@@ -62,6 +92,71 @@ function getShortPreview(sourceText: string) {
   return `${cleanText.slice(0, 140)}...`;
 }
 
+function hasCurrentExtractedData(analysis?: LocalAnalysis) {
+  return Boolean(
+    analysis?.extractedData &&
+      "caseNumber" in analysis.extractedData &&
+      "contacts" in analysis.extractedData &&
+      "deadlines" in analysis.extractedData &&
+      "documentImportance" in analysis.extractedData &&
+      "actionPlan" in analysis &&
+      "prioritySummary" in analysis &&
+      "priorityLevel" in analysis &&
+      "deadlineStatus" in analysis &&
+      "daysRemaining" in analysis &&
+      "deadlineMessage" in analysis
+  );
+}
+
+function formatValue(value: string | null | undefined) {
+  return value && value.trim() ? value : notFoundText;
+}
+
+function formatList(values: string[] | undefined) {
+  return values && values.length > 0 ? values.join(", ") : notFoundText;
+}
+
+function formatContacts(contacts: LocalAnalysis["extractedData"]["contacts"] | undefined) {
+  if (!contacts) {
+    return notFoundText;
+  }
+
+  const contactParts = [
+    ...contacts.emails.map((email) => `E-Mail: ${email}`),
+    ...contacts.phones.map((phone) => `Telefon: ${phone}`),
+    ...contacts.websites.map((website) => `Webseite: ${website}`)
+  ];
+
+  return contactParts.length > 0 ? contactParts.join(", ") : notFoundText;
+}
+
+function getNearestDeadline(deadlines: string[]) {
+  const parsedDeadlines = deadlines
+    .map((deadline) => {
+      const match = deadline.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+
+      if (!match) {
+        return null;
+      }
+
+      const date = new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
+
+      return { date, formatted: deadline };
+    })
+    .filter((deadline): deadline is { date: Date; formatted: string } => Boolean(deadline));
+  const today = new Date();
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const futureDeadlines = parsedDeadlines
+    .filter((deadline) => deadline.date.getTime() >= todayStart.getTime())
+    .sort((firstDeadline, secondDeadline) => firstDeadline.date.getTime() - secondDeadline.date.getTime());
+
+  return (
+    futureDeadlines[0]?.formatted ??
+    parsedDeadlines.sort((firstDeadline, secondDeadline) => secondDeadline.date.getTime() - firstDeadline.date.getTime())[0]?.formatted ??
+    null
+  );
+}
+
 export default function CaseResultPage() {
   const [currentCase, setCurrentCase] = useState<CurrentCase | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -76,7 +171,7 @@ export default function CaseResultPage() {
       return null;
     }
 
-    if (currentCase.analysis?.extractedData?.requiredAction !== undefined) {
+    if (hasCurrentExtractedData(currentCase.analysis)) {
       return currentCase.analysis;
     }
 
@@ -84,6 +179,39 @@ export default function CaseResultPage() {
   }, [currentCase]);
 
   const riskLevel = analysis?.riskLevel ?? currentCase?.riskLevel ?? "low";
+  const actionSteps = analysis?.actionPlan?.length ? analysis.actionPlan : analysis?.recommendedActions ?? [];
+  const deadlineDate = analysis ? getNearestDeadline(analysis.extractedData.deadlines) ?? analysis.extractedData.deadline : null;
+  const deadlineFacts = analysis
+    ? [
+        ["Статус", deadlineStatusLabels[analysis.deadlineStatus]],
+        ["Дата срока", formatValue(deadlineDate)]
+      ]
+    : [];
+  const priorityFacts = analysis
+    ? [
+        ["Уровень приоритета", priorityLabels[analysis.priorityLevel]],
+        ["Ближайший срок", formatValue(deadlineDate)],
+        ["Главное действие", formatValue(analysis.extractedData.requiredAction)],
+        ["Главное последствие", formatValue(analysis.extractedData.consequences[0])]
+      ]
+    : [];
+  const importantFacts = analysis
+    ? [
+        ["Organisation", formatValue(analysis.extractedData.organization)],
+        ["Dokumenttyp", formatValue(analysis.extractedData.documentImportance ?? analysis.extractedData.documentType)],
+        ["Aktenzeichen / Fallnummer", formatValue(analysis.extractedData.caseNumber)],
+        [
+          "Frist",
+          analysis.extractedData.deadlines.length > 0
+            ? analysis.extractedData.deadlines.join(", ")
+            : formatValue(analysis.extractedData.deadline)
+        ],
+        ["Betrag", formatValue(analysis.extractedData.amount)],
+        ["Kontakte", formatContacts(analysis.extractedData.contacts)],
+        ["Folgen", formatList(analysis.extractedData.consequences)],
+        ["Risikostufe", riskFactLabels[analysis.riskLevel]]
+      ]
+    : [];
 
   if (!isLoaded) {
     return (
@@ -159,20 +287,69 @@ export default function CaseResultPage() {
             <span className="section-label">Предупреждение о сроке</span>
             <span className="result-meta">важно</span>
           </div>
-          <p>⚠ Срок найден: {analysis.extractedData.deadline}</p>
+          <p>Срок найден: {formatList(analysis.extractedData.deadlines)}</p>
         </section>
       ) : null}
+
+      <section className={`result-card deadline-card deadline-card-${analysis.deadlineStatus}`}>
+        <div className="result-card-header">
+          <span className="section-label">Статус срока</span>
+          <span className={`deadline-status-badge deadline-status-badge-${analysis.deadlineStatus}`}>
+            {deadlineStatusLabels[analysis.deadlineStatus]}
+          </span>
+        </div>
+        <p>{analysis.deadlineMessage}</p>
+        <dl className="facts-list">
+          {deadlineFacts.map(([label, value]) => (
+            <div className="facts-row" key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <section className="result-card result-card-hero">
+        <div className="result-card-header">
+          <span className="section-label">Самое важное</span>
+          <span className="result-meta">priority</span>
+        </div>
+        <p>{analysis.prioritySummary}</p>
+        <dl className="facts-list">
+          {priorityFacts.map(([label, value]) => (
+            <div className="facts-row" key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
 
       <section className="result-card recommendations-card">
         <div className="result-card-header">
           <span className="section-label">Что делать сейчас</span>
           <span className="result-meta">следующие шаги</span>
         </div>
-        <ul className="clean-list">
-          {analysis.recommendedActions.map((recommendation) => (
-            <li key={recommendation}>{recommendation}</li>
+        <ol className="clean-list">
+          {actionSteps.map((step) => (
+            <li key={step}>{step}</li>
           ))}
-        </ul>
+        </ol>
+      </section>
+
+      <section className="result-card">
+        <div className="result-card-header">
+          <span className="section-label">Wichtige Fakten</span>
+          <span className="result-meta">локально</span>
+        </div>
+        <dl className="facts-list">
+          {importantFacts.map(([label, value]) => (
+            <div className="facts-row" key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
 
       <section className="result-card">
@@ -182,18 +359,8 @@ export default function CaseResultPage() {
         </div>
         <ul className="clean-list">
           <li>Категория: {analysis.category}</li>
-          <li>Тип документа: {analysis.extractedData.documentType ?? "не найден"}</li>
-          <li>Организация: {analysis.extractedData.organization ?? "не найдена"}</li>
-          <li>Требуемое действие: {analysis.extractedData.requiredAction ?? "не найдено"}</li>
-          <li>Срок: {analysis.extractedData.deadline ?? "не найден"}</li>
-          <li>Сумма: {analysis.extractedData.amount ?? "не найдена"}</li>
-          <li>
-            Последствия:{" "}
-            {analysis.extractedData.consequences.length > 0
-              ? analysis.extractedData.consequences.join(", ")
-              : "не найдено"}
-          </li>
-          <li>Риск: {riskLabels[analysis.riskLevel]}</li>
+          <li>Тип документа: {formatValue(analysis.extractedData.documentType)}</li>
+          <li>Требуемое действие: {formatValue(analysis.extractedData.requiredAction)}</li>
         </ul>
       </section>
 

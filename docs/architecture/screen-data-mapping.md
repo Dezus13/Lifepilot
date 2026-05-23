@@ -81,6 +81,7 @@
 - `riskLevel`;
 - `status`;
 - `updatedAt`;
+- `analysis.extractedData`, если он уже сохранен;
 - локальные правила отображения риска;
 - резервное значение категории `Другое`.
 
@@ -89,13 +90,17 @@
 - краткое отображение анализа из исходного текста;
 - risk badge;
 - объяснение уровня риска;
-- список рекомендаций;
+- блок `Самое важное` с `analysis.prioritySummary`, `analysis.priorityLevel`, ближайшим сроком, главным действием и главным последствием;
+- fallback `Nicht gefunden` для отсутствующих priority-значений;
+- блок `Статус срока` с `analysis.deadlineStatus`, `analysis.daysRemaining`, `analysis.deadlineMessage` и датой срока;
+- блок `Wichtige Fakten` с организацией, типом документа, номером дела, сроками, суммой, контактами, последствиями и уровнем риска;
+- нумерованный список шагов из `analysis.actionPlan`;
 - безопасное empty state, если кейс не найден.
 
 Изменяет:
 
 - в текущем MVP не записывает новый результат в хранилище;
-- может пересчитать `riskLevel` для отображения, если он отсутствует в текущем кейсе;
+- может пересчитать локальный анализ для отображения, если сохраненный кейс старый и не содержит новых полей важных фактов или priority-полей;
 - переводит пользователя к экрану черновика через навигацию.
 
 ## Черновик
@@ -124,10 +129,15 @@
 - `sourceText`;
 - `category`;
 - `riskLevel`;
+- `analysis`, включая `analysis.extractedData`;
+- `analysis.actionPlan`, если он сохранен;
+- `analysis.prioritySummary` и `analysis.priorityLevel`, если они сохранены;
+- `analysis.deadlineStatus`, `analysis.daysRemaining` и `analysis.deadlineMessage`, если они сохранены;
 - `status`;
 - `updatedAt`;
 - резервную категорию `Другое`;
 - расчет `riskLevel` для старых записей без уровня риска.
+- сохраненные priority-данные внутри `analysis` в `lifepilot.caseHistory`.
 
 Создает:
 

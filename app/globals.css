@@ -705,6 +705,31 @@ a {
     linear-gradient(180deg, rgba(255, 246, 244, 0.94) 0%, rgba(255, 238, 234, 0.72) 100%);
 }
 
+.deadline-card-overdue,
+.deadline-card-urgent {
+  border-color: rgba(185, 70, 70, 0.34);
+  background:
+    linear-gradient(180deg, rgba(255, 246, 244, 0.94) 0%, rgba(255, 238, 234, 0.72) 100%);
+}
+
+.deadline-card-upcoming {
+  border-color: var(--warning-line);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 236, 0.92) 0%, rgba(255, 248, 230, 0.76) 100%);
+}
+
+.deadline-card-normal {
+  border-color: rgba(15, 118, 110, 0.18);
+  background:
+    linear-gradient(180deg, rgba(245, 252, 250, 0.92) 0%, rgba(228, 243, 241, 0.64) 100%);
+}
+
+.deadline-card-unknown {
+  border-color: rgba(104, 114, 127, 0.24);
+  background:
+    linear-gradient(180deg, rgba(248, 250, 249, 0.9) 0%, rgba(238, 243, 242, 0.72) 100%);
+}
+
 .risk-badge {
   width: fit-content;
   border-radius: 999px;
@@ -730,6 +755,40 @@ a {
   border: 1px solid rgba(185, 70, 70, 0.3);
   color: #8f2525;
   background: rgba(255, 229, 225, 0.84);
+}
+
+.deadline-status-badge {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.deadline-status-badge-overdue,
+.deadline-status-badge-urgent {
+  border: 1px solid rgba(185, 70, 70, 0.3);
+  color: #8f2525;
+  background: rgba(255, 229, 225, 0.84);
+}
+
+.deadline-status-badge-upcoming {
+  border: 1px solid var(--warning-line);
+  color: var(--warning-text);
+  background: rgba(234, 210, 138, 0.3);
+}
+
+.deadline-status-badge-normal {
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  color: var(--accent);
+  background: rgba(228, 243, 241, 0.82);
+}
+
+.deadline-status-badge-unknown {
+  border: 1px solid rgba(104, 114, 127, 0.22);
+  color: var(--text-muted);
+  background: rgba(238, 243, 242, 0.86);
 }
 
 .category-chip {
@@ -761,6 +820,45 @@ a {
 .clean-list li::marker {
   color: var(--accent);
   font-weight: 900;
+}
+
+.facts-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.facts-row {
+  display: grid;
+  gap: 4px;
+  border-bottom: 1px solid rgba(225, 231, 229, 0.72);
+  padding-bottom: 10px;
+}
+
+.facts-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.facts-row dt,
+.facts-row dd {
+  margin: 0;
+}
+
+.facts-row dt {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.facts-row dd {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 720;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .draft-card {
