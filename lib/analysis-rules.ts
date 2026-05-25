@@ -1,3 +1,5 @@
+import { buildActionPlan } from "./action-plan";
+
 export type RiskLevel = "low" | "medium" | "high";
 export type CaseStatus = "new" | "analyzed" | "action-required" | "waiting" | "completed";
 export type CaseCategory = "Жильё" | "Банк" | "Страховка" | "Госорган" | "Работа" | "Документы" | "Другое";
@@ -41,14 +43,6 @@ export type LocalAnalysis = {
   actionPlan: string[];
   recommendedActions: string[];
   extractedData: ExtractedData;
-};
-
-export type ActionPlanInput = {
-  organization: string | null;
-  documentType: DocumentImportance | string | null;
-  riskLevel: RiskLevel;
-  deadline: string | null;
-  consequences: string[];
 };
 
 export type PrioritySummaryInput = {
@@ -543,106 +537,6 @@ function buildRecommendations(category: CaseCategory, riskLevel: RiskLevel, orga
   return unique(recommendations);
 }
 
-function buildDeadlineStep(deadline: string | null) {
-  return deadline ? `Проверить срок ${deadline} и поставить напоминание.` : "Проверить, указан ли в документе срок ответа или действия.";
-}
-
-function buildDocumentTypeStep(documentType: ActionPlanInput["documentType"]) {
-  if (documentType === "Mahnung" || documentType === "Rechnung") {
-    return "Сверить сумму, назначение платежа и реквизиты перед любой оплатой.";
-  }
-
-  if (documentType === "Kündigung") {
-    return "Проверить дату прекращения договора и не признавать спорные пункты без ручной проверки.";
-  }
-
-  if (documentType === "Dokumentenanforderung") {
-    return "Составить список требуемых Unterlagen или Nachweise и отметить, каких документов не хватает.";
-  }
-
-  if (documentType === "Termin") {
-    return "Проверить дату, время, адрес термина и возможность переноса, если прийти нельзя.";
-  }
-
-  return "Коротко выписать, что именно сообщает документ и требуется ли ответ.";
-}
-
-function buildOrganizationSteps(organization: string | null) {
-  if (organization === "AMS") {
-    return [
-      "Проверить eAMS, Frist и список Nachweise, которые нужно подать.",
-      "Подготовить документы для AMS и сохранить подтверждение отправки."
-    ];
-  }
-
-  if (organization === "MA40") {
-    return [
-      "Сверить Geschäftszahl или Aktenzeichen MA40 с документом.",
-      "Подготовить требуемые Unterlagen и отправлять их только по указанному каналу MA40."
-    ];
-  }
-
-  if (organization === "ÖGK") {
-    return [
-      "Проверить номер страхования, период и причину письма от ÖGK.",
-      "Подготовить медицинские или страховые подтверждения, если они запрошены."
-    ];
-  }
-
-  if (organization === "Wiener Wohnen") {
-    return [
-      "Сверить Mietvertrag, адрес квартиры, сумму и период, о котором пишет Wiener Wohnen.",
-      "Сохранить письмо и подготовить письменный ответ, если есть спор по оплате или договору."
-    ];
-  }
-
-  if (organization === "Versicherung" || organization === "страховая") {
-    return [
-      "Проверить номер полиса или Schadenfall и дату события.",
-      "Собрать подтверждения, счета или фотографии, которые просит страховая."
-    ];
-  }
-
-  if (organization === "Arbeitgeber") {
-    return [
-      "Сверить письмо с Arbeitsvertrag, графиком, зарплатой или сроком ответа.",
-      "Отвечать письменно и сохранить копию ответа работодателю."
-    ];
-  }
-
-  return ["Сверить отправителя, номер документа и цель письма перед ответом."];
-}
-
-function buildConsequenceStep(consequences: string[]) {
-  if (consequences.length === 0) {
-    return "Если последствия не указаны явно, не додумывать их и проверить только факты из текста.";
-  }
-
-  return `Отдельно проверить возможные последствия: ${consequences.join(", ")}.`;
-}
-
-function buildRiskStep(riskLevel: RiskLevel) {
-  if (riskLevel === "high") {
-    return "Перед отправкой ответа или оплатой вручную проверить документ и при сомнении обратиться к специалисту.";
-  }
-
-  if (riskLevel === "medium") {
-    return "Перед ответом сверить сроки, суммы, личные данные и список документов.";
-  }
-
-  return "Сохранить кейс в истории и использовать план как чек-лист для спокойной проверки.";
-}
-
-export function buildActionPlan(input: ActionPlanInput) {
-  return unique([
-    buildDeadlineStep(input.deadline),
-    buildDocumentTypeStep(input.documentType),
-    ...buildOrganizationSteps(input.organization),
-    buildConsequenceStep(input.consequences),
-    buildRiskStep(input.riskLevel)
-  ]).slice(0, 6);
-}
-
 export function determineCaseStatus(input: CaseStatusInput): CaseStatus {
   const hasDeadline = Boolean(input.deadline || input.deadlines.length > 0);
   const hasActionPlan = input.actionPlan.length > 0;
@@ -733,13 +627,6 @@ export function createLocalAnalysis(sourceText: string): LocalAnalysis {
     isDeadlineSoon: deadlineEntries.some((deadlineEntry) => isDeadlineSoon(deadlineEntry.date))
   };
   const foundKeywords = unique([...categoryResult.foundKeywords, ...riskResult.foundKeywords]);
-  const actionPlan = buildActionPlan({
-    organization,
-    documentType: extractedData.documentImportance ?? extractedData.documentType,
-    riskLevel: riskResult.riskLevel,
-    deadline: extractedData.deadline,
-    consequences: extractedData.consequences
-  });
   const priorityInput: PrioritySummaryInput = {
     organization,
     documentType: extractedData.documentImportance ?? extractedData.documentType,
@@ -749,7 +636,13 @@ export function createLocalAnalysis(sourceText: string): LocalAnalysis {
     consequences: extractedData.consequences,
     riskLevel: riskResult.riskLevel
   };
+  const priorityLevel = determinePriorityLevel(priorityInput);
   const deadlineStatusResult = buildDeadlineStatus(extractedData.deadlines.length > 0 ? extractedData.deadlines : extractedData.deadline);
+  const actionPlan = buildActionPlan({
+    riskLevel: riskResult.riskLevel,
+    priorityLevel,
+    deadlineStatus: deadlineStatusResult.status
+  });
   const status = determineCaseStatus({
     deadline: extractedData.deadline,
     deadlines: extractedData.deadlines,
@@ -766,7 +659,7 @@ export function createLocalAnalysis(sourceText: string): LocalAnalysis {
     riskReason: riskReasons[riskResult.riskLevel],
     explanation: `${riskReasons[riskResult.riskLevel]} Категория определена как "${categoryResult.category}".`,
     prioritySummary: buildPrioritySummary(priorityInput),
-    priorityLevel: determinePriorityLevel(priorityInput),
+    priorityLevel,
     deadlineStatus: deadlineStatusResult.status,
     daysRemaining: deadlineStatusResult.daysRemaining,
     deadlineMessage: deadlineStatusResult.deadlineMessage,

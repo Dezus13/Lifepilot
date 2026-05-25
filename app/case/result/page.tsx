@@ -325,7 +325,7 @@ export default function CaseResultPage() {
 
       <section className="result-card recommendations-card">
         <div className="result-card-header">
-          <span className="section-label">Что делать сейчас</span>
+          <span className="section-label">План действий</span>
           <span className="result-meta">следующие шаги</span>
         </div>
         <ol className="clean-list">

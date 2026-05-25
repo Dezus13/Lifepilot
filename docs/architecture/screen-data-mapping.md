@@ -96,6 +96,7 @@
 - `updatedAt`;
 - `analysis.extractedData`, если он уже сохранен;
 - `analysis.status`, если он уже сохранен;
+- `analysis.actionPlan`, сформированный Action Plan Engine;
 - локальные правила отображения риска;
 - резервное значение категории `Другое`.
 
@@ -109,7 +110,7 @@
 - fallback `Nicht gefunden` для отсутствующих priority-значений;
 - блок `Статус срока` с `analysis.deadlineStatus`, `analysis.daysRemaining`, `analysis.deadlineMessage` и датой срока;
 - блок `Wichtige Fakten` с организацией, типом документа, номером дела, сроками, суммой, контактами, последствиями и уровнем риска;
-- нумерованный список шагов из `analysis.actionPlan`;
+- блок `План действий` с нумерованным списком 3-5 шагов из `analysis.actionPlan`;
 - безопасное empty state, если кейс не найден.
 
 Изменяет:
