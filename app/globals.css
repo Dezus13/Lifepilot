@@ -730,6 +730,21 @@ a {
     linear-gradient(180deg, rgba(248, 250, 249, 0.9) 0%, rgba(238, 243, 242, 0.72) 100%);
 }
 
+.case-status-card-new,
+.case-status-card-analyzed,
+.case-status-card-waiting,
+.case-status-card-completed {
+  border-color: rgba(15, 118, 110, 0.18);
+  background:
+    linear-gradient(180deg, rgba(245, 252, 250, 0.92) 0%, rgba(228, 243, 241, 0.64) 100%);
+}
+
+.case-status-card-action-required {
+  border-color: var(--warning-line);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 236, 0.92) 0%, rgba(255, 248, 230, 0.76) 100%);
+}
+
 .risk-badge {
   width: fit-content;
   border-radius: 999px;
@@ -789,6 +804,35 @@ a {
   border: 1px solid rgba(104, 114, 127, 0.22);
   color: var(--text-muted);
   background: rgba(238, 243, 242, 0.86);
+}
+
+.case-status-badge {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.case-status-badge-new,
+.case-status-badge-analyzed,
+.case-status-badge-waiting,
+.case-status-badge-completed {
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  color: var(--accent);
+  background: rgba(228, 243, 241, 0.82);
+}
+
+.case-status-badge-action-required {
+  border: 1px solid var(--warning-line);
+  color: var(--warning-text);
+  background: rgba(234, 210, 138, 0.3);
+}
+
+.case-status-title {
+  font-size: 18px;
+  font-weight: 850;
 }
 
 .category-chip {

@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   createLocalAnalysis,
+  normalizeCaseStatus,
   type CaseCategory,
+  type CaseStatus,
   type DeadlineStatus,
   type LocalAnalysis,
   type PriorityLevel,
@@ -19,7 +21,7 @@ type CurrentCase = {
   category: CaseCategory;
   riskLevel?: RiskLevel;
   analysis?: LocalAnalysis;
-  status: string;
+  status: CaseStatus;
   updatedAt: string;
 };
 
@@ -52,6 +54,22 @@ const deadlineStatusLabels: Record<DeadlineStatus, string> = {
   unknown: "unknown"
 };
 
+const caseStatusLabels: Record<CaseStatus, string> = {
+  new: "Новый",
+  analyzed: "Проанализирован",
+  "action-required": "Требует действия",
+  waiting: "Ожидание",
+  completed: "Завершен"
+};
+
+const caseStatusDescriptions: Record<CaseStatus, string> = {
+  new: "Кейс еще не проходил локальный анализ.",
+  analyzed: "Анализ готов, критического сигнала или ближайшего обязательного срока не найдено.",
+  "action-required": "Нужно вручную проверить риск, срок или шаги плана перед следующим действием.",
+  waiting: "В кейсе есть срок или внешнее ожидание, но высокий риск не обнаружен.",
+  completed: "По текущим правилам не найдено дальнейших обязательных шагов."
+};
+
 const notFoundText = "Nicht gefunden";
 
 function readCurrentCase(): CurrentCase | null {
@@ -74,7 +92,7 @@ function readCurrentCase(): CurrentCase | null {
       category: parsedCase.category ?? fallbackCategory,
       riskLevel: parsedCase.riskLevel,
       analysis: parsedCase.analysis,
-      status: parsedCase.status ?? "проанализирован",
+      status: normalizeCaseStatus(parsedCase.status, parsedCase.analysis?.status ?? "new"),
       updatedAt: parsedCase.updatedAt ?? new Date().toISOString()
     };
   } catch {
@@ -104,7 +122,8 @@ function hasCurrentExtractedData(analysis?: LocalAnalysis) {
       "priorityLevel" in analysis &&
       "deadlineStatus" in analysis &&
       "daysRemaining" in analysis &&
-      "deadlineMessage" in analysis
+      "deadlineMessage" in analysis &&
+      "status" in analysis
   );
 }
 
@@ -179,6 +198,7 @@ export default function CaseResultPage() {
   }, [currentCase]);
 
   const riskLevel = analysis?.riskLevel ?? currentCase?.riskLevel ?? "low";
+  const caseStatus = analysis?.status ?? currentCase?.status ?? "new";
   const actionSteps = analysis?.actionPlan?.length ? analysis.actionPlan : analysis?.recommendedActions ?? [];
   const deadlineDate = analysis ? getNearestDeadline(analysis.extractedData.deadlines) ?? analysis.extractedData.deadline : null;
   const deadlineFacts = analysis
@@ -259,6 +279,15 @@ export default function CaseResultPage() {
         </div>
         <p className={`risk-badge risk-badge-${riskLevel}`}>{riskLabels[riskLevel]}</p>
         <p>{analysis.riskReason}</p>
+      </section>
+
+      <section className={`result-card case-status-card case-status-card-${caseStatus}`}>
+        <div className="result-card-header">
+          <span className="section-label">Статус кейса</span>
+          <span className={`case-status-badge case-status-badge-${caseStatus}`}>{caseStatus}</span>
+        </div>
+        <p className="case-status-title">{caseStatusLabels[caseStatus]}</p>
+        <p>{caseStatusDescriptions[caseStatus]}</p>
       </section>
 
       <section className={`result-card risk-card risk-card-${riskLevel}`}>

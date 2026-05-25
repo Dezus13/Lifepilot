@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getRiskLevel, type CaseCategory, type LocalAnalysis, type RiskLevel } from "../../lib/analysis-rules";
+import {
+  getRiskLevel,
+  normalizeCaseStatus,
+  type CaseCategory,
+  type CaseStatus,
+  type LocalAnalysis,
+  type RiskLevel
+} from "../../lib/analysis-rules";
 
 const currentCaseKey = "lifepilot.currentCase";
 const caseHistoryKey = "lifepilot.caseHistory";
@@ -14,7 +21,7 @@ type StoredCase = {
   category?: CaseCategory;
   riskLevel?: RiskLevel;
   analysis?: LocalAnalysis;
-  status?: string;
+  status?: CaseStatus | string;
   updatedAt: string;
 };
 
@@ -94,7 +101,7 @@ export default function HistoryPage() {
         category: historyCase.category ?? fallbackCategory,
         riskLevel: historyCase.riskLevel ?? getRiskLevel(historyCase.sourceText),
         analysis: historyCase.analysis,
-        status: historyCase.status ?? "создан",
+        status: normalizeCaseStatus(historyCase.status, historyCase.analysis?.status ?? "new"),
         updatedAt: historyCase.updatedAt
       })
     );

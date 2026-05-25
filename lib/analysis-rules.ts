@@ -1,4 +1,5 @@
 export type RiskLevel = "low" | "medium" | "high";
+export type CaseStatus = "new" | "analyzed" | "action-required" | "waiting" | "completed";
 export type CaseCategory = "Жильё" | "Банк" | "Страховка" | "Госорган" | "Работа" | "Документы" | "Другое";
 export type DocumentImportance = "Information" | "Termin" | "Dokumentenanforderung" | "Rechnung" | "Mahnung" | "Kündigung";
 export type PriorityLevel = "critical" | "high" | "medium" | "low";
@@ -26,6 +27,7 @@ export type ExtractedData = {
 
 export type LocalAnalysis = {
   category: CaseCategory;
+  status: CaseStatus;
   riskLevel: RiskLevel;
   foundKeywords: string[];
   riskKeywords: string[];
@@ -64,6 +66,27 @@ export type DeadlineStatusResult = {
   daysRemaining: number | null;
   deadlineMessage: string;
   deadline: string | null;
+};
+
+export type CaseStatusInput = {
+  deadline: string | null;
+  deadlines: string[];
+  riskLevel: RiskLevel;
+  actionPlan: string[];
+};
+
+const caseStatuses: CaseStatus[] = ["new", "analyzed", "action-required", "waiting", "completed"];
+
+const legacyCaseStatusMap: Record<string, CaseStatus> = {
+  черновик: "new",
+  создан: "new",
+  проанализирован: "analyzed",
+  объяснен: "analyzed",
+  "план создан": "action-required",
+  "ответ создан": "waiting",
+  сохранен: "analyzed",
+  "требует уточнения": "action-required",
+  "высокий риск": "action-required"
 };
 
 const categoryKeywordGroups: Array<{
@@ -171,6 +194,18 @@ function findKeywords(sourceText: string, keywords: string[]) {
 
 function unique(items: string[]) {
   return Array.from(new Set(items));
+}
+
+export function normalizeCaseStatus(status: unknown, fallback: CaseStatus = "new"): CaseStatus {
+  if (typeof status !== "string") {
+    return fallback;
+  }
+
+  if (caseStatuses.includes(status as CaseStatus)) {
+    return status as CaseStatus;
+  }
+
+  return legacyCaseStatusMap[status] ?? fallback;
 }
 
 function cleanExtractedValue(value: string) {
@@ -608,6 +643,25 @@ export function buildActionPlan(input: ActionPlanInput) {
   ]).slice(0, 6);
 }
 
+export function determineCaseStatus(input: CaseStatusInput): CaseStatus {
+  const hasDeadline = Boolean(input.deadline || input.deadlines.length > 0);
+  const hasActionPlan = input.actionPlan.length > 0;
+
+  if (input.riskLevel === "high" || (hasDeadline && input.riskLevel === "medium") || (hasActionPlan && input.riskLevel !== "low")) {
+    return "action-required";
+  }
+
+  if (hasDeadline) {
+    return "waiting";
+  }
+
+  if (hasActionPlan) {
+    return "analyzed";
+  }
+
+  return "completed";
+}
+
 export function determinePriorityLevel(input: PrioritySummaryInput): PriorityLevel {
   const consequencesText = input.consequences.join(" ").toLowerCase();
   const hasCriticalConsequence =
@@ -696,9 +750,16 @@ export function createLocalAnalysis(sourceText: string): LocalAnalysis {
     riskLevel: riskResult.riskLevel
   };
   const deadlineStatusResult = buildDeadlineStatus(extractedData.deadlines.length > 0 ? extractedData.deadlines : extractedData.deadline);
+  const status = determineCaseStatus({
+    deadline: extractedData.deadline,
+    deadlines: extractedData.deadlines,
+    riskLevel: riskResult.riskLevel,
+    actionPlan
+  });
 
   return {
     category: categoryResult.category,
+    status,
     riskLevel: riskResult.riskLevel,
     foundKeywords,
     riskKeywords: riskResult.foundKeywords,

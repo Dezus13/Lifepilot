@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { createLocalAnalysis, type CaseCategory, type LocalAnalysis, type RiskLevel } from "../../../lib/analysis-rules";
+import { createLocalAnalysis, type CaseCategory, type CaseStatus, type LocalAnalysis, type RiskLevel } from "../../../lib/analysis-rules";
 
 const currentCaseKey = "lifepilot.currentCase";
 const caseHistoryKey = "lifepilot.caseHistory";
@@ -13,7 +13,7 @@ type StoredCase = {
   category: CaseCategory;
   riskLevel: RiskLevel;
   analysis: LocalAnalysis;
-  status: string;
+  status: CaseStatus;
   updatedAt: string;
 };
 
@@ -64,7 +64,7 @@ export default function NewCasePage() {
       category: analysis.category,
       riskLevel: analysis.riskLevel,
       analysis,
-      status: "проанализирован",
+      status: analysis.status,
       updatedAt: new Date().toISOString()
     };
 
