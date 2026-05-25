@@ -151,6 +151,8 @@
 - короткий заголовок кейса;
 - человекочитаемую дату;
 - risk badge.
+- ссылку `Открыть кейс` на `/history/[caseId]`;
+- действие `Открыть результат` для восстановления кейса как текущего.
 
 Изменяет:
 
@@ -163,9 +165,38 @@
 Использует:
 
 - параметр маршрута `caseId`;
-- в текущем MVP экран остается placeholder.
+- `lifepilot.caseHistory`;
+- `id`;
+- `sourceText`;
+- `status`;
+- `analysis.status`;
+- `analysis.priorityLevel`;
+- `analysis.prioritySummary`;
+- `analysis.deadlineMessage`;
+- `analysis.extractedData.organization`;
+- `analysis.extractedData.documentType`;
+- `analysis.extractedData.documentImportance`;
+- `analysis.extractedData.requiredAction`;
+- `analysis.extractedData.consequences`;
+- `analysis.actionPlan`;
+- `analysis.foundKeywords`.
 
-Не создает и не изменяет данные. Текущий экран остается placeholder.
+Создает:
+
+- detail view сохраненного кейса;
+- preview названия и исходного текста;
+- блок статуса кейса;
+- блок приоритета и важных фактов;
+- список шагов плана действий;
+- список найденных ключевых слов;
+- безопасное empty state, если кейс не найден;
+- fallback `Nicht gefunden` для старых кейсов без новых полей.
+
+Изменяет:
+
+- не изменяет `lifepilot.currentCase`;
+- не изменяет `lifepilot.caseHistory`;
+- не создает backend, auth, database или внешний запрос.
 
 ## Безопасность
 
@@ -197,7 +228,7 @@
 - Экран результата читает данные, но не считается источником сохраненного результата.
 - История работает только с сохраненными локальными кейсами.
 - Открытие истории восстанавливает кейс как текущий, а не создает новый.
-- Placeholder-экраны не должны создавать скрытые данные.
+- Просмотр сохраненного кейса читает запись по `id` и не создает скрытые данные.
 
 ## Связанные документы
 

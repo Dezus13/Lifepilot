@@ -1172,6 +1172,11 @@ a {
   align-items: center;
 }
 
+.history-card-actions {
+  display: grid;
+  gap: 8px;
+}
+
 .history-card h2,
 .history-card p {
   margin: 0;
@@ -1221,6 +1226,11 @@ a {
 @media (min-width: 420px) {
   .history-card-footer {
     grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .history-card-actions {
+    grid-auto-flow: column;
     align-items: center;
   }
 }

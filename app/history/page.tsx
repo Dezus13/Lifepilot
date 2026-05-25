@@ -97,6 +97,7 @@ export default function HistoryPage() {
     localStorage.setItem(
       currentCaseKey,
       JSON.stringify({
+        id: historyCase.id,
         sourceText: historyCase.sourceText,
         category: historyCase.category ?? fallbackCategory,
         riskLevel: historyCase.riskLevel ?? getRiskLevel(historyCase.sourceText),
@@ -166,9 +167,14 @@ export default function HistoryPage() {
                     Риск: {riskLabels[riskLevel]}
                   </span>
                 </div>
-                <button className="button button-compact" type="button" onClick={() => openResult(historyCase)}>
-                  Открыть результат
-                </button>
+                <div className="history-card-actions">
+                  <Link className="button button-secondary button-compact" href={`/history/${encodeURIComponent(historyCase.id)}`}>
+                    Открыть кейс
+                  </Link>
+                  <button className="button button-compact" type="button" onClick={() => openResult(historyCase)}>
+                    Открыть результат
+                  </button>
+                </div>
               </div>
             </article>
           );
