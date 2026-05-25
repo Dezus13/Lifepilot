@@ -2,17 +2,17 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { type CaseCategory, type RiskLevel } from "../lib/analysis-rules";
+import {
+  getRiskLevel,
+  normalizeCaseStatus,
+  type CaseStatus,
+  type PriorityLevel,
+  type RiskLevel
+} from "../lib/analysis-rules";
+import { readCaseHistory } from "../lib/case-storage";
+import type { StoredCase } from "../lib/types";
 
-const caseHistoryKey = "lifepilot.caseHistory";
-
-type StoredCase = {
-  id: string;
-  sourceText: string;
-  category?: CaseCategory;
-  riskLevel?: RiskLevel;
-  updatedAt: string;
-};
+const notFoundText = "Nicht gefunden";
 
 const quickActions = [
   {
@@ -41,24 +41,20 @@ const riskLabels: Record<RiskLevel, string> = {
   high: "Высокий"
 };
 
-function readCaseHistory() {
-  const rawHistory = localStorage.getItem(caseHistoryKey);
-
-  if (!rawHistory) {
-    return [];
-  }
-
-  try {
-    const parsedHistory = JSON.parse(rawHistory) as StoredCase[];
-
-    return Array.isArray(parsedHistory) ? parsedHistory : [];
-  } catch {
-    return [];
-  }
-}
+const caseStatusLabels: Record<CaseStatus, string> = {
+  new: "Новый",
+  analyzed: "Проанализировано",
+  "action-required": "Требует действия",
+  waiting: "Ожидание",
+  completed: "Завершено"
+};
 
 function getCasePreview(sourceText: string) {
   const cleanText = sourceText.replace(/\s+/g, " ").trim();
+
+  if (!cleanText) {
+    return notFoundText;
+  }
 
   if (cleanText.length <= 58) {
     return cleanText;
@@ -67,14 +63,57 @@ function getCasePreview(sourceText: string) {
   return `${cleanText.slice(0, 58)}...`;
 }
 
+function getCaseStatus(historyCase: StoredCase) {
+  return normalizeCaseStatus(historyCase.status, historyCase.analysis?.status ?? "new");
+}
+
+function getCaseRiskLevel(historyCase: StoredCase) {
+  return historyCase.riskLevel ?? historyCase.analysis?.riskLevel ?? getRiskLevel(historyCase.sourceText);
+}
+
+function getPriorityLevel(historyCase: StoredCase): PriorityLevel | null {
+  return historyCase.analysis?.priorityLevel ?? null;
+}
+
+function getCreatedAt(historyCase: StoredCase) {
+  return historyCase.createdAt ?? historyCase.updatedAt;
+}
+
+function getCaseTime(historyCase: StoredCase) {
+  const time = new Date(getCreatedAt(historyCase) ?? "").getTime();
+
+  return Number.isNaN(time) ? 0 : time;
+}
+
+function formatDate(value: string | undefined) {
+  if (!value) {
+    return notFoundText;
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return notFoundText;
+  }
+
+  return new Intl.DateTimeFormat("ru-RU", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  }).format(date);
+}
+
 function countHighRiskCases(history: StoredCase[]) {
-  return history.filter((historyCase) => historyCase.riskLevel === "high").length;
+  return history.filter((historyCase) => getCaseRiskLevel(historyCase) === "high").length;
 }
 
 export default function HomePage() {
   const [history, setHistory] = useState<StoredCase[]>([]);
-  const recentCases = history.slice(0, 3);
+  const lastCase = [...history].sort((firstCase, secondCase) => getCaseTime(secondCase) - getCaseTime(firstCase))[0] ?? null;
   const highRiskCount = countHighRiskCases(history);
+  const actionRequiredCount = history.filter((historyCase) => getCaseStatus(historyCase) === "action-required").length;
+  const waitingCount = history.filter((historyCase) => getCaseStatus(historyCase) === "waiting").length;
+  const completedCount = history.filter((historyCase) => getCaseStatus(historyCase) === "completed").length;
 
   useEffect(() => {
     setHistory(readCaseHistory());
@@ -100,20 +139,59 @@ export default function HomePage() {
 
       <section className="home-overview" aria-label="Обзор статусов">
         <div className="overview-tile">
-          <span>Кейсы</span>
+          <span>Всего кейсов</span>
           <strong>{history.length}</strong>
           <small>локально</small>
         </div>
         <div className="overview-tile overview-tile-warning">
-          <span>Риск</span>
+          <span>Требуют действия</span>
+          <strong>{actionRequiredCount}</strong>
+          <small>status</small>
+        </div>
+        <div className="overview-tile overview-tile-warning">
+          <span>Высокий риск</span>
           <strong>{highRiskCount}</strong>
-          <small>высокий</small>
+          <small>riskLevel</small>
         </div>
         <div className="overview-tile">
-          <span>Хранение</span>
-          <strong>Local</strong>
-          <small>localStorage</small>
+          <span>В ожидании</span>
+          <strong>{waitingCount}</strong>
+          <small>status</small>
         </div>
+        <div className="overview-tile">
+          <span>Завершено</span>
+          <strong>{completedCount}</strong>
+          <small>status</small>
+        </div>
+      </section>
+
+      <section className="dashboard-section">
+        <div className="section-heading">
+          <h2>Последний кейс</h2>
+          <p>Самая свежая запись из локальной истории.</p>
+        </div>
+
+        {!lastCase ? (
+          <div className="placeholder-panel">
+            <p>История пока пуста</p>
+            <Link className="button primary-action" href="/case/new">
+              Новый кейс
+            </Link>
+          </div>
+        ) : (
+          <article className="home-case-card home-last-case-card">
+            <div>
+              <h3>{getCasePreview(lastCase.sourceText)}</h3>
+              <p>Дата создания: {formatDate(getCreatedAt(lastCase))}</p>
+            </div>
+            <div className="history-card-badges">
+              <span className={`case-status-badge case-status-badge-${getCaseStatus(lastCase)}`}>
+                {caseStatusLabels[getCaseStatus(lastCase)]}
+              </span>
+              <span className="case-status-chip">Priority: {getPriorityLevel(lastCase) ?? notFoundText}</span>
+            </div>
+          </article>
+        )}
       </section>
 
       <section className="dashboard-section">
@@ -139,32 +217,14 @@ export default function HomePage() {
 
       <section className="dashboard-section">
         <div className="section-heading">
-          <h2>Последние кейсы</h2>
-          <p>Сохраненные локально результаты анализа.</p>
+          <h2>Локальное состояние</h2>
+          <p>История хранится только в браузере и не отправляется на сервер.</p>
         </div>
 
-        {recentCases.length === 0 ? (
-          <div className="placeholder-panel">
-            <p>Пока нет сохраненных кейсов. Начните с нового письма или документа.</p>
-            <Link className="button primary-action" href="/case/new">
-              Новый кейс
-            </Link>
-          </div>
-        ) : (
-          <div className="home-case-list">
-            {recentCases.map((historyCase) => (
-              <article className="home-case-card" key={historyCase.id}>
-                <div>
-                  <h3>{getCasePreview(historyCase.sourceText)}</h3>
-                  <p>{historyCase.category ?? "Другое"}</p>
-                </div>
-                <span className={`risk-badge risk-badge-${historyCase.riskLevel ?? "low"}`}>
-                  {riskLabels[historyCase.riskLevel ?? "low"]}
-                </span>
-              </article>
-            ))}
-          </div>
-        )}
+        <div className="home-case-card">
+          <span className="risk-badge risk-badge-low">{riskLabels.low}</span>
+          <p>Старые записи без новых полей показывают {notFoundText} вместо пустых значений.</p>
+        </div>
       </section>
     </div>
   );

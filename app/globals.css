@@ -975,7 +975,7 @@ a {
 
 .home-overview {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -1125,6 +1125,12 @@ a {
   backdrop-filter: blur(18px) saturate(145%);
 }
 
+.home-last-case-card {
+  border-color: rgba(15, 118, 110, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(228, 243, 241, 0.68) 100%);
+}
+
 .home-case-card h3,
 .home-case-card p {
   margin: 0;
@@ -1144,6 +1150,65 @@ a {
 .history-list {
   display: grid;
   gap: 12px;
+}
+
+.history-controls {
+  display: grid;
+  gap: 14px;
+  border: 1px solid rgba(225, 231, 229, 0.78);
+  border-radius: 8px;
+  padding: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(255, 255, 255, 0.62) 100%);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  backdrop-filter: blur(18px) saturate(145%);
+}
+
+.history-search-group {
+  display: grid;
+  gap: 8px;
+}
+
+.history-search-input,
+.history-filter-field select {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid rgba(225, 231, 229, 0.9);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.78);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.history-search-input:focus,
+.history-filter-field select:focus {
+  border-color: var(--accent);
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  background: var(--surface);
+}
+
+.history-filter-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.history-filter-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.history-filter-field span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.35;
+  text-transform: uppercase;
 }
 
 .history-card {
@@ -1224,6 +1289,10 @@ a {
 }
 
 @media (min-width: 420px) {
+  .history-filter-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .history-card-footer {
     grid-template-columns: 1fr auto;
     align-items: center;

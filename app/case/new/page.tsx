@@ -2,45 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { createLocalAnalysis, type CaseCategory, type CaseStatus, type LocalAnalysis, type RiskLevel } from "../../../lib/analysis-rules";
-
-const currentCaseKey = "lifepilot.currentCase";
-const caseHistoryKey = "lifepilot.caseHistory";
-
-type StoredCase = {
-  id: string;
-  sourceText: string;
-  category: CaseCategory;
-  riskLevel: RiskLevel;
-  analysis: LocalAnalysis;
-  status: CaseStatus;
-  updatedAt: string;
-};
-
-function readCaseHistory() {
-  const rawHistory = localStorage.getItem(caseHistoryKey);
-
-  if (!rawHistory) {
-    return [];
-  }
-
-  try {
-    const parsedHistory = JSON.parse(rawHistory) as StoredCase[];
-
-    return Array.isArray(parsedHistory) ? parsedHistory : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveCaseToHistory(caseData: StoredCase) {
-  const nextHistory = [
-    caseData,
-    ...readCaseHistory().filter((historyCase) => historyCase.id !== caseData.id)
-  ];
-
-  localStorage.setItem(caseHistoryKey, JSON.stringify(nextHistory));
-}
+import { createLocalAnalysis } from "../../../lib/analysis-rules";
+import { saveCase } from "../../../lib/case-storage";
+import type { StoredCase } from "../../../lib/types";
 
 export default function NewCasePage() {
   const router = useRouter();
@@ -68,8 +32,7 @@ export default function NewCasePage() {
       updatedAt: new Date().toISOString()
     };
 
-    localStorage.setItem(currentCaseKey, JSON.stringify(caseData));
-    saveCaseToHistory(caseData);
+    saveCase(caseData);
 
     router.push("/case/analyzing");
   }

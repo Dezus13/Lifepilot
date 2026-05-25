@@ -5,24 +5,12 @@ import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   normalizeCaseStatus,
-  type CaseCategory,
-  type CaseStatus,
-  type LocalAnalysis,
-  type RiskLevel
+  type CaseStatus
 } from "../../../lib/analysis-rules";
+import { readCaseHistory } from "../../../lib/case-storage";
+import type { StoredCase } from "../../../lib/types";
 
-const caseHistoryKey = "lifepilot.caseHistory";
 const notFoundText = "Nicht gefunden";
-
-type StoredCase = {
-  id: string;
-  sourceText: string;
-  category?: CaseCategory;
-  riskLevel?: RiskLevel;
-  analysis?: Partial<LocalAnalysis>;
-  status?: CaseStatus | string;
-  updatedAt?: string;
-};
 
 const caseStatusLabels: Record<CaseStatus, string> = {
   new: "Новый",
@@ -31,22 +19,6 @@ const caseStatusLabels: Record<CaseStatus, string> = {
   waiting: "Ожидание",
   completed: "Завершен"
 };
-
-function readCaseHistory() {
-  const rawHistory = localStorage.getItem(caseHistoryKey);
-
-  if (!rawHistory) {
-    return [];
-  }
-
-  try {
-    const parsedHistory = JSON.parse(rawHistory) as StoredCase[];
-
-    return Array.isArray(parsedHistory) ? parsedHistory : [];
-  } catch {
-    return [];
-  }
-}
 
 function getCasePreview(sourceText: string, maxLength = 140) {
   const cleanText = sourceText.replace(/\s+/g, " ").trim();

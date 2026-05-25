@@ -2,16 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { type CaseCategory, type LocalAnalysis, type RiskLevel } from "../../../lib/analysis-rules";
-
-const currentCaseKey = "lifepilot.currentCase";
-
-type CurrentCase = {
-  sourceText: string;
-  category: CaseCategory;
-  riskLevel?: RiskLevel;
-  analysis?: LocalAnalysis;
-};
+import { type CaseCategory, type RiskLevel } from "../../../lib/analysis-rules";
+import { readCurrentCase } from "../../../lib/case-storage";
+import type { StoredCase } from "../../../lib/types";
 
 const fallbackCategory: CaseCategory = "Другое";
 
@@ -21,33 +14,8 @@ const draftIntroByRisk: Record<RiskLevel, string> = {
   high: "Ich habe Ihr Schreiben erhalten. Da es um wichtige mögliche Folgen geht, möchte ich die Angelegenheit zunächst sorgfältig prüfen."
 };
 
-function readCurrentCase(): CurrentCase | null {
-  const rawCase = localStorage.getItem(currentCaseKey);
-
-  if (!rawCase) {
-    return null;
-  }
-
-  try {
-    const parsedCase = JSON.parse(rawCase) as Partial<CurrentCase>;
-
-    if (!parsedCase.sourceText) {
-      return null;
-    }
-
-    return {
-      sourceText: parsedCase.sourceText,
-      category: parsedCase.category ?? fallbackCategory,
-      riskLevel: parsedCase.riskLevel,
-      analysis: parsedCase.analysis
-    };
-  } catch {
-    return null;
-  }
-}
-
 export default function CaseDraftPage() {
-  const [currentCase, setCurrentCase] = useState<CurrentCase | null>(null);
+  const [currentCase, setCurrentCase] = useState<StoredCase | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {

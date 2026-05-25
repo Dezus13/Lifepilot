@@ -12,18 +12,8 @@ import {
   type PriorityLevel,
   type RiskLevel
 } from "../../../lib/analysis-rules";
-
-const currentCaseKey = "lifepilot.currentCase";
-
-type CurrentCase = {
-  id?: string;
-  sourceText: string;
-  category: CaseCategory;
-  riskLevel?: RiskLevel;
-  analysis?: LocalAnalysis;
-  status: CaseStatus;
-  updatedAt: string;
-};
+import { readCurrentCase } from "../../../lib/case-storage";
+import type { StoredCase } from "../../../lib/types";
 
 const fallbackCategory: CaseCategory = "Другое";
 
@@ -72,34 +62,6 @@ const caseStatusDescriptions: Record<CaseStatus, string> = {
 
 const notFoundText = "Nicht gefunden";
 
-function readCurrentCase(): CurrentCase | null {
-  const rawCase = localStorage.getItem(currentCaseKey);
-
-  if (!rawCase) {
-    return null;
-  }
-
-  try {
-    const parsedCase = JSON.parse(rawCase) as Partial<CurrentCase>;
-
-    if (!parsedCase.sourceText) {
-      return null;
-    }
-
-    return {
-      id: parsedCase.id,
-      sourceText: parsedCase.sourceText,
-      category: parsedCase.category ?? fallbackCategory,
-      riskLevel: parsedCase.riskLevel,
-      analysis: parsedCase.analysis,
-      status: normalizeCaseStatus(parsedCase.status, parsedCase.analysis?.status ?? "new"),
-      updatedAt: parsedCase.updatedAt ?? new Date().toISOString()
-    };
-  } catch {
-    return null;
-  }
-}
-
 function getShortPreview(sourceText: string) {
   const cleanText = sourceText.replace(/\s+/g, " ").trim();
 
@@ -110,14 +72,21 @@ function getShortPreview(sourceText: string) {
   return `${cleanText.slice(0, 140)}...`;
 }
 
-function hasCurrentExtractedData(analysis?: LocalAnalysis) {
+function hasCurrentExtractedData(analysis?: StoredCase["analysis"]): analysis is LocalAnalysis {
   return Boolean(
     analysis?.extractedData &&
+      "category" in analysis &&
+      "riskLevel" in analysis &&
+      "riskKeywords" in analysis &&
+      "riskReason" in analysis &&
+      "explanation" in analysis &&
+      "foundKeywords" in analysis &&
       "caseNumber" in analysis.extractedData &&
       "contacts" in analysis.extractedData &&
       "deadlines" in analysis.extractedData &&
       "documentImportance" in analysis.extractedData &&
       "actionPlan" in analysis &&
+      "recommendedActions" in analysis &&
       "prioritySummary" in analysis &&
       "priorityLevel" in analysis &&
       "deadlineStatus" in analysis &&
@@ -135,7 +104,7 @@ function formatList(values: string[] | undefined) {
   return values && values.length > 0 ? values.join(", ") : notFoundText;
 }
 
-function formatContacts(contacts: LocalAnalysis["extractedData"]["contacts"] | undefined) {
+function formatContacts(contacts: NonNullable<NonNullable<StoredCase["analysis"]>["extractedData"]>["contacts"] | undefined) {
   if (!contacts) {
     return notFoundText;
   }
@@ -177,7 +146,7 @@ function getNearestDeadline(deadlines: string[]) {
 }
 
 export default function CaseResultPage() {
-  const [currentCase, setCurrentCase] = useState<CurrentCase | null>(null);
+  const [currentCase, setCurrentCase] = useState<StoredCase | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -198,7 +167,7 @@ export default function CaseResultPage() {
   }, [currentCase]);
 
   const riskLevel = analysis?.riskLevel ?? currentCase?.riskLevel ?? "low";
-  const caseStatus = analysis?.status ?? currentCase?.status ?? "new";
+  const caseStatus = normalizeCaseStatus(analysis?.status ?? currentCase?.status, "new");
   const actionSteps = analysis?.actionPlan?.length ? analysis.actionPlan : analysis?.recommendedActions ?? [];
   const deadlineDate = analysis ? getNearestDeadline(analysis.extractedData.deadlines) ?? analysis.extractedData.deadline : null;
   const deadlineFacts = analysis
