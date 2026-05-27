@@ -219,12 +219,29 @@ Dashboard на главной странице читает `lifepilot.caseHisto
 
 Демонстрационный результат анализа может быть сформирован на клиенте из сохраненного текста и не требует backend, database или внешнего сервиса.
 
+## Supabase foundation layer
+
+В проекте подготовлен базовый browser-safe клиент Supabase в `lib/supabase-client.ts`.
+
+Этот слой нужен только как архитектурная основа для будущего database stage. В текущем MVP он не заменяет `localStorage`, не читает и не записывает кейсы, не создает auth-сессию и не предполагает наличие таблиц.
+
+Правила текущего этапа:
+
+- `localStorage` остается единственным рабочим хранилищем кейсов MVP;
+- Supabase-клиент может использовать только публичные browser-переменные окружения `NEXT_PUBLIC_SUPABASE_URL` и `NEXT_PUBLIC_SUPABASE_ANON_KEY`;
+- отсутствие Supabase-переменных должно давать безопасную ошибку только в development;
+- production-интерфейс не должен показывать пользователю технические детали конфигурации;
+- до появления database schema нельзя добавлять запросы к таблицам, auth-flow, миграции, storage buckets или синхронизацию истории.
+
+Тип базы данных в foundation layer намеренно пустой. Таблицы, связи и row-типы должны появиться только после утверждения database schema.
+
 ## Границы хранения текущего MVP
 
 В `localStorage` сейчас не должны находиться:
 
 - auth session;
 - server user id;
+- Supabase user id;
 - платежные данные;
 - Stripe customer id;
 - subscription status;

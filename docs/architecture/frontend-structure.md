@@ -8,7 +8,7 @@
 
 Frontend MVP построен на Next.js App Router. Основной сценарий расположен в routes внутри `app/` и работает вокруг одного текущего кейса.
 
-Текущая структура не содержит отдельного backend-слоя, auth-слоя, database-слоя, API-клиентов, сложного state manager или отдельного storage-модуля.
+Текущая структура не содержит отдельного backend-слоя, auth-слоя, database-слоя, сложного state manager или серверного storage-модуля. В проекте есть только foundation API-client для Supabase, который не подключен к пользовательскому flow и не заменяет локальное хранение.
 
 ## Корневая структура
 
@@ -25,6 +25,8 @@ app/
 ```
 
 `app/` является единственным корнем приложения. Отдельный `src/` в текущем MVP не используется.
+
+Общие frontend-утилиты находятся в `lib/`. На текущем этапе там расположены локальные правила анализа, работа с `localStorage` и foundation-клиент Supabase.
 
 ## Routes
 
@@ -61,6 +63,20 @@ app/
 - [state-management.md](./state-management.md) описывает состояние экранов, текущего кейса и истории;
 - [../specs/data-storage.md](../specs/data-storage.md) описывает состав данных в `localStorage`.
 
+## Supabase foundation layer
+
+Файл `lib/supabase-client.ts` создает единый lazy singleton для `createClient`.
+
+Требования к этому слою:
+
+- использовать только browser-safe публичные переменные окружения Next.js;
+- не создавать клиент повторно при нескольких импортах;
+- возвращать типизированный клиент с пустым database-типом до утверждения схемы;
+- не подключать auth, migrations, tables, storage buckets или server actions;
+- не изменять существующий `localStorage` flow.
+
+Если Supabase-переменные отсутствуют, development-среда получает безопасную ошибку конфигурации. В production foundation layer не должен раскрывать технические детали пользователю.
+
 ## Границы frontend MVP
 
 В текущей frontend-структуре не нужны:
@@ -69,7 +85,7 @@ app/
 - глобальный store;
 - server state;
 - auth routes;
-- API clients;
+- дополнительные API clients поверх Supabase foundation layer;
 - OCR, PDF, email или billing-модули;
 - пустые папки без использования в текущем MVP.
 
