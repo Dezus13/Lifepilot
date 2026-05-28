@@ -225,15 +225,25 @@ Dashboard на главной странице читает `lifepilot.caseHisto
 
 Этот слой нужен только как архитектурная основа для будущего database stage. В текущем MVP он не заменяет `localStorage`, не читает и не записывает кейсы, не создает auth-сессию и не предполагает наличие таблиц.
 
+Принято решение использовать hosted Supabase project. Локальная Supabase через Docker в текущем MVP не используется и не является обязательной частью development flow.
+
 Правила текущего этапа:
 
 - `localStorage` остается единственным рабочим хранилищем кейсов MVP;
 - Supabase-клиент может использовать только публичные browser-переменные окружения `NEXT_PUBLIC_SUPABASE_URL` и `NEXT_PUBLIC_SUPABASE_ANON_KEY`;
+- `.env.local` должен содержать `NEXT_PUBLIC_SUPABASE_URL` и `NEXT_PUBLIC_SUPABASE_ANON_KEY` для подключения к hosted Supabase project;
+- secret keys, service role keys и приватные токены нельзя использовать на frontend;
 - отсутствие Supabase-переменных должно давать безопасную ошибку только в development;
 - production-интерфейс не должен показывать пользователю технические детали конфигурации;
 - до появления database schema нельзя добавлять запросы к таблицам, auth-flow, миграции, storage buckets или синхронизацию истории.
 
 Тип базы данных в foundation layer намеренно пустой. Таблицы, связи и row-типы должны появиться только после утверждения database schema.
+
+Переход от локального MVP к hosted Supabase должен быть постепенным:
+
+1. сначала перенести case history в Supabase как дополнительный источник хранения;
+2. затем сохранять новые cases в Supabase без отключения локального fallback;
+3. затем читать историю из Supabase, сохраняя безопасное поведение при недоступности сервиса.
 
 ## Границы хранения текущего MVP
 
