@@ -223,23 +223,25 @@ Dashboard на главной странице читает `lifepilot.caseHisto
 
 В проекте подготовлен базовый browser-safe клиент Supabase в `lib/supabase-client.ts`.
 
-Этот слой нужен только как архитектурная основа для будущего database stage. В текущем MVP он не заменяет `localStorage`, не читает и не записывает кейсы, не создает auth-сессию и не предполагает наличие таблиц.
+Этот слой нужен только как архитектурная основа для будущего database stage. В текущем MVP он не заменяет `localStorage`, не читает и не записывает кейсы, не создает auth-сессию и не зависит от таблиц во время пользовательского flow.
 
 Принято решение использовать hosted Supabase project. Локальная Supabase через Docker в текущем MVP не используется и не является обязательной частью development flow.
 
 Правила текущего этапа:
 
 - `localStorage` остается единственным рабочим хранилищем кейсов MVP;
+- hosted Supabase выбран как будущий database layer для хранения кейсов;
 - Supabase-клиент может использовать только публичные browser-переменные окружения `NEXT_PUBLIC_SUPABASE_URL` и `NEXT_PUBLIC_SUPABASE_ANON_KEY`;
 - `.env.local` должен содержать `NEXT_PUBLIC_SUPABASE_URL` и `NEXT_PUBLIC_SUPABASE_ANON_KEY` для подключения к hosted Supabase project;
 - secret keys, service role keys и приватные токены нельзя использовать на frontend;
 - отсутствие Supabase-переменных должно давать безопасную ошибку только в development;
 - production-интерфейс не должен показывать пользователю технические детали конфигурации;
-- до появления database schema нельзя добавлять запросы к таблицам, auth-flow, миграции, storage buckets или синхронизацию истории.
+- migration file `supabase/migrations/20260528000000_initial_lifepilot_schema.sql` создан только как schema foundation для будущего hosted Supabase stage;
+- до отдельного application stage нельзя добавлять запросы к таблицам, auth-flow, storage buckets или синхронизацию истории.
 
-Тип базы данных в foundation layer намеренно пустой. Таблицы, связи и row-типы должны появиться только после утверждения database schema.
+Тип базы данных в frontend foundation layer намеренно пустой. Row-типы, связи с пользователями и access rules должны появиться только после утверждения database/auth stage.
 
-Переход от локального MVP к hosted Supabase должен быть постепенным:
+Переход от локального MVP к hosted Supabase должен идти постепенно по направлению `localStorage` -> `public.cases`:
 
 1. сначала перенести case history в Supabase как дополнительный источник хранения;
 2. затем сохранять новые cases в Supabase без отключения локального fallback;
