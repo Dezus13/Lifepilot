@@ -67,7 +67,7 @@ app/
 
 Файл `lib/supabase-client.ts` создает единый lazy singleton для `createClient`.
 
-Файл `lib/supabase-cases.ts` содержит подготовительную функцию `readSupabaseCases()`. Она читает список строк из таблицы `public.cases` через существующий Supabase client, приводит данные к `StoredCase[]` и при ошибке возвращает пустой массив.
+Файл `lib/supabase-cases.ts` содержит подготовительную функцию `readSupabaseCases()`. Она читает список строк из таблицы `public.cases` через существующий Supabase client, приводит данные к `StoredCase[]` и при ошибке возвращает пустой массив. Структура Case и допустимые статусы описаны в [../specs/case-model.md](../specs/case-model.md).
 
 Требования к этому слою:
 
