@@ -18,14 +18,26 @@
 Использует:
 
 - статический список быстрых действий;
-- preview последних кейсов, если они подключены к локальной истории;
+- `lifepilot.caseHistory`;
+- `analysis.status`, если он сохранен;
+- `status`;
+- `riskLevel`;
+- `analysis.riskLevel`, если он сохранен;
+- `analysis.priorityLevel`, если он сохранен;
+- `createdAt`, если он сохранен;
+- `updatedAt`;
+- preview последнего кейса, если история не пуста;
 - ссылки на создание кейса, историю и настройки безопасности.
 
 Создает:
 
 - намерение пользователя начать новый кейс.
+- dashboard-статистику: всего кейсов, требуют действия, высокий риск, в ожидании, завершено;
+- блок `Последний кейс` с названием, статусом, priority и датой создания;
+- empty state `История пока пуста`, если локальных кейсов нет;
+- fallback `Nicht gefunden` для старых записей без новых полей.
 
-Не изменяет данные кейса напрямую.
+Не изменяет данные кейса напрямую. Не создает backend, auth, database или внешний запрос.
 
 ## Новый кейс
 
@@ -43,7 +55,8 @@
 - `sourceText`;
 - `category`;
 - `riskLevel`;
-- `status`;
+- `analysis.status`;
+- `status` как дубликат `analysis.status`;
 - `updatedAt`.
 
 Изменяет:
@@ -81,6 +94,9 @@
 - `riskLevel`;
 - `status`;
 - `updatedAt`;
+- `analysis.extractedData`, если он уже сохранен;
+- `analysis.status`, если он уже сохранен;
+- `analysis.actionPlan`, сформированный Action Plan Engine;
 - локальные правила отображения риска;
 - резервное значение категории `Другое`.
 
@@ -88,14 +104,19 @@
 
 - краткое отображение анализа из исходного текста;
 - risk badge;
+- блок `Статус кейса` с `analysis.status`;
 - объяснение уровня риска;
-- список рекомендаций;
+- блок `Самое важное` с `analysis.prioritySummary`, `analysis.priorityLevel`, ближайшим сроком, главным действием и главным последствием;
+- fallback `Nicht gefunden` для отсутствующих priority-значений;
+- блок `Статус срока` с `analysis.deadlineStatus`, `analysis.daysRemaining`, `analysis.deadlineMessage` и датой срока;
+- блок `Wichtige Fakten` с организацией, типом документа, номером дела, сроками, суммой, контактами, последствиями и уровнем риска;
+- блок `План действий` с нумерованным списком 3-5 шагов из `analysis.actionPlan`;
 - безопасное empty state, если кейс не найден.
 
 Изменяет:
 
 - в текущем MVP не записывает новый результат в хранилище;
-- может пересчитать `riskLevel` для отображения, если он отсутствует в текущем кейсе;
+- может пересчитать локальный анализ для отображения, если сохраненный кейс старый и не содержит новых полей важных фактов, priority-полей или `analysis.status`;
 - переводит пользователя к экрану черновика через навигацию.
 
 ## Черновик
@@ -124,21 +145,37 @@
 - `sourceText`;
 - `category`;
 - `riskLevel`;
+- `analysis`, включая `analysis.extractedData`;
+- `analysis.actionPlan`, если он сохранен;
+- `analysis.prioritySummary` и `analysis.priorityLevel`, если они сохранены;
+- `analysis.deadlineStatus`, `analysis.daysRemaining` и `analysis.deadlineMessage`, если они сохранены;
+- `analysis.status`, если он сохранен;
 - `status`;
 - `updatedAt`;
 - резервную категорию `Другое`;
 - расчет `riskLevel` для старых записей без уровня риска.
+- сохраненные priority-данные внутри `analysis` в `lifepilot.caseHistory`.
+- fallback для старых русскоязычных статусов без `CaseStatus`.
 
 Создает:
 
+- локальный поиск по title, preview, organization, documentType и keywords;
+- фильтр по статусу: все, требует действия, ожидание, завершено, проанализировано;
+- фильтр по приоритету: все, `critical`, `high`, `medium`, `low`;
+- сортировку: новые сначала, старые сначала, `critical`/`high` сначала;
 - список карточек истории;
 - preview текста;
 - короткий заголовок кейса;
 - человекочитаемую дату;
 - risk badge.
+- ссылку `Открыть кейс` на `/history/[caseId]`;
+- действие `Открыть результат` для восстановления кейса как текущего.
+- empty state `Кейсы не найдены`, если локальная фильтрация не вернула результатов;
+- fallback `Nicht gefunden` для старых кейсов без новых полей.
 
 Изменяет:
 
+- не записывает поисковый запрос, фильтры или сортировку в `localStorage`;
 - при открытии записи записывает выбранный кейс в `lifepilot.currentCase`;
 - при очистке истории удаляет `lifepilot.caseHistory`;
 - обновляет локальное состояние списка после очистки.
@@ -148,9 +185,38 @@
 Использует:
 
 - параметр маршрута `caseId`;
-- в текущем MVP экран остается placeholder.
+- `lifepilot.caseHistory`;
+- `id`;
+- `sourceText`;
+- `status`;
+- `analysis.status`;
+- `analysis.priorityLevel`;
+- `analysis.prioritySummary`;
+- `analysis.deadlineMessage`;
+- `analysis.extractedData.organization`;
+- `analysis.extractedData.documentType`;
+- `analysis.extractedData.documentImportance`;
+- `analysis.extractedData.requiredAction`;
+- `analysis.extractedData.consequences`;
+- `analysis.actionPlan`;
+- `analysis.foundKeywords`.
 
-Не создает и не изменяет данные. Текущий экран остается placeholder.
+Создает:
+
+- detail view сохраненного кейса;
+- preview названия и исходного текста;
+- блок статуса кейса;
+- блок приоритета и важных фактов;
+- список шагов плана действий;
+- список найденных ключевых слов;
+- безопасное empty state, если кейс не найден;
+- fallback `Nicht gefunden` для старых кейсов без новых полей.
+
+Изменяет:
+
+- не изменяет `lifepilot.currentCase`;
+- не изменяет `lifepilot.caseHistory`;
+- не создает backend, auth, database или внешний запрос.
 
 ## Безопасность
 
@@ -182,7 +248,7 @@
 - Экран результата читает данные, но не считается источником сохраненного результата.
 - История работает только с сохраненными локальными кейсами.
 - Открытие истории восстанавливает кейс как текущий, а не создает новый.
-- Placeholder-экраны не должны создавать скрытые данные.
+- Просмотр сохраненного кейса читает запись по `id` и не создает скрытые данные.
 
 ## Связанные документы
 

@@ -2,8 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-
-const currentCaseKey = "lifepilot.currentCase";
+import { hasCurrentCase } from "../../../lib/case-storage";
 
 const analysisSteps = ["Чтение текста", "Оценка риска", "Подготовка результата"];
 
@@ -11,9 +10,7 @@ export default function CaseAnalyzingPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const currentCase = localStorage.getItem(currentCaseKey);
-
-    if (!currentCase) {
+    if (!hasCurrentCase()) {
       router.replace("/case/new");
       return;
     }
