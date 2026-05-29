@@ -1,8 +1,33 @@
 import { createClient } from "@supabase/supabase-js";
 
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
+export type SupabaseCaseRow = {
+  id: string;
+  title: string | null;
+  category: string | null;
+  source_text: string;
+  summary: string | null;
+  risk_level: string | null;
+  priority_level: string | null;
+  status: string | null;
+  deadline_status: string | null;
+  action_plan: Json | null;
+  analysis: Json | null;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
 export type LifePilotDatabase = {
   public: {
-    Tables: Record<string, never>;
+    Tables: {
+      cases: {
+        Row: SupabaseCaseRow;
+        Insert: Partial<SupabaseCaseRow> & Pick<SupabaseCaseRow, "source_text">;
+        Update: Partial<SupabaseCaseRow>;
+        Relationships: [];
+      };
+    };
     Views: Record<string, never>;
     Functions: Record<string, never>;
   };

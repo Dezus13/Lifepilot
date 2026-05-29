@@ -237,9 +237,9 @@ Dashboard на главной странице читает `lifepilot.caseHisto
 - отсутствие Supabase-переменных должно давать безопасную ошибку только в development;
 - production-интерфейс не должен показывать пользователю технические детали конфигурации;
 - migration file `supabase/migrations/20260528000000_initial_lifepilot_schema.sql` создан только как schema foundation для будущего hosted Supabase stage;
-- до отдельного application stage нельзя добавлять запросы к таблицам, auth-flow, storage buckets или синхронизацию истории.
+- на текущем application stage разрешено только безопасное read-only чтение списка `public.cases` через anon key без auth-flow, storage buckets и синхронизации истории.
 
-Тип базы данных в frontend foundation layer намеренно пустой. Row-типы, связи с пользователями и access rules должны появиться только после утверждения database/auth stage.
+Тип базы данных в frontend foundation layer описывает только read-only форму таблицы `public.cases`. Связи с пользователями и auth access rules должны появиться только после утверждения database/auth stage.
 
 Переход от локального MVP к hosted Supabase должен идти постепенно по направлению `localStorage` -> `public.cases`:
 
