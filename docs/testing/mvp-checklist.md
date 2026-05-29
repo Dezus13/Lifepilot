@@ -20,7 +20,7 @@
 10. вернуться к истории;
 11. открыть сохраненный кейс из истории.
 
-Перед push важно проверять не только happy path, но и пустые состояния, ошибки ввода, поведение `localStorage` и мобильную читаемость.
+Перед push важно проверять не только happy path, но и пустые состояния, ошибки ввода, поведение `localStorage`, безопасность Supabase foundation layer и мобильную читаемость.
 
 ## Тестовые данные
 
@@ -153,6 +153,19 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] Поврежденная или пустая история не ломает экран истории.
 - [ ] Данные не передаются через URL.
 
+## Supabase Foundation Layer
+
+- [ ] `.env.example` существует и содержит только публичные Supabase-переменные без реальных ключей.
+- [ ] `.env.local` не отслеживается Git и не попадает в commit.
+- [ ] UI создания, результата, истории и детального просмотра продолжает работать через `localStorage`.
+- [ ] Supabase не подключен к пользовательскому flow и не заменяет локальную историю.
+- [ ] `readSupabaseCases()` существует только как подготовительный read-only слой.
+- [ ] Supabase client создается в одном месте и не дублируется.
+- [ ] В клиентском коде не используются `service_role` ключи или приватные токены.
+- [ ] Таблица `public.cases` описана в specs и соответствует TypeScript-типам.
+- [ ] Supabase read-only layer не ломает `localStorage` flow.
+- [ ] Ошибка или отсутствие Supabase-конфигурации не ломает локальный MVP.
+
 ## Mobile-First Visual Checks
 
 - [ ] Проверена ширина около 360 px.
@@ -189,7 +202,9 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] Проверена история после перезагрузки страницы.
 - [ ] Проверена очистка истории.
 - [ ] Проверен mobile layout.
-- [ ] Проверено, что нет backend, auth, database, OCR, PDF parser, billing или sync в MVP.
+- [ ] `npm run build` проходит без ошибок.
+- [ ] Проверено, что нет backend, auth, OCR, PDF parser, billing или sync в MVP.
+- [ ] Проверено, что database-слой Supabase остается read-only foundation layer и не подключен к пользовательскому UI-flow.
 - [ ] Проверено, что warnings и ограничения не исчезли из UI.
 - [ ] Проверено, что измененные документы не противоречат `docs/plans/mvp-scope.md`.
 

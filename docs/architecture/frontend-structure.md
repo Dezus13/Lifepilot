@@ -8,7 +8,7 @@
 
 Frontend MVP построен на Next.js App Router. Основной сценарий расположен в routes внутри `app/` и работает вокруг одного текущего кейса.
 
-Текущая структура не содержит отдельного backend-слоя, auth-слоя, database-слоя, сложного state manager или серверного storage-модуля. В проекте есть только foundation API-client для Supabase, который не подключен к пользовательскому flow и не заменяет локальное хранение.
+Текущая структура не содержит отдельного backend-слоя, auth-слоя, сложного state manager или серверного storage-модуля. В проекте есть Supabase foundation layer: единый client и read-only модуль для таблицы `public.cases`. Этот слой не подключен к пользовательскому flow и не заменяет локальное хранение.
 
 ## Корневая структура
 
@@ -26,7 +26,7 @@ app/
 
 `app/` является единственным корнем приложения. Отдельный `src/` в текущем MVP не используется.
 
-Общие frontend-утилиты находятся в `lib/`. На текущем этапе там расположены локальные правила анализа, работа с `localStorage` и foundation-клиент Supabase.
+Общие frontend-утилиты находятся в `lib/`. На текущем этапе там расположены локальные правила анализа, работа с `localStorage`, foundation-клиент Supabase и подготовительное read-only чтение `public.cases`.
 
 ## Routes
 
@@ -67,12 +67,15 @@ app/
 
 Файл `lib/supabase-client.ts` создает единый lazy singleton для `createClient`.
 
+Файл `lib/supabase-cases.ts` содержит подготовительную функцию `readSupabaseCases()`. Она читает список строк из таблицы `public.cases` через существующий Supabase client, приводит данные к `StoredCase[]` и при ошибке возвращает пустой массив.
+
 Требования к этому слою:
 
 - использовать только browser-safe публичные переменные окружения Next.js;
 - не создавать клиент повторно при нескольких импортах;
-- возвращать типизированный клиент с пустым database-типом до утверждения схемы;
-- не подключать auth, migrations, tables, storage buckets или server actions;
+- возвращать типизированный клиент с описанием read-only формы `public.cases`;
+- не подключать auth, storage buckets или server actions;
+- не записывать данные в Supabase из пользовательского flow;
 - не изменять существующий `localStorage` flow.
 
 Если Supabase-переменные отсутствуют, development-среда получает безопасную ошибку конфигурации. В production foundation layer не должен раскрывать технические детали пользователю.
@@ -85,7 +88,7 @@ app/
 - глобальный store;
 - server state;
 - auth routes;
-- дополнительные API clients поверх Supabase foundation layer;
+- дополнительные Supabase clients поверх foundation layer;
 - OCR, PDF, email или billing-модули;
 - пустые папки без использования в текущем MVP.
 
