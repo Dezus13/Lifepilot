@@ -23,6 +23,7 @@
 - `docs/plans/mvp-plan.md` — описывает цель первой версии и минимальный рабочий сценарий.
 - `docs/plans/development-stages.md` — делит реализацию MVP на этапы.
 - `docs/plans/screens-list.md` — перечисляет экраны MVP, их назначение и действия пользователя.
+- `docs/plans/session-18-auth-vercel-plan.md` — отдельный план будущего этапа Supabase Auth, admin login, protected admin page и Vercel deploy.
 
 ## Дополнительные разделы
 
@@ -73,3 +74,4 @@
 15. `docs/plans/mvp-plan.md`
 16. `docs/plans/development-stages.md`
 17. `docs/plans/screens-list.md`
+18. `docs/plans/session-18-auth-vercel-plan.md`

@@ -17,6 +17,44 @@ Case объединяет исходный текст, категорию, кр�
 - сохранить понятную форму данных между `localStorage`, TypeScript-типами и таблицей `public.cases`;
 - не смешивать пользовательский UI-flow с подготовительным Supabase read-only слоем.
 
+## LocalStorage `StoredCase`
+
+`StoredCase` — это локальная TypeScript-форма кейса, которая используется пользовательским MVP-flow через `localStorage`.
+
+`StoredCase` хранится в:
+
+- `lifepilot.currentCase` — текущий кейс для экранов анализа, результата и черновика;
+- `lifepilot.caseHistory` — локальная история последних кейсов.
+
+Локальный `StoredCase` использует имена полей, удобные для frontend:
+
+| Поле | Назначение | Обязательность |
+| --- | --- | --- |
+| `id` | Локальный идентификатор кейса | Обязательное |
+| `sourceText` | Исходный текст пользователя | Обязательное |
+| `category` | Категория, определенная локальным анализом | Необязательное |
+| `riskLevel` | Уровень риска, определенный локальными правилами | Необязательное |
+| `analysis` | Частичный или полный локальный результат анализа | Необязательное |
+| `status` | Статус кейса, совместимый с `CaseStatus`, или legacy-строка | Необязательное |
+| `createdAt` | Дата создания, если она сохранена | Необязательное |
+| `updatedAt` | Дата последнего обновления, если она сохранена | Необязательное |
+
+`StoredCase` является рабочей формой для UI текущего MVP. Он не содержит auth session, server user id, Supabase user id, платежные данные, файлы или серверные токены.
+
+## Supabase `SupabaseCaseRow`
+
+`SupabaseCaseRow` — это frontend-тип строки таблицы `public.cases`. Он описывает read-only форму данных, которую может вернуть подготовительный Supabase слой.
+
+`SupabaseCaseRow` использует имена полей базы данных:
+
+- `source_text` вместо `sourceText`;
+- `risk_level` вместо `riskLevel`;
+- `priority_level` вместо `analysis.priorityLevel`;
+- `deadline_status` вместо `analysis.deadlineStatus`;
+- `action_plan` вместо `analysis.actionPlan`.
+
+`readSupabaseCases()` может привести `SupabaseCaseRow` к `StoredCase[]`, чтобы будущий UI мог читать данные в локально привычной форме. В текущем MVP этот read-only слой не является источником пользовательского flow и не записывает данные в Supabase.
+
 ## Таблица `public.cases`
 
 Таблица `public.cases` существует в Supabase и описана миграцией `supabase/migrations/20260528000000_initial_lifepilot_schema.sql`.
@@ -25,7 +63,7 @@ Case объединяет исходный текст, категорию, кр�
 | --- | --- | --- | --- | --- |
 | `id` | Уникальный идентификатор кейса | `uuid` | Обязательное | Supabase |
 | `title` | Краткое название или заголовок кейса | `text` | Nullable | Система |
-| `category` | Категория ситуации пользователя | `text` | Nullable | Пользователь |
+| `category` | Категория ситуации, определенная локальным анализом | `text` | Nullable | Система |
 | `source_text` | Исходный текст письма, документа или описания ситуации | `text` | Обязательное | Пользователь |
 | `summary` | Краткое резюме ситуации | `text` | Nullable | Система |
 | `risk_level` | Уровень риска кейса | `text` | Nullable | Система |

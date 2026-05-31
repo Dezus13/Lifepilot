@@ -6,6 +6,8 @@
 
 Названия компонентов условные. Они нужны для архитектурного ориентирования, а не для немедленного создания файлов.
 
+Каноническая структура Case, `StoredCase`, `SupabaseCaseRow`, статусы и жизненный цикл описаны в [../specs/case-model.md](../specs/case-model.md). Этот документ не вводит альтернативные поля или статусы Case.
+
 ## Общие переиспользуемые блоки
 
 Базовые блоки для нескольких экранов:
@@ -133,8 +135,7 @@
 
 - `ScreenLayout`;
 - `CaseTextInput`;
-- `CaseCategorySelect`;
-- `NeedGermanDraftToggle`;
+- `LocalCategoryResult`;
 - `MinimumContextHint`;
 - `InputValidationWarning`;
 - `StartAnalysisAction`;
@@ -172,7 +173,7 @@
 
 ### Draft components
 
-- `NeedGermanDraftToggle`.
+- отдельный toggle немецкого черновика в текущем UI не используется.
 
 ### History components
 
@@ -205,7 +206,7 @@
 
 - анализ запущен;
 - анализ завершен;
-- анализ требует уточнения;
+- анализу не хватает данных;
 - обнаружен высокий риск;
 - анализ завершился ошибкой.
 
@@ -267,7 +268,7 @@
 - требуется уточнение;
 - высокий риск;
 - немецкий черновик разрешен;
-- доступен только общий шаблон;
+- будущий общий шаблон вместо конкретного черновика;
 - сохранение включено или выключено.
 
 ### Risk zones
@@ -311,7 +312,7 @@
 
 - `ScreenLayout`;
 - `DraftSafetyNotice`;
-- `DraftToneSelector`;
+- текущий нейтральный тон без отдельного selector;
 - `GermanDraftText`;
 - `DraftPlaceholderList`;
 - `DraftExplanation`;
@@ -336,7 +337,7 @@
 - есть плейсхолдеры;
 - скопировано;
 - сохранено;
-- копирование заблокировано из-за риска.
+- будущая блокировка копирования из-за риска.
 
 ### Risk zones
 
@@ -356,7 +357,7 @@
 ### Draft components
 
 - `GermanDraftText`;
-- `DraftToneSelector`;
+- текущий нейтральный тон без отдельного selector;
 - `DraftPlaceholderList`;
 - `DraftExplanation`;
 - `CopyDraftAction`.
@@ -542,12 +543,9 @@
 
 - `ScreenLayout`;
 - `HighRiskSummary`;
-- `RiskFactsList`;
 - `LegalBoundaryNotice`;
 - `SpecialistRecommendation`;
-- `BackToResultAction`;
-- `GetGeneralTemplateAction`;
-- `SaveCaseAction`.
+- `BackToSafeScreenAction`.
 
 ### Переиспользуемые блоки
 
@@ -559,11 +557,9 @@
 
 ### State zones
 
-- конкретный черновик заблокирован;
-- общий шаблон доступен;
-- общий шаблон недоступен;
-- кейс сохранен;
-- пользователь возвращается к результату.
+- статическое предупреждение показано;
+- пользователь возвращается к безопасному экрану;
+- будущая блокировка конкретного черновика не реализована в текущем UI.
 
 ### Risk zones
 
@@ -580,18 +576,17 @@
 
 ### Draft components
 
-- `GetGeneralTemplateAction`;
-- `TemplateOnlyNotice`.
+- будущий `GetGeneralTemplateAction`;
+- будущий `TemplateOnlyNotice`.
 
 ### History components
 
-- `SaveCaseAction`;
-- `SavedStateNotice`.
+- в текущем статическом экране не используются.
 
 ### Loading и error states
 
-- loading при создании общего шаблона;
-- ошибка создания шаблона;
+- будущий loading при создании общего шаблона;
+- будущая ошибка создания шаблона;
 - fallback к результату анализа.
 
 ## Связанные документы
