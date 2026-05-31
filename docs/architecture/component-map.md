@@ -6,6 +6,8 @@
 
 Названия компонентов условные. Они нужны для архитектурного ориентирования, а не для немедленного создания файлов.
 
+Каноническая структура Case, `StoredCase`, `SupabaseCaseRow`, статусы и жизненный цикл описаны в [../specs/case-model.md](../specs/case-model.md). Этот документ не вводит альтернативные поля или статусы Case.
+
 ## Общие переиспользуемые блоки
 
 Базовые блоки для нескольких экранов:
@@ -98,7 +100,6 @@
 
 - нет сохраненных кейсов;
 - есть последние кейсы;
-- история отключена;
 - onboarding не пройден.
 
 ### Risk zones
@@ -110,7 +111,7 @@
 ### Warning components
 
 - `SafetyReminder`;
-- `HistoryDisabledNotice`, если история выключена.
+- предупреждение о локальном хранении истории.
 
 ### Draft components
 
@@ -133,8 +134,7 @@
 
 - `ScreenLayout`;
 - `CaseTextInput`;
-- `CaseCategorySelect`;
-- `NeedGermanDraftToggle`;
+- `LocalCategoryResult`;
 - `MinimumContextHint`;
 - `InputValidationWarning`;
 - `StartAnalysisAction`;
@@ -150,10 +150,10 @@
 ### State zones
 
 - пустой текст;
-- слишком короткий текст;
+- короткий или неполный текст;
 - текст достаточный для анализа;
-- выбрана категория;
-- нужен немецкий черновик;
+- категория определена локальным анализом;
+- немецкий черновик доступен как текущий нейтральный draft flow;
 - есть несохраненный ввод.
 
 ### Risk zones
@@ -172,7 +172,7 @@
 
 ### Draft components
 
-- `NeedGermanDraftToggle`.
+- отдельный toggle немецкого черновика в текущем UI не используется.
 
 ### History components
 
@@ -205,7 +205,7 @@
 
 - анализ запущен;
 - анализ завершен;
-- анализ требует уточнения;
+- анализу не хватает данных;
 - обнаружен высокий риск;
 - анализ завершился ошибкой.
 
@@ -248,7 +248,6 @@
 - `WarningsSection`;
 - `ActionPlanSection`;
 - `GoToDraftAction`;
-- `SaveCaseAction`;
 - `EditSourceTextAction`.
 
 ### Переиспользуемые блоки
@@ -267,8 +266,7 @@
 - требуется уточнение;
 - высокий риск;
 - немецкий черновик разрешен;
-- доступен только общий шаблон;
-- сохранение включено или выключено.
+- будущий template-only режим вместо конкретного черновика.
 
 ### Risk zones
 
@@ -276,7 +274,7 @@
 - суммы;
 - требования;
 - неясные места;
-- high-risk статус;
+- high-risk warning;
 - переход к черновику.
 
 ### Warning components
@@ -291,17 +289,14 @@
 
 - `GoToDraftAction`;
 - `DraftAvailabilityNotice`;
-- `TemplateOnlyNotice`.
+- будущий `TemplateOnlyNotice`.
 
 ### History components
 
-- `SaveCaseAction`;
-- `SavedStateNotice`.
+Кейс уже сохраняется локально после запуска анализа. На экране результата нет отдельного действия сохранения.
 
 ### Loading и error states
 
-- loading при сохранении;
-- ошибка сохранения;
 - ошибка отсутствия результата;
 - empty-state для неполного анализа.
 
@@ -311,12 +306,10 @@
 
 - `ScreenLayout`;
 - `DraftSafetyNotice`;
-- `DraftToneSelector`;
+- текущий нейтральный тон без отдельного selector;
 - `GermanDraftText`;
 - `DraftPlaceholderList`;
 - `DraftExplanation`;
-- `CopyDraftAction`;
-- `SaveDraftToCaseAction`;
 - `BackToAnalysisAction`.
 
 ### Переиспользуемые блоки
@@ -332,15 +325,13 @@
 
 - черновик формируется;
 - черновик готов;
-- доступен только общий шаблон;
+- будущий template-only режим доступен;
 - есть плейсхолдеры;
-- скопировано;
-- сохранено;
-- копирование заблокировано из-за риска.
+- пользователь должен проверить текст вручную.
 
 ### Risk zones
 
-- копирование без проверки;
+- использование без проверки;
 - плейсхолдеры;
 - признание вины или согласие;
 - юридически значимый текст;
@@ -350,27 +341,24 @@
 
 - `DraftSafetyNotice`;
 - `PlaceholderWarning`;
-- `CopyCheckReminder`;
-- `TemplateOnlyWarning`.
+- будущий `TemplateOnlyWarning`.
 
 ### Draft components
 
 - `GermanDraftText`;
-- `DraftToneSelector`;
+- текущий нейтральный тон без отдельного selector;
 - `DraftPlaceholderList`;
-- `DraftExplanation`;
-- `CopyDraftAction`.
+- `DraftExplanation`.
 
 ### History components
 
-- `SaveDraftToCaseAction`;
-- `SavedStateNotice`.
+Черновик не создает отдельной записи в истории и не сохраняет отдельное состояние.
 
 ### Loading и error states
 
 - loading генерации;
 - ошибка генерации;
-- fallback на общий шаблон;
+- будущий fallback на template-only режим;
 - empty-state, если черновик не разрешен.
 
 ## История кейсов
@@ -383,7 +371,6 @@
 - `CaseStatusBadge`;
 - `CaseRiskBadge`;
 - `HistoryEmptyState`;
-- `HistoryDisabledState`;
 - `StartNewCaseAction`.
 
 ### Переиспользуемые блоки
@@ -397,7 +384,6 @@
 ### State zones
 
 - история пуста;
-- история отключена;
 - история загружается;
 - есть сохраненные кейсы;
 - ошибка чтения истории.
@@ -411,8 +397,7 @@
 ### Warning components
 
 - `HistoryPrivacyNotice`;
-- `HighRiskCaseBadge`;
-- `HistoryDisabledNotice`.
+- `HighRiskCaseBadge`.
 
 ### Draft components
 
@@ -422,14 +407,12 @@
 
 - `HistoryList`;
 - `CaseHistoryItem`;
-- `HistoryEmptyState`;
-- `HistoryDisabledState`.
+- `HistoryEmptyState`.
 
 ### Loading и error states
 
 - loading списка;
 - empty-state;
-- disabled-state;
 - ошибка чтения.
 
 ## Настройки безопасности
@@ -438,10 +421,7 @@
 
 - `ScreenLayout`;
 - `SafetyRulesSummary`;
-- `HistorySavingToggle`;
-- `ExplanationLanguageSetting`;
-- `DefaultDraftToneSetting`;
-- `DetailLevelSetting`;
+- `DraftToneInfo`;
 - `PrivacyNotice`;
 - `BackAction`.
 
@@ -454,37 +434,31 @@
 
 ### State zones
 
-- история включена;
-- история выключена;
-- настройки изменены;
-- настройки сохранены;
-- ошибка сохранения настроек.
+- статический safety content загружен;
+- пользователь возвращается на главный экран.
 
 ### Risk zones
 
-- пользователь думает, что настройки дают юридическую защиту;
-- неявное сохранение истории;
-- изменение настроек влияет на будущие кейсы, но не должно переписывать прошлые.
+- пользователь думает, что safety screen дает юридическую защиту;
+- пользователь думает, что экран меняет параметры хранения или тон черновика;
+- экран не должен переписывать прошлые кейсы.
 
 ### Warning components
 
 - `SafetyRulesSummary`;
-- `PrivacyNotice`;
-- `HistorySavingWarning`.
+- `PrivacyNotice`.
 
 ### Draft components
 
-- `DefaultDraftToneSetting`.
+- `DraftToneInfo`.
 
 ### History components
 
-- `HistorySavingToggle`.
+На экране безопасности нет элементов управления историей. История управляется локальным MVP-flow и очищается на экране истории.
 
 ### Loading и error states
 
-- loading чтения настроек;
-- ошибка сохранения;
-- confirmation-state после изменения.
+Для текущего статического экрана не нужны loading, save-error или confirmation-state. Если экран недоступен, используется общий fallback route.
 
 ## Экран ошибки
 
@@ -542,12 +516,9 @@
 
 - `ScreenLayout`;
 - `HighRiskSummary`;
-- `RiskFactsList`;
 - `LegalBoundaryNotice`;
 - `SpecialistRecommendation`;
-- `BackToResultAction`;
-- `GetGeneralTemplateAction`;
-- `SaveCaseAction`.
+- `BackToSafeScreenAction`.
 
 ### Переиспользуемые блоки
 
@@ -559,15 +530,13 @@
 
 ### State zones
 
-- конкретный черновик заблокирован;
-- общий шаблон доступен;
-- общий шаблон недоступен;
-- кейс сохранен;
-- пользователь возвращается к результату.
+- статическое предупреждение показано;
+- пользователь возвращается к безопасному экрану;
+- будущая блокировка конкретного черновика не реализована в текущем UI.
 
 ### Risk zones
 
-- обход блокировки конкретного ответа;
+- обход предупреждения о рискованном ответе;
 - слишком мягкое предупреждение;
 - слишком пугающее предупреждение без полезного действия;
 - неясная причина высокого риска.
@@ -580,18 +549,17 @@
 
 ### Draft components
 
-- `GetGeneralTemplateAction`;
-- `TemplateOnlyNotice`.
+- будущий `GetGeneralTemplateAction`;
+- будущий `TemplateOnlyNotice`.
 
 ### History components
 
-- `SaveCaseAction`;
-- `SavedStateNotice`.
+- в текущем статическом экране не используются.
 
 ### Loading и error states
 
-- loading при создании общего шаблона;
-- ошибка создания шаблона;
+- будущий loading при создании общего шаблона;
+- будущая ошибка создания шаблона;
 - fallback к результату анализа.
 
 ## Связанные документы

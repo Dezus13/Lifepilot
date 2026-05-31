@@ -1,26 +1,39 @@
 # Подключение Supabase
 
+## Назначение документа
+
+Этот документ фиксирует текущую связь LifePilot с hosted Supabase project. Supabase на этом этапе является только read-only foundation layer и не заменяет `localStorage` в пользовательском MVP-flow.
+
+Каноническая структура Case, `StoredCase`, `SupabaseCaseRow`, таблица `public.cases` и статусная модель описаны в [specs/case-model.md](./specs/case-model.md).
+
 ## Локальные переменные окружения
 
-Создать файл .env.local:
+Локально используется `.env.local` со значениями hosted Supabase project:
 
+```text
 NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+```
+
+`.env.local` нужен только для локального окружения и не должен попадать в Git.
 
 ## Безопасность
 
-- .env.local не должен попадать в Git
-- В репозиторий отправляется только .env.example
-- Реальные ключи хранятся только локально
+- В репозиторий отправляется только `.env.example` без реальных ключей.
+- Реальные значения хранятся только локально или в dashboard окружения деплоя.
+- `service_role` key, приватные токены и production credentials нельзя использовать во frontend.
+- Supabase Auth, RLS policies и запись данных не включены в текущий MVP-flow.
 
 ## База данных
 
-Используется удалённый проект Supabase.
+Используется удаленный hosted Supabase project.
 
-Основная таблица:
+Основная таблица foundation layer:
 
-- cases
+- `public.cases`
 
 Назначение таблицы:
 
-Таблица cases хранит жизненные ситуации пользователя, категорию, описание, приоритет, уровень риска, статус, анализ и план действий.
+`public.cases` хранит read-only форму кейса для будущего database stage: исходный текст, категорию, summary, priority, risk level, status, analysis и action plan.
+
+В текущем MVP пользовательские экраны создания, результата, истории и детального просмотра продолжают работать через `localStorage`. Функция `readSupabaseCases()` может читать `public.cases`, но UI не должен использовать Supabase как основной источник данных, не должен записывать кейсы в Supabase и не должен запускать синхронизацию истории.
