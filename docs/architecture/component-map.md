@@ -265,7 +265,7 @@
 - результат полный;
 - требуется уточнение;
 - высокий риск;
-- немецкий черновик разрешен;
+- немецкий черновик доступен при наличии текущего кейса;
 - будущий template-only режим вместо конкретного черновика.
 
 ### Risk zones
@@ -308,25 +308,20 @@
 - `DraftSafetyNotice`;
 - текущий нейтральный тон без отдельного selector;
 - `GermanDraftText`;
-- `DraftPlaceholderList`;
-- `DraftExplanation`;
 - `BackToAnalysisAction`.
 
 ### Переиспользуемые блоки
 
 - `WarningBanner`;
 - `DangerBanner`;
-- `PlaceholderList`;
 - `BottomActions`;
 - `SafeNotice`;
 - `ErrorState`.
 
 ### State zones
 
-- черновик формируется;
 - черновик готов;
 - будущий template-only режим доступен;
-- есть плейсхолдеры;
 - пользователь должен проверить текст вручную.
 
 ### Risk zones
@@ -340,15 +335,12 @@
 ### Warning components
 
 - `DraftSafetyNotice`;
-- `PlaceholderWarning`;
 - будущий `TemplateOnlyWarning`.
 
 ### Draft components
 
 - `GermanDraftText`;
-- текущий нейтральный тон без отдельного selector;
-- `DraftPlaceholderList`;
-- `DraftExplanation`.
+- текущий нейтральный тон без отдельного selector.
 
 ### History components
 
@@ -356,10 +348,8 @@
 
 ### Loading и error states
 
-- loading генерации;
-- ошибка генерации;
-- будущий fallback на template-only режим;
-- empty-state, если черновик не разрешен.
+- empty-state, если текущий кейс отсутствует;
+- будущий fallback на template-only режим.
 
 ## История кейсов
 
@@ -482,7 +472,7 @@
 
 - ошибка ввода;
 - ошибка анализа;
-- ошибка генерации черновика;
+- ошибка открытия черновика;
 - ошибка сохранения;
 - неизвестная ошибка.
 
@@ -499,7 +489,7 @@
 
 ### Draft components
 
-- не используются, кроме ошибки генерации черновика.
+- не используются, кроме ошибки открытия черновика из-за отсутствия текущего кейса.
 
 ### History components
 

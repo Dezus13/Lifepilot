@@ -157,11 +157,11 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] `.env.local` не отслеживается Git и не попадает в commit.
 - [ ] UI создания, результата, истории и детального просмотра продолжает работать через `localStorage`.
 - [ ] Supabase не подключен к пользовательскому flow и не заменяет локальную историю.
-- [ ] `readSupabaseCases()` существует только как подготовительный read-only слой.
+- [ ] `readSupabaseCases()` существует только как подготовительная функция и не является источником данных UI.
 - [ ] Supabase client создается в одном месте и не дублируется.
 - [ ] В клиентском коде не используются `service_role` ключи или приватные токены.
 - [ ] Таблица `public.cases` описана в specs и соответствует TypeScript-типам.
-- [ ] Supabase read-only layer не ломает `localStorage` flow.
+- [ ] RLS для `public.cases` включен, SELECT policy для anon role отсутствует, и это не ломает `localStorage` flow.
 - [ ] Ошибка или отсутствие Supabase-конфигурации не ломает локальный MVP.
 
 ## Mobile-First Visual Checks
@@ -202,7 +202,7 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] Проверен mobile layout.
 - [ ] `npm run build` проходит без ошибок.
 - [ ] Проверено, что нет backend, auth, OCR, PDF parser, billing или sync в MVP.
-- [ ] Проверено, что database-слой Supabase остается read-only foundation layer и не подключен к пользовательскому UI-flow.
+- [ ] Проверено, что Supabase foundation остается schema/client слоем без разрешенного anon SELECT и не подключен к пользовательскому UI-flow.
 - [ ] Проверено, что warnings и ограничения не исчезли из UI.
 - [ ] Проверено, что измененные документы не противоречат `docs/plans/mvp-scope.md`.
 

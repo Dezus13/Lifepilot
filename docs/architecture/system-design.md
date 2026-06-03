@@ -76,9 +76,9 @@ Supabase Layer включает:
 - Supabase Client;
 - таблицу `public.cases`;
 - типизацию данных;
-- read-only инфраструктурный слой.
+- подготовительную функцию чтения без разрешенного anon SELECT.
 
-Слой подготовлен, но пока не является основным источником данных приложения. `readSupabaseCases()` может читать `public.cases`, но основной UI-flow не зависит от этого чтения.
+Слой подготовлен как schema/client foundation, но пока не является основным источником данных приложения. `readSupabaseCases()` существует, однако migration включает RLS без SELECT policy для anon role, поэтому browser anon client не может читать `public.cases` как рабочий источник данных.
 
 Структура `public.cases` и статусная модель Case описаны в [case-model.md](../specs/case-model.md).
 
@@ -91,7 +91,7 @@ Supabase Layer включает:
 - Next.js;
 - TypeScript;
 - LocalStorage;
-- Supabase Read Layer;
+- Supabase Foundation Layer;
 - документацию и Specs.
 
 ---

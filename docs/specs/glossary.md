@@ -24,9 +24,9 @@
 
 Текущий рабочий слой хранения MVP. Сохраняет текущий кейс и локальную историю в браузере пользователя.
 
-## Supabase Read Layer
+## Supabase Foundation Layer
 
-Подготовленный read-only слой для чтения `public.cases` через Supabase client. Пока не является основным источником данных UI.
+Подготовленный Supabase client, TypeScript-тип строки `public.cases`, schema migration и функция `readSupabaseCases()`. В текущем MVP RLS включен, SELECT policy для anon role отсутствует, поэтому этот слой не является рабочим источником данных UI.
 
 ## MVP
 

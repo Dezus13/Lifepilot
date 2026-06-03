@@ -8,7 +8,7 @@
 
 Frontend MVP построен на Next.js App Router. Основной сценарий расположен в routes внутри `app/` и работает вокруг одного текущего кейса.
 
-Текущая структура не содержит отдельного backend-слоя, auth-слоя, сложного state manager или серверного storage-модуля. В проекте есть Supabase foundation layer: единый client и read-only модуль для таблицы `public.cases`. Этот слой не подключен к пользовательскому flow и не заменяет локальное хранение.
+Текущая структура не содержит отдельного backend-слоя, auth-слоя, сложного state manager или серверного storage-модуля. В проекте есть Supabase foundation layer: единый client, типы и подготовительный модуль для таблицы `public.cases`. Этот слой не подключен к пользовательскому flow и не заменяет локальное хранение.
 
 ## Корневая структура
 
@@ -26,7 +26,7 @@ app/
 
 `app/` является единственным корнем приложения. Отдельный `src/` в текущем MVP не используется.
 
-Общие frontend-утилиты находятся в `lib/`. На текущем этапе там расположены локальные правила анализа, работа с `localStorage`, foundation-клиент Supabase и подготовительное read-only чтение `public.cases`.
+Общие frontend-утилиты находятся в `lib/`. На текущем этапе там расположены локальные правила анализа, работа с `localStorage`, foundation-клиент Supabase и подготовительная функция чтения `public.cases`, которая не используется UI.
 
 ## Routes
 
@@ -67,13 +67,13 @@ app/
 
 Файл `lib/supabase-client.ts` создает единый lazy singleton для `createClient`.
 
-Файл `lib/supabase-cases.ts` содержит подготовительную функцию `readSupabaseCases()`. Она читает список строк из таблицы `public.cases` через существующий Supabase client, приводит данные к `StoredCase[]` и при ошибке возвращает пустой массив. Структура Case и допустимые статусы описаны в [../specs/case-model.md](../specs/case-model.md).
+Файл `lib/supabase-cases.ts` содержит подготовительную функцию `readSupabaseCases()`. Она описывает будущий select-запрос к таблице `public.cases`, приводит данные к `StoredCase[]` и при ошибке возвращает пустой массив. В текущей migration RLS включен, а SELECT policy для anon role отсутствует, поэтому browser anon client не может читать `public.cases` как рабочий источник данных. Структура Case и допустимые статусы описаны в [../specs/case-model.md](../specs/case-model.md).
 
 Требования к этому слою:
 
 - использовать только browser-safe публичные переменные окружения Next.js;
 - не создавать клиент повторно при нескольких импортах;
-- возвращать типизированный клиент с описанием read-only формы `public.cases`;
+- возвращать типизированный клиент с описанием формы `public.cases`;
 - не подключать auth, storage buckets или server actions;
 - не записывать данные в Supabase из пользовательского flow;
 - не изменять существующий `localStorage` flow.

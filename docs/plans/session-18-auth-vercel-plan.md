@@ -66,7 +66,7 @@ Session 18 должна быть отдельным этапом, потому �
 - правила чтения `public.cases`;
 - правила записи, удаления и аудита действий.
 
-Текущий `public.cases` layer остается read-only foundation до отдельного решения о database/auth stage.
+Текущий `public.cases` layer остается schema/client foundation без разрешенного anon SELECT до отдельного решения о database/auth stage.
 
 ## Vercel-развертывание
 
