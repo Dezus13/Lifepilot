@@ -19,7 +19,7 @@ LifePilot помогает людям, которые живут в Австри
 - Case Status Engine
 - Case Detail Screen
 - Документация проекта
-- Read-only слой Supabase
+- Supabase schema/client foundation
 - Типизированная модель Case
 
 Каноническая структура Case, статусы и жизненный цикл описаны в `docs/specs/case-model.md`.
@@ -51,12 +51,12 @@ LifePilot помогает людям, которые живут в Австри
 - Supabase client
 - Таблица public.cases
 - Миграции
-- Read-only доступ
+- Подготовительная функция чтения без разрешенного anon SELECT
 - Документация хранения данных
 
 Пользовательский интерфейс пока не использует Supabase как основной источник данных.
 
-Основной источник данных MVP остается `localStorage`; Supabase является подготовленным read-only infrastructure layer.
+Основной источник данных MVP остается `localStorage`; Supabase является подготовленным schema/client foundation. RLS для `public.cases` включен, SELECT policy для anon role сейчас отсутствует.
 
 ---
 

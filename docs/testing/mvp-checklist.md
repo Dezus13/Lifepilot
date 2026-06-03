@@ -157,12 +157,46 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] `.env.local` не отслеживается Git и не попадает в commit.
 - [ ] UI создания, результата, истории и детального просмотра продолжает работать через `localStorage`.
 - [ ] Supabase не подключен к пользовательскому flow и не заменяет локальную историю.
-- [ ] `readSupabaseCases()` существует только как подготовительный read-only слой.
+- [ ] `readSupabaseCases()` существует только как подготовительная функция и не является источником данных UI.
 - [ ] Supabase client создается в одном месте и не дублируется.
 - [ ] В клиентском коде не используются `service_role` ключи или приватные токены.
 - [ ] Таблица `public.cases` описана в specs и соответствует TypeScript-типам.
-- [ ] Supabase read-only layer не ломает `localStorage` flow.
+- [ ] RLS для `public.cases` включен, SELECT policy для anon role отсутствует, и это не ломает `localStorage` flow.
 - [ ] Ошибка или отсутствие Supabase-конфигурации не ломает локальный MVP.
+
+## Auth/Admin Foundation Readiness
+
+Этот раздел проверяет только готовность документации к будущей реализации Auth/Admin. Код, UI, migrations, env и Supabase schema не должны меняться без отдельного approval.
+
+- [ ] [../architecture/auth-admin-foundation-decision-review.md](../architecture/auth-admin-foundation-decision-review.md) является source of truth для Auth/Admin решений.
+- [ ] [../specs/auth-spec.md](../specs/auth-spec.md) описывает login, logout, session validation, protected routes, auth states и error states.
+- [ ] [../specs/admin-spec.md](../specs/admin-spec.md) описывает admin identity, allowlist flow, admin access rules и admin session rules.
+- [ ] [../specs/database-auth-model.md](../specs/database-auth-model.md) описывает `auth.users`, `public.admin_users`, связи, поля и ограничения.
+- [ ] [../specs/security-model.md](../specs/security-model.md) описывает server-side only operations, service role boundaries, env variables и forbidden client operations.
+- [ ] [../architecture/routing-map.md](../architecture/routing-map.md) содержит будущие routes `/admin/login` и `/admin`.
+- [ ] [../architecture/state-management.md](../architecture/state-management.md) фиксирует, что auth state не хранится в `localStorage` LifePilot MVP.
+- [ ] [../plans/admin-users-migration-plan.md](../plans/admin-users-migration-plan.md) описывает migration plan для `public.admin_users`.
+- [ ] План Auth/Admin и Vercel не используется как source of truth вместо ADR и specs.
+- [ ] Реализация Auth/Admin начинается только после отдельного approval.
+
+## Auth/Admin Future Implementation Checks
+
+Эти проверки выполняются только после approval и реализации Auth/Admin.
+
+- [ ] `/admin/login` доступен как public route.
+- [ ] `/admin/login` использует Supabase Auth email/password.
+- [ ] Magic link и signup через UI не реализованы.
+- [ ] Успешный login ведет на `/admin`.
+- [ ] `/admin` проверяет session server-side до показа admin content.
+- [ ] `/admin` проверяет active запись в `public.admin_users`.
+- [ ] Пользователь без session получает redirect на `/admin/login`.
+- [ ] Пользователь без active admin record не получает admin content.
+- [ ] Logout закрывает admin session и не очищает `lifepilot.caseHistory`.
+- [ ] Auth session, password, access token, refresh token, role и allowlist data не сохраняются в `localStorage`.
+- [ ] Client-side UI не читает `public.admin_users` напрямую через browser anon или browser authenticated client.
+- [ ] Service role key не используется во frontend.
+- [ ] Admin page не читает и не изменяет `public.cases` без отдельного RLS/data-access review.
+- [ ] Основной пользовательский MVP остается public и local-first.
 
 ## Mobile-First Visual Checks
 
@@ -202,7 +236,8 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] Проверен mobile layout.
 - [ ] `npm run build` проходит без ошибок.
 - [ ] Проверено, что нет backend, auth, OCR, PDF parser, billing или sync в MVP.
-- [ ] Проверено, что database-слой Supabase остается read-only foundation layer и не подключен к пользовательскому UI-flow.
+- [ ] Проверено, что Supabase foundation остается schema/client слоем без разрешенного anon SELECT и не подключен к пользовательскому UI-flow.
+- [ ] Проверено, что Auth/Admin implementation не начиналась без отдельного approval.
 - [ ] Проверено, что warnings и ограничения не исчезли из UI.
 - [ ] Проверено, что измененные документы не противоречат `docs/plans/mvp-scope.md`.
 
@@ -219,3 +254,5 @@ Checklist считается пройденным, если основной с�
 - [../architecture/data-flow.md](../architecture/data-flow.md) описывает поток данных.
 - [../architecture/state-management.md](../architecture/state-management.md) описывает состояние приложения.
 - [../design/design-system.md](../design/design-system.md) описывает визуальные правила.
+- [../specs/auth-spec.md](../specs/auth-spec.md) описывает будущие auth-проверки.
+- [../plans/admin-users-migration-plan.md](../plans/admin-users-migration-plan.md) описывает migration plan для `public.admin_users`.

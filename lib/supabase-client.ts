@@ -18,9 +18,32 @@ export type SupabaseCaseRow = {
   updated_at: string | null;
 };
 
+export type SupabaseAdminUserRow = {
+  id: string;
+  auth_user_id: string;
+  email: string;
+  role: "admin";
+  status: "active" | "disabled";
+  created_at: string;
+  updated_at: string;
+};
+
 export type LifePilotDatabase = {
   public: {
     Tables: {
+      admin_users: {
+        Row: SupabaseAdminUserRow;
+        Insert: Partial<Pick<SupabaseAdminUserRow, "created_at" | "id" | "role" | "status" | "updated_at">> &
+          Pick<SupabaseAdminUserRow, "auth_user_id" | "email">;
+        Update: Partial<Omit<SupabaseAdminUserRow, "id">>;
+        Relationships: [
+          {
+            columns: ["auth_user_id"];
+            referencedColumns: ["id"];
+            referencedRelation: "users";
+          }
+        ];
+      };
       cases: {
         Row: SupabaseCaseRow;
         Insert: Partial<SupabaseCaseRow> & Pick<SupabaseCaseRow, "source_text">;
@@ -33,9 +56,7 @@ export type LifePilotDatabase = {
   };
 };
 
-export type LifePilotSupabaseClient = ReturnType<
-  typeof createClient<LifePilotDatabase, "public", "public">
->;
+export type LifePilotSupabaseClient = ReturnType<typeof createClient<LifePilotDatabase>>;
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -80,10 +101,7 @@ export function getSupabaseClient(): LifePilotSupabaseClient | null {
   }
 
   if (!supabaseClient) {
-    supabaseClient = createClient<LifePilotDatabase, "public", "public">(
-      config.url,
-      config.anonKey
-    );
+    supabaseClient = createClient<LifePilotDatabase>(config.url, config.anonKey);
   }
 
   return supabaseClient;
