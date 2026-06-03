@@ -55,6 +55,39 @@
 - `lifepilot.currentCase` — текущий кейс, который открывают экраны анализа и результата;
 - `lifepilot.caseHistory` — список последних кейсов для экрана истории.
 
+## Auth/Admin Foundation state
+
+Auth/Admin Foundation начинается только после отдельного approval на реализацию. Source of truth:
+
+- [auth-admin-foundation-decision-review.md](./auth-admin-foundation-decision-review.md);
+- [../specs/auth-spec.md](../specs/auth-spec.md);
+- [../specs/admin-spec.md](../specs/admin-spec.md);
+- [../specs/security-model.md](../specs/security-model.md).
+
+Auth state не должен смешиваться с Case state.
+
+Auth/Admin Foundation использует следующие концептуальные состояния:
+
+- `unauthenticated`;
+- `authenticating`;
+- `authenticated-pending-admin-check`;
+- `admin-authorized`;
+- `admin-forbidden`;
+- `auth-error`.
+
+Эти состояния описывают auth-flow и не являются `CaseStatus`.
+
+Правила состояния:
+
+- Supabase Auth session не хранится в `lifepilot.currentCase`;
+- Supabase Auth session не хранится в `lifepilot.caseHistory`;
+- password, access token, refresh token, admin email, role и allowlist data не сохраняются в `localStorage` LifePilot MVP;
+- проверка session и `public.admin_users` allowlist выполняется server-side перед показом `/admin`;
+- logout закрывает admin session, но не очищает локальную историю кейсов;
+- основной пользовательский MVP продолжает работать через `localStorage` без auth.
+
+План этапа Auth/Admin и Vercel не является source of truth для state management. Состояние Auth/Admin определяется ADR и specs.
+
 ## Передача данных между экранами
 
 Данные не передаются через query params и не должны попадать в URL. Это важно, потому что исходный текст может содержать чувствительную информацию.
@@ -103,3 +136,5 @@
 - [screen-data-mapping.md](./screen-data-mapping.md) связывает данные с экранами.
 - [../specs/data-storage.md](../specs/data-storage.md) описывает состав сохраняемых данных.
 - [routing-map.md](./routing-map.md) описывает state-guarded маршруты.
+- [../specs/auth-spec.md](../specs/auth-spec.md) описывает auth states.
+- [../specs/security-model.md](../specs/security-model.md) описывает границу `localStorage` для Auth/Admin.

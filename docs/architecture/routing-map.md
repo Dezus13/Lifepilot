@@ -60,6 +60,31 @@ State-guarded routes:
 
 State-guarded не означает защищенный auth-маршрут. Это значит, что экран не должен открываться без нужного состояния кейса.
 
+## Auth/Admin Foundation routes
+
+Auth/Admin Foundation не является частью текущего пользовательского MVP и начинается только после отдельного approval на реализацию. Source of truth для решений Auth/Admin:
+
+- [auth-admin-foundation-decision-review.md](./auth-admin-foundation-decision-review.md);
+- [../specs/auth-spec.md](../specs/auth-spec.md);
+- [../specs/admin-spec.md](../specs/admin-spec.md);
+- [../specs/security-model.md](../specs/security-model.md).
+
+Планируемые routes будущего Auth/Admin этапа:
+
+- `/admin/login` — публичный route для входа администратора;
+- `/admin` — protected route для active admin.
+
+Правила:
+
+- `/admin/login` не защищается auth, но не должен менять основной пользовательский flow;
+- `/admin` проверяет Supabase Auth session и `public.admin_users` allowlist до показа admin content;
+- пользователь без session получает redirect на `/admin/login`;
+- пользователь с session, но без active admin record, не получает admin content;
+- protected admin route не должен полагаться только на client-side UI check;
+- основной пользовательский MVP не должен становиться auth-protected.
+
+План этапа Auth/Admin и Vercel находится в [../plans/auth-admin-vercel-plan.md](../plans/auth-admin-vercel-plan.md), а технические решения берутся из ADR и specs.
+
 ## Переходы
 
 ### Первый запуск
@@ -195,6 +220,8 @@ Deep-link в MVP рискован, потому что часть экранов
 
 Это поведение должно быть описано как routing guard, но не как система прав доступа.
 
+Для будущего `/admin` это правило не применяется: admin route должен быть настоящим protected route с server-side session validation и allowlist check.
+
 ## Где возможна навигационная сложность
 
 Особенно внимательно нужно отнестись к переходам:
@@ -214,3 +241,5 @@ Deep-link в MVP рискован, потому что часть экранов
 - [component-map.md](./component-map.md) описывает компоненты по экранам.
 - [../plans/screens-flow.md](../plans/screens-flow.md) описывает UI-поток MVP.
 - [mvp-safety-rules.md](./mvp-safety-rules.md) фиксирует безопасное поведение.
+- [../specs/auth-spec.md](../specs/auth-spec.md) описывает future auth routes и auth states.
+- [../specs/admin-spec.md](../specs/admin-spec.md) описывает admin access rules.
