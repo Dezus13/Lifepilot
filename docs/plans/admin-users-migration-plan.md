@@ -25,6 +25,7 @@ Migration нужна только для admin authorization.
 - создавать связь кейсов с пользователями;
 - добавлять audit log без отдельного решения;
 - давать browser anon client прямой SELECT к `public.admin_users`;
+- давать browser client полный доступ к allowlist;
 - подключать admin page к чтению или записи `public.cases`.
 
 ## Таблица `public.admin_users`
@@ -82,19 +83,33 @@ RLS для `public.admin_users` должен быть включен.
 Правила:
 
 - `anon` не получает прямой SELECT к `public.admin_users`;
-- `authenticated` не получает прямой SELECT к `public.admin_users`;
-- browser client не получает прямой SELECT к `public.admin_users`;
+- `authenticated` получает SELECT только для собственной active admin row;
+- browser client не должен читать `public.admin_users`;
 - admin-доступ не проверяется client-side чтением allowlist;
 - admin validation выполняется только server-side;
-- server-side check читает `public.admin_users` и проверяет `status = active`, затем `role = admin`;
+- server-side check через `@supabase/ssr` читает собственную active admin row из `public.admin_users` и проверяет `status = active`, затем `role = admin`;
 - service role key запрещен для MVP Auth Foundation.
 
-План прямых table policies:
+План table policies:
 
-- deny direct SELECT for `anon`;
-- deny direct SELECT for `authenticated`;
+- no SELECT policy for `anon`;
+- SELECT policy for `authenticated` только на own active admin row;
 - deny INSERT, UPDATE и DELETE for `anon`;
 - deny INSERT, UPDATE и DELETE for `authenticated`.
+
+Обязательная SELECT policy:
+
+```sql
+create policy "admin users can read own active admin row"
+on public.admin_users
+for select
+to authenticated
+using (
+  auth.uid() = auth_user_id
+  and status = 'active'
+  and role = 'admin'
+);
+```
 
 Любые будущие admin-management операции с `public.admin_users` должны проходить отдельный review.
 
@@ -125,9 +140,10 @@ RLS для `public.admin_users` должен быть включен.
 4. Добавить mandatory foreign key к `auth.users(id)`.
 5. Добавить constraints из этого плана.
 6. Добавить RLS deny policies для `anon` и `authenticated`.
-7. Не добавлять реальные admin email в GitHub.
-8. Проверить migration локально или в утвержденной Supabase среде.
-9. Обновить docs, если фактическая migration отличается от плана.
+7. Добавить SELECT policy для own active admin row.
+8. Не добавлять реальные admin email в GitHub.
+9. Проверить migration локально или в утвержденной Supabase среде.
+10. Обновить docs, если фактическая migration отличается от плана.
 
 ## Критерии готовности migration
 
@@ -137,7 +153,8 @@ Migration считается готовой только когда:
 - constraints соответствуют [../specs/database-auth-model.md](../specs/database-auth-model.md);
 - `auth_user_id` имеет foreign key на `auth.users(id)`;
 - RLS включен;
-- `anon` и `authenticated` не имеют прямого table access к allowlist;
+- `anon` не имеет прямого SELECT к allowlist;
+- `authenticated` может читать только собственную active admin row;
 - service role key не используется во frontend;
 - service role key не используется для MVP Auth Foundation;
 - реальные admin email и секреты не закоммичены;

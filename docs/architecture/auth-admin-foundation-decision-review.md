@@ -103,9 +103,9 @@ User-facing roles для обычных пользователей не ввод
 - redirect неавторизованного пользователя с `/admin` на `/admin/login`;
 - logout;
 - любые будущие admin-действия с `public.cases`;
-- любые операции, которым нужен service role key;
+- любые будущие операции, которым может понадобиться service role key, только после отдельного post-MVP security review;
 - любые операции записи в Supabase;
-- чтение данных, закрытых RLS policies;
+- чтение данных, доступ к которым разрешен только утвержденным server-side flow;
 - создание, отключение или изменение admin-записей, если такой процесс будет добавлен.
 
 Client-side UI может:
@@ -152,7 +152,7 @@ RLS для `public.admin_users` должен быть включен.
 
 Browser anon client не должен иметь прямой SELECT к `public.admin_users`.
 
-Server-side проверка admin-доступа должна читать `public.admin_users` безопасным способом, утвержденным в specs и architecture перед кодингом.
+Server-side проверка admin-доступа должна читать `public.admin_users` через `@supabase/ssr` и RLS policy для собственной active admin row. Детали закрыты в [auth-ssr-admin-validation-adr.md](./auth-ssr-admin-validation-adr.md).
 
 Для этого этапа не нужны:
 
@@ -188,7 +188,7 @@ Frontend может использовать только публичные Sup
 - `NEXT_PUBLIC_SUPABASE_URL`;
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
-Server-side Auth/Admin может потребовать дополнительные переменные после выбора конкретной реализации server-side Supabase client. Эти переменные нужно добавить в `.env.example` без реальных значений.
+Server-side Auth/Admin использует `@supabase/ssr` и Supabase Auth cookies. Service role key запрещен для MVP Auth Foundation.
 
 Нельзя отправлять в GitHub:
 

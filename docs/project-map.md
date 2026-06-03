@@ -45,6 +45,7 @@
 - `docs/architecture/case-entity.md` — описывает архитектурный смысл Case и ссылается на `case-model.md` как source of truth.
 - `docs/architecture/mvp-safety-rules.md` — фиксирует safety-правила MVP, ограничения черновика и осторожное поведение.
 - `docs/architecture/auth-admin-foundation-decision-review.md` — source of truth для решений Auth/Admin Foundation перед обновлением specs.
+- `docs/architecture/auth-ssr-admin-validation-adr.md` — source of truth для `@supabase/ssr`, cookie session persistence, RLS policy и admin validation без service role key.
 
 ## Design: визуальные правила
 
@@ -98,29 +99,30 @@
 10. `docs/specs/case-model.md`
 11. `docs/specs/data-storage.md`
 12. `docs/architecture/auth-admin-foundation-decision-review.md`
-13. `docs/specs/auth-spec.md`
-14. `docs/specs/admin-spec.md`
-15. `docs/specs/database-auth-model.md`
-16. `docs/specs/security-model.md`
-17. `docs/architecture/system-design.md`
-18. `docs/architecture/frontend-structure.md`
-19. `docs/architecture/data-flow.md`
-20. `docs/architecture/state-management.md`
-21. `docs/architecture/routing-map.md`
-22. `docs/architecture/screen-data-mapping.md`
-23. `docs/architecture/component-map.md`
-24. `docs/architecture/case-entity.md`
-25. `docs/architecture/mvp-safety-rules.md`
-26. `docs/design/design-system.md`
-27. `docs/design/mobile-layout.md`
-28. `docs/plans/mvp-scope.md`
-29. `docs/plans/mvp-roadmap.md`
-30. `docs/plans/mvp-plan.md`
-31. `docs/plans/development-stages.md`
-32. `docs/plans/implementation-order.md`
-33. `docs/plans/screens-list.md`
-34. `docs/plans/screens-flow.md`
-35. `docs/plans/admin-users-migration-plan.md`
-36. `docs/testing/mvp-checklist.md`
-37. `docs/supabase-local-connection.md`
-38. `docs/plans/auth-admin-vercel-plan.md`
+13. `docs/architecture/auth-ssr-admin-validation-adr.md`
+14. `docs/specs/auth-spec.md`
+15. `docs/specs/admin-spec.md`
+16. `docs/specs/database-auth-model.md`
+17. `docs/specs/security-model.md`
+18. `docs/architecture/system-design.md`
+19. `docs/architecture/frontend-structure.md`
+20. `docs/architecture/data-flow.md`
+21. `docs/architecture/state-management.md`
+22. `docs/architecture/routing-map.md`
+23. `docs/architecture/screen-data-mapping.md`
+24. `docs/architecture/component-map.md`
+25. `docs/architecture/case-entity.md`
+26. `docs/architecture/mvp-safety-rules.md`
+27. `docs/design/design-system.md`
+28. `docs/design/mobile-layout.md`
+29. `docs/plans/mvp-scope.md`
+30. `docs/plans/mvp-roadmap.md`
+31. `docs/plans/mvp-plan.md`
+32. `docs/plans/development-stages.md`
+33. `docs/plans/implementation-order.md`
+34. `docs/plans/screens-list.md`
+35. `docs/plans/screens-flow.md`
+36. `docs/plans/admin-users-migration-plan.md`
+37. `docs/testing/mvp-checklist.md`
+38. `docs/supabase-local-connection.md`
+39. `docs/plans/auth-admin-vercel-plan.md`

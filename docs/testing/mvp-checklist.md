@@ -193,7 +193,7 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] Пользователь без active admin record не получает admin content.
 - [ ] Logout закрывает admin session и не очищает `lifepilot.caseHistory`.
 - [ ] Auth session, password, access token, refresh token, role и allowlist data не сохраняются в `localStorage`.
-- [ ] Client-side UI не читает `public.admin_users` напрямую через browser anon client.
+- [ ] Client-side UI не читает `public.admin_users` напрямую через browser anon или browser authenticated client.
 - [ ] Service role key не используется во frontend.
 - [ ] Admin page не читает и не изменяет `public.cases` без отдельного RLS/data-access review.
 - [ ] Основной пользовательский MVP остается public и local-first.

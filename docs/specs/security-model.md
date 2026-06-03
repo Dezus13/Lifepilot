@@ -12,6 +12,7 @@
 
 - Auth-sensitive решения принимаются server-side.
 - Client-side UI не принимает окончательное решение об admin-доступе.
+- Session persistence использует Supabase Auth cookies через `@supabase/ssr`.
 - Service role key не попадает во frontend bundle.
 - Service role key запрещен для MVP Auth Foundation.
 - Основной пользовательский MVP остается local-first.
@@ -25,7 +26,7 @@
 
 - проверка текущей Supabase Auth session;
 - проверка admin allowlist в `public.admin_users`;
-- чтение `public.admin_users` для admin validation;
+- чтение собственной active admin row из `public.admin_users` для admin validation;
 - проверка `status = active`;
 - проверка `role = admin`;
 - redirect с `/admin` на `/admin/login` для unauthenticated пользователя;
@@ -34,7 +35,7 @@
 - любые операции записи в Supabase;
 - создание, отключение или изменение admin-записей, если такой процесс появится;
 - любые будущие admin-действия с `public.cases`;
-- чтение данных, закрытых RLS policies.
+- чтение данных, доступ к которым разрешен только утвержденным server-side flow.
 
 ## Service role boundaries
 
@@ -62,7 +63,7 @@ Service role key не используется для первой реализ�
 
 Эти переменные могут использоваться browser-safe Supabase client.
 
-Server-side переменные для admin validation должны быть добавлены в `.env.example` только как имена без реальных значений, если выбранная реализация требует server-only database access. Service role key не добавляется в `.env.example` для MVP Auth Foundation.
+Для MVP Auth Foundation используется `@supabase/ssr` и публичные Supabase переменные. Service role key не добавляется в `.env.example` для MVP Auth Foundation.
 
 Нельзя коммитить:
 
@@ -86,7 +87,7 @@ Client-side UI не должен:
 - хранить password, token или refresh token в localStorage истории кейсов;
 - использовать service role key;
 - читать `public.admin_users` напрямую через browser anon client;
-- читать `public.admin_users` напрямую через browser authenticated client;
+- читать `public.admin_users` напрямую через browser authenticated client, даже если RLS разрешает own-row SELECT;
 - принимать admin-доступ только по email из формы;
 - показывать admin content до server-side validation;
 - читать `public.cases` как admin без server-side проверки и утвержденных RLS policies;
@@ -147,12 +148,12 @@ Admin validation выполняется только server-side в фиксир
 
 1. Проверить Supabase Auth session.
 2. Получить Auth user id и email.
-3. Прочитать `public.admin_users` server-side.
+3. Прочитать собственную active admin row из `public.admin_users` server-side через `@supabase/ssr`.
 4. Проверить `status = active`.
 5. Проверить `role = admin`.
 6. Запретить доступ, если любой шаг не прошел.
 
-RLS для `public.admin_users` должен запрещать direct table access для `anon` и `authenticated`. Browser client не должен читать allowlist напрямую.
+RLS для `public.admin_users` должен запрещать SELECT для `anon` и разрешать `authenticated` SELECT только для собственной active admin row. Browser client не должен читать allowlist напрямую.
 
 ## Связанные документы
 

@@ -67,7 +67,7 @@ Session validation выполняется server-side.
 
 1. Проверить наличие валидной Supabase Auth session.
 2. Получить `auth.users.id` и email текущего пользователя.
-3. Server-side прочитать `public.admin_users`.
+3. Server-side через `@supabase/ssr` прочитать собственную active admin row из `public.admin_users`.
 4. Проверить наличие admin-записи с `auth_user_id` текущего Auth user.
 5. Проверить, что email в admin-записи совпадает с email текущего Auth user.
 6. Проверить, что `status` равен `active`.
@@ -75,7 +75,9 @@ Session validation выполняется server-side.
 
 Если любая проверка не проходит, admin content не показывается.
 
-`public.admin_users` не читается browser client. Direct table access для `anon` и `authenticated` должен быть запрещен RLS. Service role key запрещен для MVP Auth Foundation.
+`public.admin_users` не читается browser client. RLS запрещает SELECT для `anon` и разрешает `authenticated` читать только собственную active admin row. Service role key запрещен для MVP Auth Foundation.
+
+Session persistence использует Supabase Auth cookies через `@supabase/ssr`, а не `localStorage`.
 
 ## Protected routes
 

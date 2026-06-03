@@ -93,7 +93,7 @@ Auth/Admin и Vercel должны быть отдельным продуктов
 - `NEXT_PUBLIC_SUPABASE_URL`;
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
-Для будущего Auth stage могут понадобиться дополнительные server-side переменные после выбора конкретной реализации server-side Supabase client. Их нужно добавить в `.env.example` без реальных значений и настроить в Vercel dashboard.
+Auth stage использует `@supabase/ssr` и Supabase Auth cookies. Для MVP Auth Foundation используются публичные Supabase-переменные; service role key не добавляется в `.env.example`.
 
 Правила:
 

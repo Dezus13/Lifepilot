@@ -103,15 +103,29 @@ RLS для `public.admin_users` должен быть включен.
 Direct table access rules:
 
 - `anon` не получает прямой SELECT к `public.admin_users`;
-- `authenticated` не получает прямой SELECT к `public.admin_users`;
-- browser client не читает `public.admin_users`;
+- `authenticated` получает SELECT только для собственной active admin row;
+- browser client не должен читать `public.admin_users`;
 - admin-доступ не проверяется client-side чтением `public.admin_users`.
+
+Обязательная SELECT policy:
+
+```sql
+create policy "admin users can read own active admin row"
+on public.admin_users
+for select
+to authenticated
+using (
+  auth.uid() = auth_user_id
+  and status = 'active'
+  and role = 'admin'
+);
+```
 
 Admin validation выполняется только server-side:
 
 1. server-side получает валидную Supabase Auth session;
 2. server-side получает `auth.users.id` и email текущего Auth user;
-3. server-side читает `public.admin_users`;
+3. server-side читает собственную active admin row из `public.admin_users`;
 4. server-side проверяет `status = active`;
 5. server-side проверяет `role = admin`;
 6. если проверка не проходит, admin content не показывается.

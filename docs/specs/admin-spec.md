@@ -67,7 +67,7 @@ Allowlist не хранится:
 
 Обычный signup не должен автоматически создавать запись в `public.admin_users`.
 
-Direct table access к `public.admin_users` для `anon` и `authenticated` должен быть запрещен RLS. Browser client не читает allowlist напрямую.
+Direct table access к `public.admin_users` для `anon` должен быть запрещен RLS. `authenticated` получает SELECT только для собственной active admin row. Browser client не читает allowlist напрямую.
 
 ## Admin access rules
 
@@ -96,7 +96,7 @@ Direct table access к `public.admin_users` для `anon` и `authenticated` д�
 
 1. Supabase Auth session.
 2. Auth user id и email.
-3. Чтение `public.admin_users`.
+3. Чтение собственной active admin row из `public.admin_users` через `@supabase/ssr`.
 4. Проверка `status = active`.
 5. Проверка `role = admin`.
 
