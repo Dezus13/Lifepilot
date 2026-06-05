@@ -8,7 +8,7 @@
 
 Frontend MVP построен на Next.js App Router. Основной сценарий расположен в routes внутри `app/` и работает вокруг одного текущего кейса.
 
-Текущая структура не содержит отдельного backend-слоя, auth-слоя, сложного state manager или серверного storage-модуля. В проекте есть Supabase foundation layer: единый client, типы и подготовительный модуль для таблицы `public.cases`. Этот слой не подключен к пользовательскому flow и не заменяет локальное хранение.
+Текущая структура пользовательского MVP не содержит отдельного backend-слоя, сложного state manager или серверного storage-модуля. В проекте есть Supabase foundation layer для `public.cases` и отдельный Auth/Admin Foundation для `/admin/login` и `/admin`. Пользовательский flow не подключен к Supabase как источнику данных и не заменяет локальное хранение.
 
 ## Корневая структура
 
@@ -17,6 +17,7 @@ Frontend MVP построен на Next.js App Router. Основной сцен
 ```text
 app/
   components/
+  admin/
   case/
   history/
   onboarding/
@@ -26,7 +27,7 @@ app/
 
 `app/` является единственным корнем приложения. Отдельный `src/` в текущем MVP не используется.
 
-Общие frontend-утилиты находятся в `lib/`. На текущем этапе там расположены локальные правила анализа, работа с `localStorage`, foundation-клиент Supabase и подготовительная функция чтения `public.cases`, которая не используется UI.
+Общие frontend-утилиты находятся в `lib/`. На текущем этапе там расположены локальные правила анализа, работа с `localStorage`, foundation-клиент Supabase, server-side Supabase client для Auth/Admin и подготовительная функция чтения `public.cases`, которая не используется пользовательским UI.
 
 ## Routes
 
@@ -42,6 +43,8 @@ app/
 - `/history` — локальная история кейсов;
 - `/history/:caseId` — экран деталей сохраненного кейса из локальной истории `localStorage`;
 - `/settings/safety` — настройки безопасности;
+- `/admin/login` — публичный admin login route;
+- `/admin` — protected admin route с server-side validation;
 - `/error` — экран ошибки;
 - fallback route — неизвестный маршрут.
 
@@ -80,6 +83,19 @@ app/
 
 Если Supabase-переменные отсутствуют, development-среда получает безопасную ошибку конфигурации. В production foundation layer не должен раскрывать технические детали пользователю.
 
+## Auth/Admin Foundation layer
+
+Auth/Admin Foundation реализован отдельно от пользовательского MVP:
+
+- `app/admin/login/page.tsx` показывает admin login form;
+- `app/admin/login/actions.ts` выполняет Supabase Auth email/password login через Server Action;
+- `app/admin/page.tsx` защищает `/admin` через server-side validation;
+- `app/admin/actions.ts` выполняет logout;
+- `lib/supabase-server.ts` создает Supabase server client через `@supabase/ssr`;
+- `lib/admin-auth.ts` проверяет session, Auth user и собственную active admin row в `public.admin_users`.
+
+Этот слой не меняет `lifepilot.currentCase`, `lifepilot.caseHistory` и пользовательские routes MVP.
+
 ## Границы frontend MVP
 
 В текущей frontend-структуре не нужны:
@@ -87,8 +103,6 @@ app/
 - отдельный UI-kit;
 - глобальный store;
 - server state;
-- auth routes;
-- дополнительные Supabase clients поверх foundation layer;
 - OCR, PDF, email или billing-модули;
 - пустые папки без использования в текущем MVP.
 
@@ -100,4 +114,4 @@ app/
 - [routing-map.md](./routing-map.md) описывает маршруты и переходы.
 - [screen-data-mapping.md](./screen-data-mapping.md) описывает данные по экранам.
 - [component-map.md](./component-map.md) описывает компоненты по экранам MVP.
-- [../plans/screens-flow.md](../plans/screens-flow.md) описывает UI-поток экранов.
+- [../plans/completed/screens-flow.md](../plans/completed/screens-flow.md) описывает UI-поток экранов.

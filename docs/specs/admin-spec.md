@@ -2,11 +2,11 @@
 
 ## Назначение
 
-Этот документ описывает admin identity, allowlist flow, правила admin-доступа и admin session rules для будущего Auth/Admin этапа.
+Этот документ описывает admin identity, allowlist flow, правила admin-доступа и admin session rules для реализованного Auth/Admin Foundation.
 
 Единственный source of truth для архитектурных решений: [../architecture/auth-admin-foundation-decision-review.md](../architecture/auth-admin-foundation-decision-review.md).
 
-Этот spec не означает, что admin-раздел уже реализован.
+Текущий admin-раздел реализован минимально: `/admin/login` выполняет вход через Supabase Auth, `/admin` защищен server-side проверкой session и `public.admin_users`.
 
 ## Граница admin stage
 

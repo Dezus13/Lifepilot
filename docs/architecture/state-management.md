@@ -57,7 +57,7 @@
 
 ## Auth/Admin Foundation state
 
-Auth/Admin Foundation начинается только после отдельного approval на реализацию. Source of truth:
+Auth/Admin Foundation реализован и остается отдельным от Case state. Source of truth:
 
 - [auth-admin-foundation-decision-review.md](./auth-admin-foundation-decision-review.md);
 - [../specs/auth-spec.md](../specs/auth-spec.md);
@@ -66,7 +66,7 @@ Auth/Admin Foundation начинается только после отдель�
 
 Auth state не должен смешиваться с Case state.
 
-Auth/Admin Foundation использует следующие концептуальные состояния:
+Auth/Admin Foundation использует следующие состояния:
 
 - `unauthenticated`;
 - `authenticating`;

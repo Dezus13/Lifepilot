@@ -124,4 +124,4 @@ AI-данные должны быть связаны с исходным тек�
 - [../specs/data-storage.md](../specs/data-storage.md) фиксирует данные, которые нужно хранить для кейса.
 - [../specs/decision-logic.md](../specs/decision-logic.md) описывает правила анализа, предупреждений и вычисления статуса кейса.
 - [../specs/user-flow.md](../specs/user-flow.md) описывает пользовательский путь через кейс.
-- [../plans/mvp-scope.md](../plans/mvp-scope.md) задает границы MVP.
+- [../plans/active/mvp-scope.md](../plans/active/mvp-scope.md) задает границы MVP.

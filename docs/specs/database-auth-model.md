@@ -6,7 +6,7 @@
 
 Единственный source of truth для архитектурных решений: [../architecture/auth-admin-foundation-decision-review.md](../architecture/auth-admin-foundation-decision-review.md).
 
-Этот spec не создает migration и не означает, что таблица `public.admin_users` уже существует.
+В кодовой базе есть migration `supabase/migrations/20260604000000_admin_users_auth_foundation.sql`, которая создает `public.admin_users`, включает RLS и добавляет SELECT policy для собственной active admin row.
 
 ## Граница database auth model
 
@@ -66,10 +66,10 @@ LifePilot не создает эту таблицу вручную и не оп�
 
 ## Связь `auth.users` и `public.admin_users`
 
-Каноническая связь:
+Каноническая связь реализованной migration:
 
 - `public.admin_users.auth_user_id` обязательно ссылается на `auth.users.id`;
-- migration должна добавить foreign key: `auth_user_id REFERENCES auth.users(id) ON DELETE CASCADE`.
+- migration добавляет foreign key: `auth_user_id REFERENCES auth.users(id) ON DELETE CASCADE`.
 
 Правила:
 
@@ -81,7 +81,7 @@ LifePilot не создает эту таблицу вручную и не оп�
 
 ## Ограничения таблицы
 
-Минимальные constraints, которые должны быть отражены в migration plan:
+Минимальные constraints, отраженные в migration:
 
 - primary key на `id`;
 - unique constraint на `auth_user_id`;
@@ -94,11 +94,11 @@ LifePilot не создает эту таблицу вручную и не оп�
 - check constraint для `status in ('active', 'disabled')`;
 - foreign key `auth_user_id REFERENCES auth.users(id) ON DELETE CASCADE`.
 
-Foreign key обязателен. Если migration не может добавить foreign key к `auth.users(id)`, Auth/Admin implementation должна быть остановлена до отдельного architecture review.
+Foreign key обязателен. Текущая migration добавляет `auth_user_id REFERENCES auth.users(id) ON DELETE CASCADE`.
 
 ## RLS
 
-RLS для `public.admin_users` должен быть включен.
+RLS для `public.admin_users` включается в migration.
 
 Direct table access rules:
 

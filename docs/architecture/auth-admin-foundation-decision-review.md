@@ -2,13 +2,13 @@
 
 ## Назначение
 
-Этот документ является source of truth для будущих specs по Auth/Admin Foundation. Он закрывает архитектурные решения перед реализацией Supabase Auth, admin login, protected admin page и server-side access checks.
+Этот документ является source of truth для Auth/Admin Foundation. Он закрывает архитектурные решения для Supabase Auth, admin login, protected admin page и server-side access checks.
 
-Документ не означает, что Auth/Admin уже реализован. До изменения кода specs, architecture и testing должны ссылаться на решения из этого файла.
+Auth/Admin Foundation реализован в коде: `/admin/login`, `/admin`, `lib/admin-auth.ts`, `lib/supabase-server.ts`, migration `20260604000000_admin_users_auth_foundation.sql` и таблица `public.admin_users`.
 
 ## Граница решения
 
-Auth/Admin Foundation нужен только для администраторского доступа к будущему admin-разделу.
+Auth/Admin Foundation нужен только для администраторского доступа к admin-разделу.
 
 В текущую границу не входят:
 
@@ -129,7 +129,7 @@ Client-side UI не должен:
 
 - `public.cases` — уже существует как schema foundation. В текущем MVP RLS включен, SELECT policy для anon отсутствует, пользовательский UI не использует эту таблицу как источник данных.
 
-Для Auth/Admin Foundation нужна новая таблица:
+Для Auth/Admin Foundation создана таблица:
 
 - `public.admin_users` — allowlist и app-level роль администратора.
 
@@ -148,7 +148,7 @@ Client-side UI не должен:
 - `role`: `admin`;
 - `status`: `active`, `disabled`.
 
-RLS для `public.admin_users` должен быть включен.
+RLS для `public.admin_users` включен в migration `20260604000000_admin_users_auth_foundation.sql`.
 
 Browser anon client не должен иметь прямой SELECT к `public.admin_users`.
 
@@ -166,7 +166,7 @@ Audit log может понадобиться позже, если admin page н
 
 ## Решение 7: protected admin routes
 
-Планируемые routes:
+Реализованные routes:
 
 - `/admin/login` — публичный route для входа администратора;
 - `/admin` — protected route, доступный только активному admin.
@@ -219,21 +219,17 @@ Service role key запрещен во frontend bundle. Если он понад
 12. `localStorage` не используется для хранения auth session LifePilot MVP.
 13. `public.cases` не становится пользовательским источником данных в этом этапе.
 14. Новая обязательная таблица этапа — `public.admin_users`.
-15. RLS для `public.admin_users` должен быть включен.
+15. RLS для `public.admin_users` включен в migration.
 16. Browser anon client не получает прямой доступ к `public.admin_users`.
 17. Любое чтение или изменение пользовательских кейсов через admin page требует отдельного RLS/data-access review.
-18. Specs, architecture и testing для Auth/Admin должны быть обновлены на основе этого ADR до написания кода.
+18. Specs, architecture и testing для Auth/Admin должны оставаться синхронизированы с реализованным кодом.
 
-## Что должно быть обновлено после этого ADR
+## Реализованные артефакты
 
-Перед реализацией нужно обновить:
-
-- specs для Admin Login;
-- specs для Protected Admin Page;
-- architecture для server-side auth checks;
-- routing-map для `/admin/login` и `/admin`;
-- state-management для auth session boundary;
-- testing checklist для login, logout, protected route и forbidden state;
-- Supabase migration plan для `public.admin_users`.
-
-До этих обновлений код Auth/Admin писать нельзя.
+- `app/admin/login/page.tsx`;
+- `app/admin/login/actions.ts`;
+- `app/admin/page.tsx`;
+- `app/admin/actions.ts`;
+- `lib/admin-auth.ts`;
+- `lib/supabase-server.ts`;
+- `supabase/migrations/20260604000000_admin_users_auth_foundation.sql`.

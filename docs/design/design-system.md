@@ -219,5 +219,5 @@ LifePilot не должен выглядеть как сложная юриди�
 ## Связанные документы
 
 - [mobile-layout.md](./mobile-layout.md) описывает структуру мобильных экранов.
-- [../plans/screens-flow.md](../plans/screens-flow.md) описывает полный UI-поток экранов MVP.
+- [../plans/completed/screens-flow.md](../plans/completed/screens-flow.md) описывает полный UI-поток экранов MVP.
 - [../architecture/mvp-safety-rules.md](../architecture/mvp-safety-rules.md) фиксирует безопасное поведение MVP.

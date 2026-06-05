@@ -39,7 +39,7 @@
 
 ## Protected и unprotected routes
 
-В MVP нет аккаунтов, ролей и auth-защиты.
+В пользовательском MVP нет аккаунтов, ролей и auth-защиты. Auth-защита существует только для отдельного admin route `/admin`.
 
 Unprotected routes:
 
@@ -62,14 +62,14 @@ State-guarded не означает защищенный auth-маршрут. Э
 
 ## Auth/Admin Foundation routes
 
-Auth/Admin Foundation не является частью текущего пользовательского MVP и начинается только после отдельного approval на реализацию. Source of truth для решений Auth/Admin:
+Auth/Admin Foundation реализован отдельно от текущего пользовательского MVP. Source of truth для решений Auth/Admin:
 
 - [auth-admin-foundation-decision-review.md](./auth-admin-foundation-decision-review.md);
 - [../specs/auth-spec.md](../specs/auth-spec.md);
 - [../specs/admin-spec.md](../specs/admin-spec.md);
 - [../specs/security-model.md](../specs/security-model.md).
 
-Планируемые routes будущего Auth/Admin этапа:
+Реализованные routes Auth/Admin Foundation:
 
 - `/admin/login` — публичный route для входа администратора;
 - `/admin` — protected route для active admin.
@@ -83,7 +83,7 @@ Auth/Admin Foundation не является частью текущего пол
 - protected admin route не должен полагаться только на client-side UI check;
 - основной пользовательский MVP не должен становиться auth-protected.
 
-План этапа Auth/Admin и Vercel находится в [../plans/auth-admin-vercel-plan.md](../plans/auth-admin-vercel-plan.md), а технические решения берутся из ADR и specs.
+План этапа Auth/Admin и Vercel находится в [../plans/active/auth-admin-vercel-plan.md](../plans/active/auth-admin-vercel-plan.md), а технические решения берутся из ADR и specs.
 
 ## Переходы
 
@@ -220,7 +220,7 @@ Deep-link в MVP рискован, потому что часть экранов
 
 Это поведение должно быть описано как routing guard, но не как система прав доступа.
 
-Для будущего `/admin` это правило не применяется: admin route должен быть настоящим protected route с server-side session validation и allowlist check.
+Для `/admin` это правило не применяется: admin route является настоящим protected route с server-side session validation и allowlist check.
 
 ## Где возможна навигационная сложность
 
@@ -239,7 +239,7 @@ Deep-link в MVP рискован, потому что часть экранов
 
 - [frontend-structure.md](./frontend-structure.md) описывает будущую структуру frontend.
 - [component-map.md](./component-map.md) описывает компоненты по экранам.
-- [../plans/screens-flow.md](../plans/screens-flow.md) описывает UI-поток MVP.
+- [../plans/completed/screens-flow.md](../plans/completed/screens-flow.md) описывает UI-поток MVP.
 - [mvp-safety-rules.md](./mvp-safety-rules.md) фиксирует безопасное поведение.
-- [../specs/auth-spec.md](../specs/auth-spec.md) описывает future auth routes и auth states.
+- [../specs/auth-spec.md](../specs/auth-spec.md) описывает auth routes и auth states.
 - [../specs/admin-spec.md](../specs/admin-spec.md) описывает admin access rules.

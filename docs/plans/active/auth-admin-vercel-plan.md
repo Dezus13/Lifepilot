@@ -2,26 +2,26 @@
 
 ## Назначение
 
-Этот документ описывает будущий этап после текущего local-first MVP. Он не меняет границы текущего MVP и не означает, что Supabase Auth, admin-поток или развертывание уже реализованы.
+Этот документ описывает текущий этап Auth/Admin и Vercel после local-first MVP. Он не меняет границы пользовательского MVP.
 
-Auth/Admin и Vercel должны быть отдельным продуктовым этапом, потому что они вводят auth, защищенные маршруты, production-развертывание и новые требования безопасности.
+Auth Foundation уже реализован в коде: `/admin/login`, `/admin`, `lib/admin-auth.ts`, `lib/supabase-server.ts`, migration `20260604000000_admin_users_auth_foundation.sql` и таблица `public.admin_users`.
 
-Архитектурные решения для Auth/Admin Foundation закрыты в [../architecture/auth-admin-foundation-decision-review.md](../architecture/auth-admin-foundation-decision-review.md). Детальные specs описаны в [../specs/auth-spec.md](../specs/auth-spec.md), [../specs/admin-spec.md](../specs/admin-spec.md), [../specs/database-auth-model.md](../specs/database-auth-model.md) и [../specs/security-model.md](../specs/security-model.md).
+Vercel-развертывание и production-проверки остаются активной незавершенной частью этого плана.
 
-Реализация Auth/Admin может начаться только после отдельного approval.
+Архитектурные решения для Auth/Admin Foundation закрыты в [../../architecture/auth-admin-foundation-decision-review.md](../../architecture/auth-admin-foundation-decision-review.md). Детальные specs описаны в [../../specs/auth-spec.md](../../specs/auth-spec.md), [../../specs/admin-spec.md](../../specs/admin-spec.md), [../../specs/database-auth-model.md](../../specs/database-auth-model.md) и [../../specs/security-model.md](../../specs/security-model.md).
 
 ## Цели этапа Auth/Admin и Vercel
 
-- Подготовить Supabase Auth для администраторского входа.
-- Добавить admin login.
-- Добавить protected admin page.
+- Поддерживать реализованный Supabase Auth для администраторского входа.
+- Поддерживать реализованный admin login.
+- Поддерживать реализованный protected admin page.
 - Подготовить Vercel-развертывание.
 - Проверить переменные окружения для production.
 - Зафиксировать, какие файлы и секреты нельзя отправлять в GitHub.
 
-## Supabase Auth
+## Supabase Auth Foundation
 
-Планируемые задачи:
+Реализовано:
 
 - использовать Supabase Auth email/password для admin login;
 - использовать admin identity: Supabase Auth user + запись `public.admin_users`;
@@ -34,7 +34,7 @@ Auth/Admin и Vercel должны быть отдельным продуктов
 
 ## Admin Login
 
-Планируемый route:
+Реализованный route:
 
 - `/admin/login` — экран входа администратора.
 
@@ -48,7 +48,7 @@ Auth/Admin и Vercel должны быть отдельным продуктов
 
 ## Protected Admin Page
 
-Планируемый route:
+Реализованный route:
 
 - `/admin` — защищенная admin page.
 
@@ -74,7 +74,7 @@ Auth/Admin и Vercel должны быть отдельным продуктов
 
 ## Vercel-развертывание
 
-Планируемые задачи:
+Активные незавершенные задачи:
 
 - проверить `npm run build` локально;
 - убедиться, что `package-lock.json` актуален;
@@ -123,16 +123,12 @@ Auth stage использует `@supabase/ssr` и Supabase Auth cookies. Для
 ## Последовательность работ
 
 1. Использовать Auth/Admin ADR и specs как source of truth.
-2. Обновить architecture для protected routes и server-side checks.
-3. Обновить testing checklist для admin login, protected admin page и deploy.
-4. Подготовить Supabase Auth configuration.
-5. Использовать [admin-users-migration-plan.md](./admin-users-migration-plan.md) как migration plan для `public.admin_users`.
-6. Реализовать `/admin/login`.
-7. Реализовать protected `/admin`.
-8. Настроить переменные окружения Vercel.
-9. Запустить `npm run build`.
-10. Проверить preview-развертывание.
-11. Проверить production-развертывание.
+2. Проверить, что реализованные `/admin/login`, `/admin`, `lib/admin-auth.ts`, `lib/supabase-server.ts` и migration `public.admin_users` соответствуют docs.
+3. Настроить Supabase Auth configuration в целевой среде.
+4. Настроить переменные окружения Vercel.
+5. Запустить `npm run build`.
+6. Проверить preview-развертывание.
+7. Проверить production-развертывание.
 
 ## Не входит в этап Auth/Admin и Vercel без отдельного решения
 

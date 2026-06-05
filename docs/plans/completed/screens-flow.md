@@ -371,8 +371,8 @@
 
 ## Связанные документы
 
-- [../design/design-system.md](../design/design-system.md) описывает базовые визуальные правила MVP.
-- [../design/mobile-layout.md](../design/mobile-layout.md) описывает мобильную структуру экранов.
-- [../architecture/mvp-safety-rules.md](../architecture/mvp-safety-rules.md) фиксирует правила безопасного поведения.
+- [../../design/design-system.md](../../design/design-system.md) описывает базовые визуальные правила MVP.
+- [../../design/mobile-layout.md](../../design/mobile-layout.md) описывает мобильную структуру экранов.
+- [../../architecture/mvp-safety-rules.md](../../architecture/mvp-safety-rules.md) фиксирует правила безопасного поведения.
 - [screens-list.md](./screens-list.md) содержит базовый список экранов MVP.
-- [mvp-scope.md](./mvp-scope.md) задает границы MVP.
+- [mvp-scope.md](../active/mvp-scope.md) задает границы MVP.

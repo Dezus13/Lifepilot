@@ -2,7 +2,7 @@
 
 ## Назначение
 
-Этот ADR закрывает технический конфликт Auth Foundation перед реализацией:
+Этот ADR закрывает технический конфликт реализованного Auth Foundation:
 
 - как server-side читает `public.admin_users`;
 - используется ли `@supabase/ssr`;
@@ -43,7 +43,7 @@
 
 ## Использование `@supabase/ssr`
 
-Auth/Admin implementation должна использовать `@supabase/ssr`.
+Auth/Admin implementation использует `@supabase/ssr`.
 
 Причины:
 
@@ -53,7 +53,7 @@ Auth/Admin implementation должна использовать `@supabase/ssr`.
 - совместимость с Vercel serverless runtime;
 - отсутствие необходимости хранить auth session в `localStorage`.
 
-Implementation stage должен добавить dependency `@supabase/ssr`.
+Dependency `@supabase/ssr` добавлена в проект.
 
 ## Session persistence на Vercel
 
@@ -97,7 +97,7 @@ Email можно сверять server-side, если он нужен specs, н�
 
 ## RLS policy для `public.admin_users`
 
-RLS для `public.admin_users` должен быть включен.
+RLS для `public.admin_users` включается migration `20260604000000_admin_users_auth_foundation.sql`.
 
 Обязательная SELECT policy:
 

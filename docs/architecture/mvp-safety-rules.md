@@ -165,4 +165,4 @@ AI может ошибаться. Он может неправильно пон�
 - [data-flow.md](./data-flow.md) описывает поток данных между экранами MVP.
 - [../specs/decision-logic.md](../specs/decision-logic.md) описывает правила анализа, срочности и предупреждений.
 - [../specs/data-storage.md](../specs/data-storage.md) описывает данные кейса, warning-поля и границы хранения.
-- [../plans/mvp-scope.md](../plans/mvp-scope.md) фиксирует границы MVP.
+- [../plans/active/mvp-scope.md](../plans/active/mvp-scope.md) фиксирует границы MVP.

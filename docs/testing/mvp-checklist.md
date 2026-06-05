@@ -164,24 +164,24 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] RLS для `public.cases` включен, SELECT policy для anon role отсутствует, и это не ломает `localStorage` flow.
 - [ ] Ошибка или отсутствие Supabase-конфигурации не ломает локальный MVP.
 
-## Auth/Admin Foundation Readiness
+## Auth/Admin Foundation Checks
 
-Этот раздел проверяет только готовность документации к будущей реализации Auth/Admin. Код, UI, migrations, env и Supabase schema не должны меняться без отдельного approval.
+Этот раздел проверяет реализованный Auth/Admin Foundation. Он не меняет основной пользовательский MVP flow и не дает admin page доступ к пользовательским кейсам без отдельного RLS/data-access review.
 
 - [ ] [../architecture/auth-admin-foundation-decision-review.md](../architecture/auth-admin-foundation-decision-review.md) является source of truth для Auth/Admin решений.
 - [ ] [../specs/auth-spec.md](../specs/auth-spec.md) описывает login, logout, session validation, protected routes, auth states и error states.
 - [ ] [../specs/admin-spec.md](../specs/admin-spec.md) описывает admin identity, allowlist flow, admin access rules и admin session rules.
 - [ ] [../specs/database-auth-model.md](../specs/database-auth-model.md) описывает `auth.users`, `public.admin_users`, связи, поля и ограничения.
 - [ ] [../specs/security-model.md](../specs/security-model.md) описывает server-side only operations, service role boundaries, env variables и forbidden client operations.
-- [ ] [../architecture/routing-map.md](../architecture/routing-map.md) содержит будущие routes `/admin/login` и `/admin`.
+- [ ] [../architecture/routing-map.md](../architecture/routing-map.md) содержит реализованные routes `/admin/login` и `/admin`.
 - [ ] [../architecture/state-management.md](../architecture/state-management.md) фиксирует, что auth state не хранится в `localStorage` LifePilot MVP.
-- [ ] [../plans/admin-users-migration-plan.md](../plans/admin-users-migration-plan.md) описывает migration plan для `public.admin_users`.
+- [ ] [../plans/active/admin-users-migration-plan.md](../plans/active/admin-users-migration-plan.md) описывает реализованную migration для `public.admin_users`.
 - [ ] План Auth/Admin и Vercel не используется как source of truth вместо ADR и specs.
-- [ ] Реализация Auth/Admin начинается только после отдельного approval.
+- [ ] Реализованные Auth/Admin файлы соответствуют ADR и specs.
 
-## Auth/Admin Future Implementation Checks
+## Auth/Admin Implementation Checks
 
-Эти проверки выполняются только после approval и реализации Auth/Admin.
+Эти проверки выполняются для текущей реализации Auth/Admin.
 
 - [ ] `/admin/login` доступен как public route.
 - [ ] `/admin/login` использует Supabase Auth email/password.
@@ -239,7 +239,7 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] Проверено, что Supabase foundation остается schema/client слоем без разрешенного anon SELECT и не подключен к пользовательскому UI-flow.
 - [ ] Проверено, что Auth/Admin implementation не начиналась без отдельного approval.
 - [ ] Проверено, что warnings и ограничения не исчезли из UI.
-- [ ] Проверено, что измененные документы не противоречат `docs/plans/mvp-scope.md`.
+- [ ] Проверено, что измененные документы не противоречат `docs/plans/active/mvp-scope.md`.
 
 ## Когда checklist считается пройденным
 
@@ -249,10 +249,10 @@ Checklist считается пройденным, если основной с�
 
 ## Связанные документы
 
-- [../plans/mvp-scope.md](../plans/mvp-scope.md) фиксирует границы MVP.
-- [../plans/screens-list.md](../plans/screens-list.md) описывает экраны MVP.
+- [../plans/active/mvp-scope.md](../plans/active/mvp-scope.md) фиксирует границы MVP.
+- [../plans/completed/screens-list.md](../plans/completed/screens-list.md) описывает экраны MVP.
 - [../architecture/data-flow.md](../architecture/data-flow.md) описывает поток данных.
 - [../architecture/state-management.md](../architecture/state-management.md) описывает состояние приложения.
 - [../design/design-system.md](../design/design-system.md) описывает визуальные правила.
 - [../specs/auth-spec.md](../specs/auth-spec.md) описывает будущие auth-проверки.
-- [../plans/admin-users-migration-plan.md](../plans/admin-users-migration-plan.md) описывает migration plan для `public.admin_users`.
+- [../plans/active/admin-users-migration-plan.md](../plans/active/admin-users-migration-plan.md) описывает migration plan для `public.admin_users`.

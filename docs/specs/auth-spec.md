@@ -2,11 +2,11 @@
 
 ## Назначение
 
-Этот документ описывает Auth Foundation для будущего Admin/Auth этапа LifePilot.
+Этот документ описывает реализованный Auth Foundation для Admin/Auth этапа LifePilot.
 
 Единственный source of truth для архитектурных решений: [../architecture/auth-admin-foundation-decision-review.md](../architecture/auth-admin-foundation-decision-review.md).
 
-Этот spec не означает, что auth уже реализован. До реализации код, architecture и testing должны быть обновлены на основе этого документа и ADR.
+Текущая реализация включает `/admin/login`, `/admin`, server actions для login/logout, `lib/admin-auth.ts`, `lib/supabase-server.ts` и Supabase migration `20260604000000_admin_users_auth_foundation.sql`.
 
 ## Граница Auth Foundation
 
@@ -28,7 +28,7 @@ Auth Foundation нужен только для администраторско�
 
 Admin Login использует Supabase Auth email/password.
 
-Планируемый route:
+Реализованный route:
 
 - `/admin/login`.
 

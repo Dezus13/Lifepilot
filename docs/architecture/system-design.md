@@ -151,5 +151,5 @@ Supabase
 - [project-overview.md](../specs/project-overview.md)
 - [case-model.md](../specs/case-model.md)
 - [data-storage.md](../specs/data-storage.md)
-- [mvp-roadmap.md](../plans/mvp-roadmap.md)
+- [mvp-roadmap.md](../plans/active/mvp-roadmap.md)
 - [project-map.md](../project-map.md)

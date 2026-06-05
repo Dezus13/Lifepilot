@@ -6,7 +6,7 @@
 
 Единственный source of truth для архитектурных решений: [../architecture/auth-admin-foundation-decision-review.md](../architecture/auth-admin-foundation-decision-review.md).
 
-Этот spec не реализует security layer и не меняет текущий local-first MVP.
+Текущий Auth Foundation реализует server-side login/logout, protected `/admin`, Supabase Auth cookies через `@supabase/ssr` и server-side admin validation через `public.admin_users`. Основной local-first MVP не меняется.
 
 ## Security principles
 
@@ -50,7 +50,7 @@ Service role key запрещен:
 - в console logs;
 - в публичных ошибках UI.
 
-Service role key не используется для первой реализации Auth/Admin Foundation.
+Service role key не используется в реализованном Auth/Admin Foundation.
 
 Если позже понадобится service role key, это будет отдельный post-MVP security review, отдельные specs и отдельный approval. До такого approval service role key считается запрещенным.
 

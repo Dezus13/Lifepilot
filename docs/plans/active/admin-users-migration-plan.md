@@ -2,16 +2,16 @@
 
 ## Назначение
 
-Этот документ описывает migration plan для таблицы `public.admin_users` перед реализацией Auth/Admin Foundation.
+Этот документ описывает реализованную migration для таблицы `public.admin_users` в Auth/Admin Foundation.
 
 Единственный source of truth для решений:
 
-- [../architecture/auth-admin-foundation-decision-review.md](../architecture/auth-admin-foundation-decision-review.md);
-- [../specs/database-auth-model.md](../specs/database-auth-model.md);
-- [../specs/admin-spec.md](../specs/admin-spec.md);
-- [../specs/security-model.md](../specs/security-model.md).
+- [../../architecture/auth-admin-foundation-decision-review.md](../../architecture/auth-admin-foundation-decision-review.md);
+- [../../specs/database-auth-model.md](../../specs/database-auth-model.md);
+- [../../specs/admin-spec.md](../../specs/admin-spec.md);
+- [../../specs/security-model.md](../../specs/security-model.md).
 
-Этот документ не создает migration и не меняет Supabase schema. Реальная migration должна быть создана только после отдельного approval на Auth/Admin implementation.
+Реальная migration создана в `supabase/migrations/20260604000000_admin_users_auth_foundation.sql`. Документ фиксирует expected schema, RLS и ограничения, чтобы дальнейшие Vercel/Auth/Supabase работы не расходились с текущей реализацией.
 
 ## Граница migration
 
@@ -30,7 +30,7 @@ Migration нужна только для admin authorization.
 
 ## Таблица `public.admin_users`
 
-Планируемая таблица:
+Реализованная таблица:
 
 - `public.admin_users`.
 
@@ -41,7 +41,7 @@ Migration нужна только для admin authorization.
 - хранить единственную app-level роль `admin`;
 - разрешать отключение доступа через `status = disabled`.
 
-## Планируемые поля
+## Реализованные поля
 
 | Поле | Тип | Ограничение | Назначение |
 | --- | --- | --- | --- |
@@ -60,7 +60,7 @@ Migration нужна только для admin authorization.
 
 ## Constraints
 
-Migration должна предусмотреть:
+Migration предусматривает:
 
 - primary key на `id`;
 - unique constraint на `auth_user_id`;
@@ -74,11 +74,11 @@ Migration должна предусмотреть:
 - foreign key `auth_user_id REFERENCES auth.users(id) ON DELETE CASCADE`;
 - дефолтные значения для `id`, `created_at` и `updated_at`, если это соответствует принятому migration style проекта.
 
-Foreign key обязателен. Если migration не может добавить `auth_user_id REFERENCES auth.users(id) ON DELETE CASCADE`, Auth/Admin implementation должна быть остановлена до отдельного architecture review.
+Foreign key обязателен. Текущая migration добавляет `auth_user_id REFERENCES auth.users(id) ON DELETE CASCADE`.
 
-## RLS plan
+## RLS
 
-RLS для `public.admin_users` должен быть включен.
+RLS для `public.admin_users` включен в migration.
 
 Правила:
 
@@ -90,7 +90,7 @@ RLS для `public.admin_users` должен быть включен.
 - server-side check через `@supabase/ssr` читает собственную active admin row из `public.admin_users` и проверяет `status = active`, затем `role = admin`;
 - service role key запрещен для MVP Auth Foundation.
 
-План table policies:
+Реализованный table policy contract:
 
 - no SELECT policy for `anon`;
 - SELECT policy for `authenticated` только на own active admin row;
@@ -132,25 +132,22 @@ using (
 - через безопасный server-side процесс;
 - через migration без реальных персональных данных, если это возможно и утверждено.
 
-## Порядок работ после approval
+## Текущее состояние
 
-1. Подтвердить approval на Auth/Admin implementation.
-2. Создать migration для `public.admin_users`.
-3. Включить RLS для `public.admin_users`.
-4. Добавить mandatory foreign key к `auth.users(id)`.
-5. Добавить constraints из этого плана.
-6. Добавить RLS deny policies для `anon` и `authenticated`.
-7. Добавить SELECT policy для own active admin row.
-8. Не добавлять реальные admin email в GitHub.
-9. Проверить migration локально или в утвержденной Supabase среде.
-10. Обновить docs, если фактическая migration отличается от плана.
+1. Migration для `public.admin_users` создана.
+2. RLS для `public.admin_users` включен.
+3. Mandatory foreign key к `auth.users(id)` добавлен.
+4. Constraints из этого документа добавлены.
+5. SELECT policy для own active admin row добавлена.
+6. Реальные admin email не добавлены в GitHub.
+7. Перед Vercel/production нужно проверить migration в целевой Supabase среде.
 
 ## Критерии готовности migration
 
 Migration считается готовой только когда:
 
 - `public.admin_users` создана;
-- constraints соответствуют [../specs/database-auth-model.md](../specs/database-auth-model.md);
+- constraints соответствуют [../../specs/database-auth-model.md](../../specs/database-auth-model.md);
 - `auth_user_id` имеет foreign key на `auth.users(id)`;
 - RLS включен;
 - `anon` не имеет прямого SELECT к allowlist;

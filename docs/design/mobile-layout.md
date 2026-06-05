@@ -145,5 +145,5 @@ Warnings показываются рядом с решением, на кото�
 ## Связанные документы
 
 - [design-system.md](./design-system.md) описывает визуальные правила MVP.
-- [../plans/screens-flow.md](../plans/screens-flow.md) описывает экраны и переходы.
+- [../plans/completed/screens-flow.md](../plans/completed/screens-flow.md) описывает экраны и переходы.
 - [../architecture/mvp-safety-rules.md](../architecture/mvp-safety-rules.md) описывает, где нужны предупреждения и ограничения.
