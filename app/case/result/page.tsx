@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   createLocalAnalysis,
+  isCompleteLocalAnalysis,
   normalizeCaseStatus,
   type CaseCategory,
   type CaseStatus,
   type DeadlineStatus,
-  type LocalAnalysis,
   type PriorityLevel,
   type RiskLevel
 } from "../../../lib/analysis-rules";
@@ -70,30 +70,6 @@ function getShortPreview(sourceText: string) {
   }
 
   return `${cleanText.slice(0, 140)}...`;
-}
-
-function hasCurrentExtractedData(analysis?: StoredCase["analysis"]): analysis is LocalAnalysis {
-  return Boolean(
-    analysis?.extractedData &&
-      "category" in analysis &&
-      "riskLevel" in analysis &&
-      "riskKeywords" in analysis &&
-      "riskReason" in analysis &&
-      "explanation" in analysis &&
-      "foundKeywords" in analysis &&
-      "caseNumber" in analysis.extractedData &&
-      "contacts" in analysis.extractedData &&
-      "deadlines" in analysis.extractedData &&
-      "documentImportance" in analysis.extractedData &&
-      "actionPlan" in analysis &&
-      "recommendedActions" in analysis &&
-      "prioritySummary" in analysis &&
-      "priorityLevel" in analysis &&
-      "deadlineStatus" in analysis &&
-      "daysRemaining" in analysis &&
-      "deadlineMessage" in analysis &&
-      "status" in analysis
-  );
 }
 
 function formatValue(value: string | null | undefined) {
@@ -159,7 +135,7 @@ export default function CaseResultPage() {
       return null;
     }
 
-    if (hasCurrentExtractedData(currentCase.analysis)) {
+    if (isCompleteLocalAnalysis(currentCase.analysis)) {
       return currentCase.analysis;
     }
 

@@ -202,6 +202,30 @@ export function normalizeCaseStatus(status: unknown, fallback: CaseStatus = "new
   return legacyCaseStatusMap[status] ?? fallback;
 }
 
+export function isCompleteLocalAnalysis(analysis: Partial<LocalAnalysis> | null | undefined): analysis is LocalAnalysis {
+  return Boolean(
+    analysis?.extractedData &&
+      "category" in analysis &&
+      "riskLevel" in analysis &&
+      "riskKeywords" in analysis &&
+      "riskReason" in analysis &&
+      "explanation" in analysis &&
+      "foundKeywords" in analysis &&
+      "caseNumber" in analysis.extractedData &&
+      "contacts" in analysis.extractedData &&
+      "deadlines" in analysis.extractedData &&
+      "documentImportance" in analysis.extractedData &&
+      "actionPlan" in analysis &&
+      "recommendedActions" in analysis &&
+      "prioritySummary" in analysis &&
+      "priorityLevel" in analysis &&
+      "deadlineStatus" in analysis &&
+      "daysRemaining" in analysis &&
+      "deadlineMessage" in analysis &&
+      "status" in analysis
+  );
+}
+
 function cleanExtractedValue(value: string) {
   return value
     .replace(/\s+/g, " ")

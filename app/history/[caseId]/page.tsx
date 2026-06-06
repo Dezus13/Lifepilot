@@ -4,8 +4,12 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
+  createLocalAnalysis,
+  isCompleteLocalAnalysis,
   normalizeCaseStatus,
-  type CaseStatus
+  type CaseStatus,
+  type PriorityLevel,
+  type RiskLevel
 } from "../../../lib/analysis-rules";
 import { readCaseHistory } from "../../../lib/case-storage";
 import type { StoredCase } from "../../../lib/types";
@@ -18,6 +22,19 @@ const caseStatusLabels: Record<CaseStatus, string> = {
   "action-required": "Требует действия",
   waiting: "Ожидание",
   completed: "Завершен"
+};
+
+const riskLabels: Record<RiskLevel, string> = {
+  low: "Низкий",
+  medium: "Средний",
+  high: "Высокий"
+};
+
+const priorityLabels: Record<PriorityLevel, string> = {
+  critical: "Critical",
+  high: "High",
+  medium: "Medium",
+  low: "Low"
 };
 
 function getCasePreview(sourceText: string, maxLength = 140) {
@@ -51,22 +68,32 @@ export default function HistoryCasePage() {
     setIsLoaded(true);
   }, [caseId]);
 
-  const caseStatus = useMemo(() => {
-    return normalizeCaseStatus(historyCase?.status, historyCase?.analysis?.status ?? "new");
+  const analysis = useMemo(() => {
+    if (!historyCase) {
+      return null;
+    }
+
+    if (isCompleteLocalAnalysis(historyCase.analysis)) {
+      return historyCase.analysis;
+    }
+
+    return createLocalAnalysis(historyCase.sourceText);
   }, [historyCase]);
 
-  const analysis = historyCase?.analysis;
+  const caseStatus = normalizeCaseStatus(analysis?.status ?? historyCase?.status, "new");
+  const riskLevel = analysis?.riskLevel ?? historyCase?.riskLevel ?? "low";
   const extractedData = analysis?.extractedData;
   const detailFacts = [
     ["Статус кейса", caseStatusLabels[caseStatus]],
-    ["Priority level", formatValue(analysis?.priorityLevel)],
+    ["Risk level", riskLabels[riskLevel]],
+    ["Priority", analysis ? priorityLabels[analysis.priorityLevel] : notFoundText],
     ["Deadline", formatValue(analysis?.deadlineMessage)],
     ["Organization", formatValue(extractedData?.organization)],
     ["Document type", formatValue(extractedData?.documentImportance ?? extractedData?.documentType)],
     ["Required action", formatValue(extractedData?.requiredAction)],
     ["Consequences", formatList(extractedData?.consequences)]
   ];
-  const actionPlan = analysis?.actionPlan ?? [];
+  const actionPlan = analysis?.actionPlan?.length ? analysis.actionPlan : analysis?.recommendedActions ?? [];
   const foundKeywords = analysis?.foundKeywords ?? [];
 
   if (!isLoaded) {
@@ -109,8 +136,26 @@ export default function HistoryCasePage() {
 
       <section className="result-card result-card-hero">
         <div className="result-card-header">
-          <span className="section-label">Самое важное</span>
+          <span className="section-label">Краткое объяснение</span>
           <span className="result-meta">history</span>
+        </div>
+        <span className="category-chip">Категория: {analysis?.category ?? historyCase.category ?? notFoundText}</span>
+        <p>{formatValue(analysis?.explanation)}</p>
+      </section>
+
+      <section className={`result-card risk-card risk-card-${riskLevel}`}>
+        <div className="result-card-header">
+          <span className="section-label">Уровень риска</span>
+          <span className="result-meta">localStorage</span>
+        </div>
+        <p className={`risk-badge risk-badge-${riskLevel}`}>{riskLabels[riskLevel]}</p>
+        <p>{formatValue(analysis?.riskReason)}</p>
+      </section>
+
+      <section className="result-card result-card-hero">
+        <div className="result-card-header">
+          <span className="section-label">Priority</span>
+          <span className="result-meta">локально</span>
         </div>
         <p>{formatValue(analysis?.prioritySummary)}</p>
         <dl className="facts-list">

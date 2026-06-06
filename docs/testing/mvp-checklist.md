@@ -148,6 +148,8 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] Очистка истории удаляет `lifepilot.caseHistory`.
 - [ ] Действие `Открыть результат` из истории заново записывает выбранный кейс в `lifepilot.currentCase`.
 - [ ] Detail route `/history/[caseId]` показывает кейс из истории и не требует изменения `lifepilot.currentCase`.
+- [ ] Detail route `/history/[caseId]` показывает risk level, priority, краткое объяснение и action plan из сохраненного локального анализа.
+- [ ] Старый кейс без новых analysis-полей открывается безопасно: локальный анализ пересчитывается из `sourceText` или отображается `Nicht gefunden`.
 - [ ] Поврежденная или пустая история не ломает экран истории.
 - [ ] Данные не передаются через URL.
 
