@@ -27,6 +27,7 @@
 - `docs/plans/active/mvp-scope.md` — главный источник ограничений MVP: что входит, что не входит, что переносится на следующие этапы.
 - `docs/plans/active/mvp-roadmap.md` — описывает этапы MVP, текущее состояние и критерии готовности.
 - `docs/plans/active/case-creation-local-storage-plan.md` — активный план первой user-facing функции MVP: создание кейса из текстового ввода и локальное сохранение в `localStorage`.
+- `docs/plans/active/saved-case-local-analysis-plan.md` — активный план второй user-facing функции MVP: локальный анализ сохраненного кейса из истории.
 - `docs/plans/completed/mvp-plan.md` — описывает цель первой версии и минимальный рабочий сценарий.
 - `docs/plans/completed/development-stages.md` — делит реализацию MVP на этапы.
 - `docs/plans/completed/implementation-order.md` — фиксирует порядок реализации MVP и очередность задач.
@@ -134,12 +135,13 @@
 31. `docs/plans/active/mvp-scope.md`
 32. `docs/plans/active/mvp-roadmap.md`
 33. `docs/plans/active/case-creation-local-storage-plan.md`
-34. `docs/plans/completed/mvp-plan.md`
-35. `docs/plans/completed/development-stages.md`
-36. `docs/plans/completed/implementation-order.md`
-37. `docs/plans/completed/screens-list.md`
-38. `docs/plans/completed/screens-flow.md`
-39. `docs/plans/completed/admin-users-migration-plan.md`
-40. `docs/testing/mvp-checklist.md`
-41. `docs/supabase-local-connection.md`
-42. `docs/plans/active/auth-admin-vercel-plan.md`
+34. `docs/plans/active/saved-case-local-analysis-plan.md`
+35. `docs/plans/completed/mvp-plan.md`
+36. `docs/plans/completed/development-stages.md`
+37. `docs/plans/completed/implementation-order.md`
+38. `docs/plans/completed/screens-list.md`
+39. `docs/plans/completed/screens-flow.md`
+40. `docs/plans/completed/admin-users-migration-plan.md`
+41. `docs/testing/mvp-checklist.md`
+42. `docs/supabase-local-connection.md`
+43. `docs/plans/active/auth-admin-vercel-plan.md`
