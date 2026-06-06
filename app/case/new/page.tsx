@@ -6,6 +6,10 @@ import { createLocalAnalysis } from "../../../lib/analysis-rules";
 import { saveCase } from "../../../lib/case-storage";
 import type { StoredCase } from "../../../lib/types";
 
+function createCaseId() {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}`;
+}
+
 export default function NewCasePage() {
   const router = useRouter();
   const [text, setText] = useState("");
@@ -22,17 +26,24 @@ export default function NewCasePage() {
     }
 
     const analysis = createLocalAnalysis(sourceText);
+    const now = new Date().toISOString();
     const caseData: StoredCase = {
-      id: `${Date.now()}`,
+      id: createCaseId(),
       sourceText,
       category: analysis.category,
       riskLevel: analysis.riskLevel,
       analysis,
       status: analysis.status,
-      updatedAt: new Date().toISOString()
+      createdAt: now,
+      updatedAt: now
     };
 
-    saveCase(caseData);
+    const isSaved = saveCase(caseData);
+
+    if (!isSaved) {
+      setWarning("Не удалось сохранить кейс в браузере. Проверьте доступное место или настройки браузера.");
+      return;
+    }
 
     router.push("/case/analyzing");
   }

@@ -27,3 +27,4 @@ Changelog обновляет тот, кто вносит соответству�
 
 - Синхронизирована документация после уточнения роли `AGENTS.md`, Supabase foundation и Admin Auth Foundation.
 - Добавлен минимальный changelog workflow.
+- Создан active plan для первой user-facing функции MVP: создание кейса и локальное сохранение в `localStorage`.
