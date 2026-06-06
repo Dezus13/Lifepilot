@@ -4,9 +4,11 @@
 
 MVP LifePilot нужен, чтобы проверить основной пользовательский сценарий: человек вставляет текст письма, документа или жизненной ситуации, получает понятное объяснение, уровень риска, приоритет, план действий и может вернуться к сохраненному кейсу.
 
-Текущая версия остается local-first: пользовательский flow работает через `localStorage`, а Supabase Foundation подготовлен как schema/client слой и не является источником данных UI.
+Текущая версия пользовательского MVP остается local-first: пользовательский flow работает через `localStorage`. Supabase Foundation и Admin Auth Foundation существуют как отдельные технические foundation-компоненты и не являются пользовательскими функциями MVP.
 
-## Что входит в MVP
+## User-facing MVP
+
+В пользовательский MVP входит только основной сценарий пользователя:
 
 - Next.js приложение с App Router.
 - Mobile-first интерфейс.
@@ -20,15 +22,23 @@ MVP LifePilot нужен, чтобы проверить основной пол�
 - Экран истории кейсов.
 - Детальный экран сохраненного кейса.
 - Каноническая модель Case, описанная в [case-model.md](./case-model.md).
-- Подготовленный Supabase Foundation для `public.cases`: schema, browser-safe client и функция `readSupabaseCases()` без разрешенного anon SELECT.
 - Документация specs, architecture, plans и testing.
+
+## Technical Foundation
+
+Эти компоненты существуют в репозитории, но не считаются пользовательскими функциями MVP:
+
+- Подготовленный Supabase Foundation для `public.cases`: schema, browser-safe client и функция `readSupabaseCases()` без разрешенного anon SELECT.
+- Отдельный Admin Auth Foundation для `/admin/login` и `/admin` без доступа к пользовательским кейсам.
+- Таблица `public.admin_users` и server-side admin validation.
 
 ## Что не входит в MVP
 
-- Auth.
+- User-facing Auth.
 - Личные аккаунты.
 - Запись кейсов в Supabase из UI.
 - Удаление кейсов из Supabase.
+- Доступ admin к пользовательским кейсам.
 - Real-time sync.
 - Командная работа.
 - Платные подписки.

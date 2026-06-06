@@ -175,7 +175,7 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] [../specs/security-model.md](../specs/security-model.md) описывает server-side only operations, service role boundaries, env variables и forbidden client operations.
 - [ ] [../architecture/routing-map.md](../architecture/routing-map.md) содержит реализованные routes `/admin/login` и `/admin`.
 - [ ] [../architecture/state-management.md](../architecture/state-management.md) фиксирует, что auth state не хранится в `localStorage` LifePilot MVP.
-- [ ] [../plans/active/admin-users-migration-plan.md](../plans/active/admin-users-migration-plan.md) описывает реализованную migration для `public.admin_users`.
+- [ ] [../plans/completed/admin-users-migration-plan.md](../plans/completed/admin-users-migration-plan.md) описывает реализованную migration для `public.admin_users`.
 - [ ] План Auth/Admin и Vercel не используется как source of truth вместо ADR и specs.
 - [ ] Реализованные Auth/Admin файлы соответствуют ADR и specs.
 
@@ -235,9 +235,9 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] Проверена очистка истории.
 - [ ] Проверен mobile layout.
 - [ ] `npm run build` проходит без ошибок.
-- [ ] Проверено, что нет backend, auth, OCR, PDF parser, billing или sync в MVP.
+- [ ] Проверено, что пользовательский MVP остается local-first без user-facing accounts, OCR, PDF parser, billing или sync.
 - [ ] Проверено, что Supabase foundation остается schema/client слоем без разрешенного anon SELECT и не подключен к пользовательскому UI-flow.
-- [ ] Проверено, что Auth/Admin implementation не начиналась без отдельного approval.
+- [ ] Проверено, что реализованный Auth/Admin Foundation не меняет основной пользовательский MVP-flow.
 - [ ] Проверено, что warnings и ограничения не исчезли из UI.
 - [ ] Проверено, что измененные документы не противоречат `docs/plans/active/mvp-scope.md`.
 
@@ -254,5 +254,5 @@ Checklist считается пройденным, если основной с�
 - [../architecture/data-flow.md](../architecture/data-flow.md) описывает поток данных.
 - [../architecture/state-management.md](../architecture/state-management.md) описывает состояние приложения.
 - [../design/design-system.md](../design/design-system.md) описывает визуальные правила.
-- [../specs/auth-spec.md](../specs/auth-spec.md) описывает будущие auth-проверки.
-- [../plans/active/admin-users-migration-plan.md](../plans/active/admin-users-migration-plan.md) описывает migration plan для `public.admin_users`.
+- [../specs/auth-spec.md](../specs/auth-spec.md) описывает реализованные admin auth-проверки и границы будущего user-facing auth.
+- [../plans/completed/admin-users-migration-plan.md](../plans/completed/admin-users-migration-plan.md) описывает migration plan для `public.admin_users`.

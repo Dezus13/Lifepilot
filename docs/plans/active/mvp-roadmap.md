@@ -8,7 +8,7 @@ LifePilot помогает людям, которые живут в Австри
 
 ## Текущее состояние проекта
 
-Что уже реализовано:
+User-facing MVP:
 
 - Next.js приложение
 - Mobile-first интерфейс
@@ -19,8 +19,17 @@ LifePilot помогает людям, которые живут в Австри
 - Case Status Engine
 - Case Detail Screen
 - Документация проекта
-- Supabase schema/client foundation
 - Типизированная модель Case
+
+Technical Foundation:
+
+- Supabase schema/client foundation
+- Таблица `public.cases` с RLS без anon SELECT policy
+- Admin Auth Foundation для `/admin/login` и `/admin`
+- Таблица `public.admin_users`
+- Server-side admin validation
+
+Technical Foundation не является пользовательской функцией MVP и не заменяет `localStorage` в пользовательском flow.
 
 Каноническая структура Case, статусы и жизненный цикл описаны в `docs/specs/case-model.md`.
 
@@ -58,6 +67,8 @@ LifePilot помогает людям, которые живут в Австри
 
 Основной источник данных MVP остается `localStorage`; Supabase является подготовленным schema/client foundation. RLS для `public.cases` включен, SELECT policy для anon role сейчас отсутствует.
 
+Этот этап относится к Technical Foundation и не является подключением database к user-facing MVP.
+
 ---
 
 ## Этап 3 — Интеграция Supabase
@@ -73,7 +84,7 @@ LifePilot помогает людям, которые живут в Австри
 
 ---
 
-## Этап 4 — Пользовательские аккаунты
+## Этап 4 — User-facing accounts
 
 Статус: Планируется
 

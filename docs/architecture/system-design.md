@@ -2,7 +2,7 @@
 
 ## Назначение документа
 
-Этот документ показывает общую архитектуру LifePilot и связи между компонентами системы: пользовательским интерфейсом, бизнес-логикой, локальным хранением и подготовленным Supabase-слоем.
+Этот документ показывает общую архитектуру LifePilot и связи между компонентами системы: пользовательским интерфейсом, бизнес-логикой, локальным хранением, подготовленным Supabase-слоем и отдельным Auth/Admin Foundation.
 
 ---
 
@@ -84,15 +84,40 @@ Supabase Layer включает:
 
 ---
 
-## Текущая архитектура MVP
+### Auth/Admin Foundation
 
-Текущая архитектура MVP включает:
+Auth/Admin Foundation реализован отдельно от пользовательского MVP:
+
+- `/admin/login` — публичный route входа администратора;
+- `/admin` — protected route с server-side validation;
+- `public.admin_users` — allowlist active admin users;
+- Supabase Auth cookies используются через `@supabase/ssr`.
+
+Этот слой не подключает user-facing accounts, не читает пользовательские кейсы и не заменяет `localStorage` в основном MVP.
+
+---
+
+## User-facing MVP Architecture
+
+Текущая архитектура пользовательского MVP включает:
 
 - Next.js;
 - TypeScript;
 - LocalStorage;
-- Supabase Foundation Layer;
 - документацию и Specs.
+
+Пользовательский MVP не использует Supabase как источник данных, не требует user-facing auth и не зависит от admin routes.
+
+## Technical Foundation
+
+Отдельно от пользовательского MVP в репозитории существуют:
+
+- Supabase Foundation Layer для будущего database stage;
+- Auth/Admin Foundation для `/admin/login` и `/admin`;
+- migration для `public.admin_users`;
+- server-side admin validation.
+
+Эти компоненты не являются пользовательскими функциями MVP и не дают admin-доступ к пользовательским кейсам.
 
 ---
 
@@ -126,19 +151,22 @@ Supabase
 - `.env.local` не хранится в Git;
 - используется `.env.example`;
 - реальные ключи локальны.
+- RLS включен для `public.cases` без anon SELECT policy;
+- RLS включен для `public.admin_users`;
+- admin validation выполняется server-side.
 
 Будущие задачи:
 
-- RLS;
 - User Isolation;
-- Auth.
+- user-facing Auth;
+- отдельный review доступа admin к пользовательским кейсам.
 
 ---
 
 ## Что не входит в MVP
 
 - Multi-user collaboration
-- Admin Panel
+- user-facing Admin Panel для пользовательских кейсов
 - Платежи
 - Подписки
 - AI Agents

@@ -6,6 +6,8 @@ LifePilot не является юридической консультацие�
 
 ## Что работает сейчас
 
+Пользовательский MVP:
+
 - создание нового кейса через поле ввода текста;
 - сохранение текста текущего кейса в `localStorage`;
 - экран анализа с коротким состоянием загрузки;
@@ -13,12 +15,20 @@ LifePilot не является юридической консультацие�
 - пример немецкого черновика для ручной проверки;
 - mobile-first интерфейс.
 
+Технические foundation-компоненты:
+
+- Supabase schema/client foundation для будущей таблицы `public.cases`;
+- RLS для `public.cases` включен, но пользовательский UI не читает и не пишет кейсы в Supabase;
+- Admin Auth Foundation для `/admin/login` и `/admin` через Supabase Auth и `public.admin_users`;
+- admin-раздел не подключен к пользовательским кейсам и не меняет основной local-first flow.
+
 ## Технологии
 
 - Next.js
 - TypeScript
 - CSS
 - `localStorage`
+- Supabase foundation
 
 ## Как запустить
 
@@ -31,9 +41,10 @@ npm run dev
 
 ## Ограничения MVP
 
-- без backend;
-- без auth;
-- без database;
+- пользовательский MVP остается local-first;
+- user-facing accounts не входят в MVP;
+- пользовательские кейсы не записываются в database из UI;
+- Supabase используется только как подготовленный foundation-слой и Admin Auth Foundation;
 - без OCR/PDF parser;
 - без настоящей AI-логики;
 - без автоматической отправки писем;

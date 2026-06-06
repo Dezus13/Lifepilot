@@ -2,13 +2,14 @@
 
 ## Правила работы
 
-- `AGENTS.md` — короткие правила для агентов: язык проекта, порядок работы и расположение разделов документации.
+- `AGENTS.md` — главный рабочий регламент для ИИ-агентов: startup workflow, source of truth, правила specs/plans/project-map, Git workflow, security/Auth/Supabase правила и Definition of Done.
+- `docs/changelog.md` — журнал значимых изменений проекта и минимальный changelog workflow.
 
 ## Specs: описание системы
 
 - `docs/specs/business-context.md` — объясняет, почему продукт нужен в Австрии, какую боль решает и чем отличается от обычного чат-бота.
 - `docs/specs/project-overview.md` — задает общую идею LifePilot, границы ответственности и mobile-first подход.
-- `docs/specs/mvp-definition.md` — фиксирует текущий состав MVP, критерии готовности и Post-MVP направления без обещания нереализованных функций.
+- `docs/specs/mvp-definition.md` — фиксирует состав user-facing MVP, отдельные technical foundation-компоненты, критерии готовности и Post-MVP направления.
 - `docs/specs/glossary.md` — задает единый словарь терминов проекта.
 - `docs/specs/user-flow.md` — описывает путь пользователя от вставки текста до объяснения, плана действий и немецкого ответа.
 - `docs/specs/feature-map.md` — показывает основные продуктовые функции и связи между ними.
@@ -30,13 +31,13 @@
 - `docs/plans/completed/implementation-order.md` — фиксирует порядок реализации MVP и очередность задач.
 - `docs/plans/completed/screens-list.md` — перечисляет экраны MVP, их назначение и действия пользователя.
 - `docs/plans/completed/screens-flow.md` — описывает переходы между экранами и пользовательский flow.
-- `docs/plans/active/admin-users-migration-plan.md` — описывает реализованную migration для `public.admin_users` и правила дальнейшей проверки.
+- `docs/plans/completed/admin-users-migration-plan.md` — описывает реализованную migration для `public.admin_users` и правила дальнейшей проверки.
 - `docs/plans/active/auth-admin-vercel-plan.md` — активный план Auth/Admin и Vercel: Auth Foundation реализован, Vercel/production-проверки остаются незавершенными.
 
 ## Architecture: структура и ограничения
 
 - `docs/architecture/mvp-architecture.md` — описывает базовую архитектуру MVP и роль `localStorage`.
-- `docs/architecture/system-design.md` — описывает системную архитектуру, слои приложения и роль Supabase Foundation Layer.
+- `docs/architecture/system-design.md` — описывает системную архитектуру, user-facing MVP architecture и отдельные technical foundation-компоненты.
 - `docs/architecture/frontend-structure.md` — описывает структуру frontend, маршруты и общие frontend-утилиты.
 - `docs/architecture/data-flow.md` — описывает движение данных между вводом, анализом, результатом, историей и Supabase foundation.
 - `docs/architecture/state-management.md` — описывает состояние экранов, текущий кейс и локальную историю.
@@ -56,6 +57,10 @@
 ## Testing: проверки MVP
 
 - `docs/testing/mvp-checklist.md` — чеклист проверки MVP, localStorage flow, Supabase foundation и мобильного UI.
+
+## Changelog
+
+- `docs/changelog.md` — фиксирует значимые изменения проекта и правила обновления changelog.
 
 ## Supabase
 
@@ -87,7 +92,7 @@
 - `auth-spec.md`, `admin-spec.md`, `database-auth-model.md` и `security-model.md` описывают реализованный Auth/Admin Foundation.
 - `mvp-scope.md` ограничивает, какие части системы входят в первую версию.
 - `mvp-plan.md`, `development-stages.md`, `implementation-order.md`, `screens-list.md` и `screens-flow.md` описывают порядок реализации выбранного MVP.
-- `admin-users-migration-plan.md` описывает реализованную migration для `public.admin_users` и оставшиеся проверки для Supabase/Vercel среды.
+- `admin-users-migration-plan.md` описывает реализованную migration для `public.admin_users`. Оставшиеся Vercel/production-проверки ведутся в `auth-admin-vercel-plan.md`.
 
 ## Важное ограничение MVP
 
@@ -97,41 +102,42 @@
 
 1. `AGENTS.md`
 2. `docs/project-map.md`
-3. `docs/specs/business-context.md`
-4. `docs/specs/project-overview.md`
-5. `docs/specs/mvp-definition.md`
-6. `docs/specs/glossary.md`
-7. `docs/specs/user-flow.md`
-8. `docs/specs/feature-map.md`
-9. `docs/specs/decision-logic.md`
-10. `docs/specs/case-model.md`
-11. `docs/specs/data-storage.md`
-12. `docs/architecture/auth-admin-foundation-decision-review.md`
-13. `docs/architecture/auth-ssr-admin-validation-adr.md`
-14. `docs/specs/auth-spec.md`
-15. `docs/specs/admin-spec.md`
-16. `docs/specs/database-auth-model.md`
-17. `docs/specs/security-model.md`
-18. `docs/architecture/system-design.md`
-19. `docs/architecture/frontend-structure.md`
-20. `docs/architecture/data-flow.md`
-21. `docs/architecture/state-management.md`
-22. `docs/architecture/routing-map.md`
-23. `docs/architecture/screen-data-mapping.md`
-24. `docs/architecture/component-map.md`
-25. `docs/architecture/case-entity.md`
-26. `docs/architecture/mvp-safety-rules.md`
-27. `docs/design/design-system.md`
-28. `docs/design/mobile-layout.md`
-29. `docs/plans/README.md`
-30. `docs/plans/active/mvp-scope.md`
-31. `docs/plans/active/mvp-roadmap.md`
-32. `docs/plans/completed/mvp-plan.md`
-33. `docs/plans/completed/development-stages.md`
-34. `docs/plans/completed/implementation-order.md`
-35. `docs/plans/completed/screens-list.md`
-36. `docs/plans/completed/screens-flow.md`
-37. `docs/plans/active/admin-users-migration-plan.md`
-38. `docs/testing/mvp-checklist.md`
-39. `docs/supabase-local-connection.md`
-40. `docs/plans/active/auth-admin-vercel-plan.md`
+3. `docs/changelog.md`
+4. `docs/specs/business-context.md`
+5. `docs/specs/project-overview.md`
+6. `docs/specs/mvp-definition.md`
+7. `docs/specs/glossary.md`
+8. `docs/specs/user-flow.md`
+9. `docs/specs/feature-map.md`
+10. `docs/specs/decision-logic.md`
+11. `docs/specs/case-model.md`
+12. `docs/specs/data-storage.md`
+13. `docs/architecture/auth-admin-foundation-decision-review.md`
+14. `docs/architecture/auth-ssr-admin-validation-adr.md`
+15. `docs/specs/auth-spec.md`
+16. `docs/specs/admin-spec.md`
+17. `docs/specs/database-auth-model.md`
+18. `docs/specs/security-model.md`
+19. `docs/architecture/system-design.md`
+20. `docs/architecture/frontend-structure.md`
+21. `docs/architecture/data-flow.md`
+22. `docs/architecture/state-management.md`
+23. `docs/architecture/routing-map.md`
+24. `docs/architecture/screen-data-mapping.md`
+25. `docs/architecture/component-map.md`
+26. `docs/architecture/case-entity.md`
+27. `docs/architecture/mvp-safety-rules.md`
+28. `docs/design/design-system.md`
+29. `docs/design/mobile-layout.md`
+30. `docs/plans/README.md`
+31. `docs/plans/active/mvp-scope.md`
+32. `docs/plans/active/mvp-roadmap.md`
+33. `docs/plans/completed/mvp-plan.md`
+34. `docs/plans/completed/development-stages.md`
+35. `docs/plans/completed/implementation-order.md`
+36. `docs/plans/completed/screens-list.md`
+37. `docs/plans/completed/screens-flow.md`
+38. `docs/plans/completed/admin-users-migration-plan.md`
+39. `docs/testing/mvp-checklist.md`
+40. `docs/supabase-local-connection.md`
+41. `docs/plans/active/auth-admin-vercel-plan.md`
