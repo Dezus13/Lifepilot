@@ -14,7 +14,7 @@ import {
 import { readCaseHistory } from "../../../lib/case-storage";
 import type { StoredCase } from "../../../lib/types";
 
-const notFoundText = "Nicht gefunden";
+const notFoundText = "Не найдено";
 
 const caseStatusLabels: Record<CaseStatus, string> = {
   new: "Новый",
@@ -31,10 +31,10 @@ const riskLabels: Record<RiskLevel, string> = {
 };
 
 const priorityLabels: Record<PriorityLevel, string> = {
-  critical: "Critical",
-  high: "High",
-  medium: "Medium",
-  low: "Low"
+  critical: "Критический",
+  high: "Высокий",
+  medium: "Средний",
+  low: "Низкий"
 };
 
 function getCasePreview(sourceText: string, maxLength = 140) {
@@ -83,15 +83,13 @@ export default function HistoryCasePage() {
   const caseStatus = normalizeCaseStatus(analysis?.status ?? historyCase?.status, "new");
   const riskLevel = analysis?.riskLevel ?? historyCase?.riskLevel ?? "low";
   const extractedData = analysis?.extractedData;
+  const deadlineSummary = extractedData?.deadlines?.[0] ?? extractedData?.deadline ?? analysis?.deadlineMessage;
   const detailFacts = [
-    ["Статус кейса", caseStatusLabels[caseStatus]],
-    ["Risk level", riskLabels[riskLevel]],
-    ["Priority", analysis ? priorityLabels[analysis.priorityLevel] : notFoundText],
-    ["Deadline", formatValue(analysis?.deadlineMessage)],
-    ["Organization", formatValue(extractedData?.organization)],
-    ["Document type", formatValue(extractedData?.documentImportance ?? extractedData?.documentType)],
-    ["Required action", formatValue(extractedData?.requiredAction)],
-    ["Consequences", formatList(extractedData?.consequences)]
+    ["Срок", formatValue(deadlineSummary)],
+    ["Организация", formatValue(extractedData?.organization)],
+    ["Тип документа", formatValue(extractedData?.documentImportance ?? extractedData?.documentType)],
+    ["Что нужно сделать", formatValue(extractedData?.requiredAction)],
+    ["Возможные последствия", formatList(extractedData?.consequences)]
   ];
   const actionPlan = analysis?.actionPlan?.length ? analysis.actionPlan : analysis?.recommendedActions ?? [];
   const foundKeywords = analysis?.foundKeywords ?? [];
@@ -99,8 +97,13 @@ export default function HistoryCasePage() {
   if (!isLoaded) {
     return (
       <div className="flow-page">
-        <h1 className="mobile-title">Кейс</h1>
-        <p>Загружаем сохраненный кейс из браузера...</p>
+        <section className="result-card empty-state-card">
+          <div className="result-card-header">
+            <span className="section-label">Кейс</span>
+            <span className="result-meta">загрузка</span>
+          </div>
+          <p>Загружаем сохраненный кейс из браузера...</p>
+        </section>
       </div>
     );
   }
@@ -108,13 +111,17 @@ export default function HistoryCasePage() {
   if (!historyCase) {
     return (
       <div className="flow-page">
-        <div className="flow-heading">
+        <section className="result-card empty-state-card">
+          <div className="result-card-header">
+            <span className="section-label">Кейс</span>
+            <span className="result-meta">не найден</span>
+          </div>
           <h1 className="mobile-title">Кейс не найден</h1>
           <p>Сохраненный кейс не найден в локальной истории. Возможно, история была очищена в браузере.</p>
-        </div>
-        <Link className="button primary-action" href="/history">
-          Назад в историю
-        </Link>
+          <Link className="button primary-action" href="/history">
+            Назад в историю
+          </Link>
+        </section>
       </div>
     );
   }
@@ -126,38 +133,46 @@ export default function HistoryCasePage() {
         <p>{getCasePreview(historyCase.sourceText, 180)}</p>
       </div>
 
-      <section className={`result-card case-status-card case-status-card-${caseStatus}`}>
+      <section className={`result-card summary-card summary-card-${riskLevel}`}>
         <div className="result-card-header">
-          <span className="section-label">Статус кейса</span>
-          <span className={`case-status-badge case-status-badge-${caseStatus}`}>{caseStatus}</span>
+          <span className="section-label">Краткий обзор</span>
+          <span className="result-meta">сохранено</span>
         </div>
-        <p className="case-status-title">{caseStatusLabels[caseStatus]}</p>
+        <div className="summary-grid">
+          <div className="summary-item">
+            <span>Риск</span>
+            <strong className={`risk-badge risk-badge-${riskLevel}`}>{riskLabels[riskLevel]}</strong>
+          </div>
+          <div className="summary-item">
+            <span>Приоритет</span>
+            <strong>{analysis ? priorityLabels[analysis.priorityLevel] : notFoundText}</strong>
+          </div>
+          <div className="summary-item">
+            <span>Статус</span>
+            <strong>{caseStatusLabels[caseStatus]}</strong>
+          </div>
+          <div className="summary-item">
+            <span>Срок</span>
+            <strong>{formatValue(deadlineSummary)}</strong>
+          </div>
+        </div>
+        <p className="summary-note">{formatValue(analysis?.prioritySummary)}</p>
       </section>
 
       <section className="result-card result-card-hero">
         <div className="result-card-header">
           <span className="section-label">Краткое объяснение</span>
-          <span className="result-meta">history</span>
+          <span className="result-meta">из истории</span>
         </div>
         <span className="category-chip">Категория: {analysis?.category ?? historyCase.category ?? notFoundText}</span>
         <p>{formatValue(analysis?.explanation)}</p>
       </section>
 
-      <section className={`result-card risk-card risk-card-${riskLevel}`}>
-        <div className="result-card-header">
-          <span className="section-label">Уровень риска</span>
-          <span className="result-meta">localStorage</span>
-        </div>
-        <p className={`risk-badge risk-badge-${riskLevel}`}>{riskLabels[riskLevel]}</p>
-        <p>{formatValue(analysis?.riskReason)}</p>
-      </section>
-
       <section className="result-card result-card-hero">
         <div className="result-card-header">
-          <span className="section-label">Priority</span>
-          <span className="result-meta">локально</span>
+          <span className="section-label">Детали кейса</span>
+          <span className="result-meta">факты</span>
         </div>
-        <p>{formatValue(analysis?.prioritySummary)}</p>
         <dl className="facts-list">
           {detailFacts.map(([label, value]) => (
             <div className="facts-row" key={label}>
@@ -205,7 +220,7 @@ export default function HistoryCasePage() {
       <section className="result-card">
         <div className="result-card-header">
           <span className="section-label">Исходный текст</span>
-          <span className="result-meta">preview</span>
+          <span className="result-meta">фрагмент</span>
         </div>
         <p>{getCasePreview(historyCase.sourceText, 320)}</p>
       </section>

@@ -15,7 +15,7 @@ import { clearCaseHistory, readCaseHistory, saveCurrentCase } from "../../lib/ca
 import type { StoredCase } from "../../lib/types";
 
 const fallbackCategory: CaseCategory = "Другое";
-const notFoundText = "Nicht gefunden";
+const notFoundText = "Не найдено";
 
 type StatusFilter = "all" | "action-required" | "waiting" | "completed" | "analyzed";
 type PriorityFilter = "all" | PriorityLevel;
@@ -45,16 +45,16 @@ const caseStatusLabels: Record<CaseStatus, string> = {
 
 const priorityLabels: Record<PriorityFilter, string> = {
   all: "Все",
-  critical: "critical",
-  high: "high",
-  medium: "medium",
-  low: "low"
+  critical: "Критический",
+  high: "Высокий",
+  medium: "Средний",
+  low: "Низкий"
 };
 
 const sortLabels: Record<SortMode, string> = {
   newest: "Новые сначала",
   oldest: "Старые сначала",
-  priority: "Critical/high сначала"
+  priority: "Критические сначала"
 };
 
 const priorityRank: Record<PriorityLevel, number> = {
@@ -108,10 +108,6 @@ function formatDate(value: string | undefined) {
     month: "short",
     year: "numeric"
   }).format(date);
-}
-
-function formatValue(value: string | null | undefined) {
-  return value && value.trim() ? value : notFoundText;
 }
 
 function getCaseStatus(historyCase: StoredCase) {
@@ -213,8 +209,13 @@ export default function HistoryPage() {
   if (!isLoaded) {
     return (
       <div className="flow-page">
-        <h1 className="mobile-title">История</h1>
-        <p>Загружаем сохраненные кейсы из браузера...</p>
+        <section className="result-card empty-state-card">
+          <div className="result-card-header">
+            <span className="section-label">История</span>
+            <span className="result-meta">загрузка</span>
+          </div>
+          <p>Загружаем сохраненные кейсы из браузера...</p>
+        </section>
       </div>
     );
   }
@@ -222,13 +223,17 @@ export default function HistoryPage() {
   if (history.length === 0) {
     return (
       <div className="flow-page">
-        <div className="flow-heading">
-          <h1 className="mobile-title">История</h1>
-          <p>Пока нет сохраненных кейсов. Создайте новый кейс, чтобы он появился здесь.</p>
-        </div>
-        <Link className="button primary-action" href="/case/new">
-          Новый кейс
-        </Link>
+        <section className="result-card empty-state-card">
+          <div className="result-card-header">
+            <span className="section-label">История</span>
+            <span className="result-meta">пусто</span>
+          </div>
+          <h1 className="mobile-title">История пуста</h1>
+          <p>Создайте первый кейс, чтобы вернуться к нему позже.</p>
+          <Link className="button primary-action" href="/case/new">
+            Новый кейс
+          </Link>
+        </section>
       </div>
     );
   }
@@ -292,24 +297,20 @@ export default function HistoryPage() {
       </section>
 
       {visibleHistory.length === 0 ? (
-        <section className="result-card">
+        <section className="result-card empty-state-card">
           <div className="result-card-header">
             <span className="section-label">Кейсы не найдены</span>
-            <span className="result-meta">filter</span>
+            <span className="result-meta">фильтр</span>
           </div>
-          <p>Кейсы не найдены</p>
+          <p>Измените поиск или фильтры, чтобы снова увидеть сохраненные кейсы.</p>
         </section>
       ) : null}
 
       <div className="history-list">
         {visibleHistory.map((historyCase) => {
           const riskLevel = historyCase.riskLevel ?? getRiskLevel(historyCase.sourceText);
-          const category = historyCase.category ?? fallbackCategory;
           const caseStatus = getCaseStatus(historyCase);
           const priorityLevel = getPriorityLevel(historyCase);
-          const organization = historyCase.analysis?.extractedData?.organization;
-          const documentType =
-            historyCase.analysis?.extractedData?.documentImportance ?? historyCase.analysis?.extractedData?.documentType;
 
           return (
             <article className="history-card" key={historyCase.id}>
@@ -323,20 +324,17 @@ export default function HistoryPage() {
 
               <div className="history-card-footer">
                 <div className="history-card-badges">
-                  <span className="category-chip">Категория: {category}</span>
                   <span className={`risk-badge risk-badge-${riskLevel}`}>
                     Риск: {riskLabels[riskLevel]}
                   </span>
                   <span className={`case-status-badge case-status-badge-${caseStatus}`}>{caseStatusLabels[caseStatus]}</span>
-                  <span className="case-status-chip">Priority: {priorityLevel ?? notFoundText}</span>
-                  <span className="case-status-chip">Организация: {formatValue(organization)}</span>
-                  <span className="case-status-chip">Тип: {formatValue(documentType)}</span>
+                  <span className="case-status-chip">Приоритет: {priorityLevel ? priorityLabels[priorityLevel] : notFoundText}</span>
                 </div>
                 <div className="history-card-actions">
-                  <Link className="button button-secondary button-compact" href={`/history/${encodeURIComponent(historyCase.id)}`}>
+                  <Link className="button button-compact" href={`/history/${encodeURIComponent(historyCase.id)}`}>
                     Открыть кейс
                   </Link>
-                  <button className="button button-compact" type="button" onClick={() => openResult(historyCase)}>
+                  <button className="button button-secondary button-compact" type="button" onClick={() => openResult(historyCase)}>
                     Открыть результат
                   </button>
                 </div>

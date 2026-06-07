@@ -28,7 +28,7 @@ Auth/Admin Foundation нужен только для администратор�
 
 Причины:
 
-- вход предсказуем для учебного admin-flow;
+- вход предсказуем для текущего admin-flow;
 - не зависит от настройки magic link email delivery перед первым deploy;
 - проще тестировать локально и на Vercel preview;
 - позволяет явно проверить неуспешный вход, logout и protected route.

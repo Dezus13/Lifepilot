@@ -2,8 +2,15 @@
 
 ## Правила работы
 
+- `README.md` — внешний вход в проект: назначение, MVP scope, архитектура, запуск, roadmap и ограничения.
 - `AGENTS.md` — главный рабочий регламент для ИИ-агентов: startup workflow, source of truth, правила specs/plans/project-map, Git workflow, security/Auth/Supabase правила и Definition of Done.
 - `docs/changelog.md` — журнал значимых изменений проекта и минимальный changelog workflow.
+
+## Roadmap
+
+- `docs/roadmap.md` — обзорный roadmap на уровне продукта: Completed, Current и Future. Точка входа в roadmap; детальный план с этапами и критериями находится в `docs/plans/active/mvp-roadmap.md`.
+- `docs/mvp-status.md` — фиксирует Implemented, Planned и Out Of Scope For Current MVP в синхронизации со specs и roadmap.
+- `docs/demo-script.md` — сценарий демонстрации MVP с ожидаемым результатом на каждом шаге.
 
 ## Specs: описание системы
 
@@ -25,14 +32,14 @@
 
 - `docs/plans/README.md` — описывает правила работы с активными и завершенными планами.
 - `docs/plans/active/mvp-scope.md` — главный источник ограничений MVP: что входит, что не входит, что переносится на следующие этапы.
-- `docs/plans/active/mvp-roadmap.md` — описывает этапы MVP, текущее состояние и критерии готовности.
-- `docs/plans/active/case-creation-local-storage-plan.md` — активный план первой user-facing функции MVP: создание кейса из текстового ввода и локальное сохранение в `localStorage`.
+- `docs/plans/active/mvp-roadmap.md` — детальный план реализации MVP с этапами, техническим состоянием и критериями готовности. Является детализацией обзорного `docs/roadmap.md`.
 - `docs/plans/completed/mvp-plan.md` — описывает цель первой версии и минимальный рабочий сценарий.
 - `docs/plans/completed/development-stages.md` — делит реализацию MVP на этапы.
 - `docs/plans/completed/implementation-order.md` — фиксирует порядок реализации MVP и очередность задач.
 - `docs/plans/completed/screens-list.md` — перечисляет экраны MVP, их назначение и действия пользователя.
 - `docs/plans/completed/screens-flow.md` — описывает переходы между экранами и пользовательский flow.
 - `docs/plans/completed/admin-users-migration-plan.md` — описывает реализованную migration для `public.admin_users` и правила дальнейшей проверки.
+- `docs/plans/completed/case-creation-local-storage-plan.md` — завершенный план первой user-facing функции MVP: создание кейса из текстового ввода и локальное сохранение в `localStorage`.
 - `docs/plans/completed/saved-case-local-analysis-plan.md` — завершенный план второй user-facing функции MVP: локальный анализ сохраненного кейса из истории.
 - `docs/plans/active/auth-admin-vercel-plan.md` — активный план Auth/Admin и Vercel: Auth Foundation реализован, Vercel/production-проверки остаются незавершенными.
 
@@ -47,6 +54,7 @@
 - `docs/architecture/screen-data-mapping.md` — связывает экраны с данными, которые они читают и изменяют.
 - `docs/architecture/component-map.md` — описывает компонентные зоны экранов без реализации компонентов.
 - `docs/architecture/case-entity.md` — описывает архитектурный смысл Case и ссылается на `case-model.md` как source of truth.
+- `docs/architecture/decisions.md` — краткие ADR по local-first storage, отсутствию user-facing Auth в MVP, rule-based analysis и будущей Supabase-интеграции.
 - `docs/architecture/mvp-safety-rules.md` — фиксирует safety-правила MVP, ограничения черновика и осторожное поведение.
 - `docs/architecture/auth-admin-foundation-decision-review.md` — source of truth для решений реализованного Auth/Admin Foundation.
 - `docs/architecture/auth-ssr-admin-validation-adr.md` — source of truth для `@supabase/ssr`, cookie session persistence, RLS policy и admin validation без service role key.
@@ -68,7 +76,21 @@
 
 - `docs/supabase-local-connection.md` — описывает текущий Supabase foundation, hosted-подключение, RLS и отсутствие anon SELECT policy.
 
-## Ключевые файлы реализации
+## User Facing MVP Implementation
+
+- `app/page.tsx` — главная страница с local-first dashboard и быстрым входом в создание кейса.
+- `app/case/new/page.tsx` — создает `StoredCase` из текстового ввода, запускает локальный анализ и сохраняет кейс в `localStorage`.
+- `app/case/analyzing/page.tsx` — показывает промежуточное состояние анализа и ведет пользователя к результату.
+- `app/case/result/page.tsx` — показывает локальный результат анализа текущего кейса: explanation, risk level, priority, facts и action plan.
+- `app/case/draft/page.tsx` — показывает демонстрационный немецкий черновик без автоматической отправки.
+- `app/history/page.tsx` — показывает локальную историю, поиск, фильтры, сортировку и переходы к сохраненным кейсам.
+- `app/history/[caseId]/page.tsx` — показывает detail view сохраненного кейса из `lifepilot.caseHistory` без изменения `lifepilot.currentCase`.
+- `lib/analysis-rules.ts` — содержит локальные правила анализа, risk level, priority, deadline status и case status.
+- `lib/action-plan.ts` — формирует локальный action plan из риска, приоритета и статуса срока.
+- `lib/case-storage.ts` — читает и сохраняет текущий кейс и историю в `localStorage`.
+- `lib/types.ts` — описывает frontend-тип `StoredCase`.
+
+## Technical Foundation implementation
 
 - `lib/supabase-client.ts` — создает единый типизированный browser-safe Supabase client через публичные переменные окружения.
 - `lib/supabase-cases.ts` — содержит подготовительную функцию `readSupabaseCases()` для будущего чтения `public.cases`; из-за RLS без SELECT policy anon client сейчас не может читать таблицу как рабочий источник данных, а UI не заменяет `localStorage`.
@@ -93,55 +115,62 @@
 - `data-storage.md` описывает данные, которые нужны этим функциям.
 - `auth-spec.md`, `admin-spec.md`, `database-auth-model.md` и `security-model.md` описывают реализованный Auth/Admin Foundation.
 - `mvp-scope.md` ограничивает, какие части системы входят в первую версию.
+- `roadmap.md` и `mvp-status.md` показывают статус функций без замены specs и active plans.
 - `mvp-plan.md`, `development-stages.md`, `implementation-order.md`, `screens-list.md` и `screens-flow.md` описывают порядок реализации выбранного MVP.
+- `case-creation-local-storage-plan.md` и `saved-case-local-analysis-plan.md` описывают завершенные первые user-facing функции MVP.
 - `admin-users-migration-plan.md` описывает реализованную migration для `public.admin_users`. Оставшиеся Vercel/production-проверки ведутся в `auth-admin-vercel-plan.md`.
 
 ## Важное ограничение MVP
 
-В текущем учебном MVP пользователь вставляет текст письма, документа или ситуации вручную. Данные текущего кейса в пользовательском UI хранятся в браузере через `localStorage`. User-facing accounts, файловая загрузка, распознавание документов и синхронизация не входят в первую версию. В проекте также есть подготовительный Supabase foundation для `public.cases`, но anon SELECT сейчас не разрешен и этот слой не подключен к пользовательскому flow. Admin Auth Foundation реализован отдельно и не меняет пользовательский MVP-flow. Полный список ограничений хранится в `docs/plans/active/mvp-scope.md`.
+В текущем MVP пользователь вставляет текст письма, документа или ситуации вручную. Данные текущего кейса в пользовательском UI хранятся в браузере через `localStorage`. User-facing accounts, файловая загрузка, распознавание документов и синхронизация не входят в первую версию. В проекте также есть подготовительный Supabase foundation для `public.cases`, но anon SELECT сейчас не разрешен и этот слой не подключен к пользовательскому flow. Admin Auth Foundation реализован отдельно и не меняет пользовательский MVP-flow. Полный список ограничений хранится в `docs/plans/active/mvp-scope.md`.
 
 ## В каком порядке читать
 
-1. `AGENTS.md`
-2. `docs/project-map.md`
-3. `docs/changelog.md`
-4. `docs/specs/business-context.md`
-5. `docs/specs/project-overview.md`
-6. `docs/specs/mvp-definition.md`
-7. `docs/specs/glossary.md`
-8. `docs/specs/user-flow.md`
-9. `docs/specs/feature-map.md`
-10. `docs/specs/decision-logic.md`
-11. `docs/specs/case-model.md`
-12. `docs/specs/data-storage.md`
-13. `docs/architecture/auth-admin-foundation-decision-review.md`
-14. `docs/architecture/auth-ssr-admin-validation-adr.md`
-15. `docs/specs/auth-spec.md`
-16. `docs/specs/admin-spec.md`
-17. `docs/specs/database-auth-model.md`
-18. `docs/specs/security-model.md`
-19. `docs/architecture/system-design.md`
-20. `docs/architecture/frontend-structure.md`
-21. `docs/architecture/data-flow.md`
-22. `docs/architecture/state-management.md`
-23. `docs/architecture/routing-map.md`
-24. `docs/architecture/screen-data-mapping.md`
-25. `docs/architecture/component-map.md`
-26. `docs/architecture/case-entity.md`
-27. `docs/architecture/mvp-safety-rules.md`
-28. `docs/design/design-system.md`
-29. `docs/design/mobile-layout.md`
-30. `docs/plans/README.md`
-31. `docs/plans/active/mvp-scope.md`
-32. `docs/plans/active/mvp-roadmap.md`
-33. `docs/plans/active/case-creation-local-storage-plan.md`
-34. `docs/plans/completed/mvp-plan.md`
-35. `docs/plans/completed/development-stages.md`
-36. `docs/plans/completed/implementation-order.md`
-37. `docs/plans/completed/screens-list.md`
-38. `docs/plans/completed/screens-flow.md`
-39. `docs/plans/completed/admin-users-migration-plan.md`
-40. `docs/plans/completed/saved-case-local-analysis-plan.md`
-41. `docs/testing/mvp-checklist.md`
-42. `docs/supabase-local-connection.md`
-43. `docs/plans/active/auth-admin-vercel-plan.md`
+1. `README.md`
+2. `AGENTS.md`
+3. `docs/project-map.md`
+4. `docs/roadmap.md`
+5. `docs/mvp-status.md`
+6. `docs/demo-script.md`
+7. `docs/changelog.md`
+8. `docs/specs/business-context.md`
+9. `docs/specs/project-overview.md`
+10. `docs/specs/mvp-definition.md`
+11. `docs/specs/glossary.md`
+12. `docs/specs/user-flow.md`
+13. `docs/specs/feature-map.md`
+14. `docs/specs/decision-logic.md`
+15. `docs/specs/case-model.md`
+16. `docs/specs/data-storage.md`
+17. `docs/architecture/decisions.md`
+18. `docs/architecture/auth-admin-foundation-decision-review.md`
+19. `docs/architecture/auth-ssr-admin-validation-adr.md`
+20. `docs/specs/auth-spec.md`
+21. `docs/specs/admin-spec.md`
+22. `docs/specs/database-auth-model.md`
+23. `docs/specs/security-model.md`
+24. `docs/architecture/system-design.md`
+25. `docs/architecture/frontend-structure.md`
+26. `docs/architecture/data-flow.md`
+27. `docs/architecture/state-management.md`
+28. `docs/architecture/routing-map.md`
+29. `docs/architecture/screen-data-mapping.md`
+30. `docs/architecture/component-map.md`
+31. `docs/architecture/case-entity.md`
+32. `docs/architecture/mvp-safety-rules.md`
+33. `docs/design/design-system.md`
+34. `docs/design/mobile-layout.md`
+35. `docs/plans/README.md`
+36. `docs/plans/active/mvp-scope.md`
+37. `docs/plans/active/mvp-roadmap.md`
+38. `docs/plans/completed/mvp-plan.md`
+39. `docs/plans/completed/development-stages.md`
+40. `docs/plans/completed/implementation-order.md`
+41. `docs/plans/completed/screens-list.md`
+42. `docs/plans/completed/screens-flow.md`
+43. `docs/plans/completed/admin-users-migration-plan.md`
+44. `docs/plans/completed/case-creation-local-storage-plan.md`
+45. `docs/plans/completed/saved-case-local-analysis-plan.md`
+46. `docs/testing/mvp-checklist.md`
+47. `docs/supabase-local-connection.md`
+48. `docs/plans/active/auth-admin-vercel-plan.md`

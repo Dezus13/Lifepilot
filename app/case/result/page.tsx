@@ -24,24 +24,24 @@ const riskLabels: Record<RiskLevel, string> = {
 };
 
 const riskFactLabels: Record<RiskLevel, string> = {
-  low: "Niedrig",
-  medium: "Mittel",
-  high: "Hoch"
+  low: "Низкий",
+  medium: "Средний",
+  high: "Высокий"
 };
 
 const priorityLabels: Record<PriorityLevel, string> = {
-  critical: "Critical",
-  high: "High",
-  medium: "Medium",
-  low: "Low"
+  critical: "Критический",
+  high: "Высокий",
+  medium: "Средний",
+  low: "Низкий"
 };
 
 const deadlineStatusLabels: Record<DeadlineStatus, string> = {
-  overdue: "overdue",
-  urgent: "urgent",
-  upcoming: "upcoming",
-  normal: "normal",
-  unknown: "unknown"
+  overdue: "Просрочен",
+  urgent: "Срочно",
+  upcoming: "Скоро",
+  normal: "Обычный",
+  unknown: "Неизвестно"
 };
 
 const caseStatusLabels: Record<CaseStatus, string> = {
@@ -60,7 +60,7 @@ const caseStatusDescriptions: Record<CaseStatus, string> = {
   completed: "По текущим правилам не найдено дальнейших обязательных шагов."
 };
 
-const notFoundText = "Nicht gefunden";
+const notFoundText = "Не найдено";
 
 function getShortPreview(sourceText: string) {
   const cleanText = sourceText.replace(/\s+/g, " ").trim();
@@ -86,9 +86,9 @@ function formatContacts(contacts: NonNullable<NonNullable<StoredCase["analysis"]
   }
 
   const contactParts = [
-    ...contacts.emails.map((email) => `E-Mail: ${email}`),
-    ...contacts.phones.map((phone) => `Telefon: ${phone}`),
-    ...contacts.websites.map((website) => `Webseite: ${website}`)
+    ...contacts.emails.map((email) => `Эл. почта: ${email}`),
+    ...contacts.phones.map((phone) => `Телефон: ${phone}`),
+    ...contacts.websites.map((website) => `Сайт: ${website}`)
   ];
 
   return contactParts.length > 0 ? contactParts.join(", ") : notFoundText;
@@ -162,27 +162,32 @@ export default function CaseResultPage() {
     : [];
   const importantFacts = analysis
     ? [
-        ["Organisation", formatValue(analysis.extractedData.organization)],
-        ["Dokumenttyp", formatValue(analysis.extractedData.documentImportance ?? analysis.extractedData.documentType)],
-        ["Aktenzeichen / Fallnummer", formatValue(analysis.extractedData.caseNumber)],
+        ["Организация", formatValue(analysis.extractedData.organization)],
+        ["Тип документа", formatValue(analysis.extractedData.documentImportance ?? analysis.extractedData.documentType)],
+        ["Номер дела", formatValue(analysis.extractedData.caseNumber)],
         [
-          "Frist",
+          "Срок",
           analysis.extractedData.deadlines.length > 0
             ? analysis.extractedData.deadlines.join(", ")
             : formatValue(analysis.extractedData.deadline)
         ],
-        ["Betrag", formatValue(analysis.extractedData.amount)],
-        ["Kontakte", formatContacts(analysis.extractedData.contacts)],
-        ["Folgen", formatList(analysis.extractedData.consequences)],
-        ["Risikostufe", riskFactLabels[analysis.riskLevel]]
+        ["Сумма", formatValue(analysis.extractedData.amount)],
+        ["Контакты", formatContacts(analysis.extractedData.contacts)],
+        ["Возможные последствия", formatList(analysis.extractedData.consequences)],
+        ["Уровень риска", riskFactLabels[analysis.riskLevel]]
       ]
     : [];
 
   if (!isLoaded) {
     return (
       <div className="flow-page">
-        <h1 className="mobile-title">Результат</h1>
-        <p>Загружаем текст из браузера...</p>
+        <section className="result-card empty-state-card">
+          <div className="result-card-header">
+            <span className="section-label">Результат</span>
+            <span className="result-meta">загрузка</span>
+          </div>
+          <p>Загружаем текст из браузера...</p>
+        </section>
       </div>
     );
   }
@@ -190,13 +195,17 @@ export default function CaseResultPage() {
   if (!currentCase || !analysis) {
     return (
       <div className="flow-page">
-        <div className="flow-heading">
-          <h1 className="mobile-title">Результат</h1>
-          <p>Пока нет текста для анализа. Начните новый кейс, чтобы пройти сценарий заново.</p>
-        </div>
-        <Link className="button primary-action" href="/case/new">
-          Новый кейс
-        </Link>
+        <section className="result-card empty-state-card">
+          <div className="result-card-header">
+            <span className="section-label">Результат</span>
+            <span className="result-meta">пусто</span>
+          </div>
+          <h1 className="mobile-title">Нет активного кейса</h1>
+          <p>Начните новый кейс, чтобы получить локальный анализ и план действий.</p>
+          <Link className="button primary-action" href="/case/new">
+            Новый кейс
+          </Link>
+        </section>
       </div>
     );
   }
@@ -207,6 +216,32 @@ export default function CaseResultPage() {
         <h1 className="mobile-title">Результат</h1>
         <p>Анализ сформирован локально по ключевым словам. Проверьте факты перед любыми действиями.</p>
       </div>
+
+      <section className={`result-card summary-card summary-card-${riskLevel}`}>
+        <div className="result-card-header">
+          <span className="section-label">Краткий обзор</span>
+          <span className="result-meta">главное</span>
+        </div>
+        <div className="summary-grid">
+          <div className="summary-item">
+            <span>Риск</span>
+            <strong className={`risk-badge risk-badge-${riskLevel}`}>{riskLabels[riskLevel]}</strong>
+          </div>
+          <div className="summary-item">
+            <span>Приоритет</span>
+            <strong>{priorityLabels[analysis.priorityLevel]}</strong>
+          </div>
+          <div className="summary-item">
+            <span>Статус</span>
+            <strong>{caseStatusLabels[caseStatus]}</strong>
+          </div>
+          <div className="summary-item">
+            <span>Срок</span>
+            <strong>{formatValue(deadlineDate)}</strong>
+          </div>
+        </div>
+        <p className="summary-note">{analysis.prioritySummary}</p>
+      </section>
 
       <section className="result-card result-card-hero">
         <div className="result-card-header">
@@ -229,7 +264,7 @@ export default function CaseResultPage() {
       <section className={`result-card case-status-card case-status-card-${caseStatus}`}>
         <div className="result-card-header">
           <span className="section-label">Статус кейса</span>
-          <span className={`case-status-badge case-status-badge-${caseStatus}`}>{caseStatus}</span>
+          <span className={`case-status-badge case-status-badge-${caseStatus}`}>{caseStatusLabels[caseStatus]}</span>
         </div>
         <p className="case-status-title">{caseStatusLabels[caseStatus]}</p>
         <p>{caseStatusDescriptions[caseStatus]}</p>
@@ -286,7 +321,7 @@ export default function CaseResultPage() {
       <section className="result-card result-card-hero">
         <div className="result-card-header">
           <span className="section-label">Самое важное</span>
-          <span className="result-meta">priority</span>
+          <span className="result-meta">приоритет</span>
         </div>
         <p>{analysis.prioritySummary}</p>
         <dl className="facts-list">
@@ -313,7 +348,7 @@ export default function CaseResultPage() {
 
       <section className="result-card">
         <div className="result-card-header">
-          <span className="section-label">Wichtige Fakten</span>
+          <span className="section-label">Важные факты</span>
           <span className="result-meta">локально</span>
         </div>
         <dl className="facts-list">
@@ -359,7 +394,7 @@ export default function CaseResultPage() {
       <section className="result-card">
         <div className="result-card-header">
           <span className="section-label">Исходный текст</span>
-          <span className="result-meta">preview</span>
+          <span className="result-meta">фрагмент</span>
         </div>
         <p>{getShortPreview(currentCase.sourceText)}</p>
       </section>

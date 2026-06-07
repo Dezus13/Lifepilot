@@ -26,6 +26,13 @@ Changelog обновляет тот, кто вносит соответству�
 ### 2026-06-07
 
 - Завершен план второй user-facing функции MVP: `saved-case-local-analysis-plan.md` перенесен из `docs/plans/active/` в `docs/plans/completed/` после ручной browser-проверки.
+- Завершен план первой user-facing функции MVP: `case-creation-local-storage-plan.md` перенесен из `docs/plans/active/` в `docs/plans/completed/`.
+- `docs/project-map.md` дополнен основными user-facing implementation files и синхронизирован с active/completed plans.
+- Уточнено fallback-поведение старых кейсов: при наличии `sourceText` локальный анализ может быть пересчитан, а отсутствующие факты показываются как `Не найдено`.
+- Добавлен короткий `docs/roadmap.md` с разделами Completed, Current и Future.
+- Обновлен корневой `README.md` как внешний вход в проект.
+- Добавлены `docs/architecture/decisions.md`, `docs/demo-script.md` и `docs/mvp-status.md`.
+- Выполнен UI-polish user-facing MVP: пользовательские labels унифицированы на русский, result/detail получили более сильный summary, history cards стали легче, empty states приведены к единому стилю.
 
 ### 2026-06-06
 
