@@ -399,9 +399,6 @@ export default function CaseResultPage() {
         <p>{getShortPreview(currentCase.sourceText)}</p>
       </section>
 
-      <Link className="button primary-action" href="/case/draft">
-        Открыть черновик
-      </Link>
     </div>
   );
 }

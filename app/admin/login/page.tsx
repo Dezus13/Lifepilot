@@ -10,9 +10,9 @@ type AdminLoginPageProps = {
 };
 
 const errorMessages: Record<string, string> = {
-  config: "Auth пока не настроен. Проверьте Supabase environment variables.",
-  invalid: "Войти не получилось. Проверьте email и пароль.",
-  missing: "Введите email и пароль."
+  config: "Авторизация пока не настроена. Проверьте переменные окружения Supabase.",
+  invalid: "Войти не получилось. Проверьте эл. почту и пароль.",
+  missing: "Введите эл. почту и пароль."
 };
 
 export default async function AdminLoginPage({ searchParams }: AdminLoginPageProps) {
@@ -28,7 +28,7 @@ export default async function AdminLoginPage({ searchParams }: AdminLoginPagePro
   return (
     <div className="flow-page">
       <section className="flow-heading">
-        <h1 className="mobile-title">Admin Login</h1>
+        <h1 className="mobile-title">Вход администратора</h1>
         <p>Вход только для администратора LifePilot.</p>
       </section>
 
@@ -37,7 +37,7 @@ export default async function AdminLoginPage({ searchParams }: AdminLoginPagePro
           <div className="result-card-header">
             <span className="section-label">Доступ закрыт</span>
           </div>
-          <p>Текущая сессия не имеет активного admin-доступа.</p>
+          <p>Текущая сессия не имеет активного доступа администратора.</p>
           <form action={logoutAdmin}>
             <button className="button button-secondary primary-action" type="submit">
               Выйти
@@ -48,7 +48,7 @@ export default async function AdminLoginPage({ searchParams }: AdminLoginPagePro
 
       <form action={loginAdmin} className="case-form">
         <label className="case-input-group">
-          <span className="field-label">Email</span>
+          <span className="field-label">Эл. почта</span>
           <input className="history-search-input" name="email" type="email" autoComplete="email" required />
         </label>
         <label className="case-input-group">

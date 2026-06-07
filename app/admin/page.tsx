@@ -8,8 +8,8 @@ export default async function AdminPage() {
   if (access.status === "config-error") {
     return (
       <div className="placeholder-panel">
-        <h1 className="mobile-title">Admin</h1>
-        <p>Auth пока не настроен. Проверьте Supabase environment variables.</p>
+        <h1 className="mobile-title">Администрирование</h1>
+        <p>Авторизация пока не настроена. Проверьте переменные окружения Supabase.</p>
       </div>
     );
   }
@@ -18,7 +18,7 @@ export default async function AdminPage() {
     return (
       <div className="placeholder-panel">
         <h1 className="mobile-title">Доступ закрыт</h1>
-        <p>Текущая сессия не имеет активного admin-доступа.</p>
+        <p>Текущая сессия не имеет активного доступа администратора.</p>
         <form action={logoutAdmin}>
           <button className="button primary-action" type="submit">
             Выйти
@@ -35,14 +35,14 @@ export default async function AdminPage() {
   return (
     <div className="flow-page">
       <section className="flow-heading">
-        <h1 className="mobile-title">Admin</h1>
+        <h1 className="mobile-title">Администрирование</h1>
         <p>Защищенный раздел LifePilot.</p>
       </section>
 
       <section className="result-card result-card-hero">
         <div className="result-card-header">
           <span className="section-label">Сессия подтверждена</span>
-          <span className="result-meta">admin</span>
+          <span className="result-meta">защищено</span>
         </div>
         <p>{access.email}</p>
       </section>

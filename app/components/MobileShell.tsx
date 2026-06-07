@@ -18,7 +18,7 @@ export function MobileShell({ children }: MobileShellProps) {
             </div>
           </div>
           <div className="mobile-header-meta">
-            <span className="mobile-stage">MVP</span>
+            <span className="mobile-stage">Локально</span>
             <span className="mobile-privacy">локально</span>
           </div>
         </header>

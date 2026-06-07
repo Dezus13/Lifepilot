@@ -86,6 +86,7 @@ export function removeCase(caseId: string) {
 export function clearCaseHistory() {
   try {
     localStorage.removeItem(caseHistoryKey);
+    localStorage.removeItem(currentCaseKey);
     return true;
   } catch {
     return false;

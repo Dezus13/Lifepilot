@@ -12,7 +12,7 @@ import {
 import { readCaseHistory } from "../lib/case-storage";
 import type { StoredCase } from "../lib/types";
 
-const notFoundText = "Nicht gefunden";
+const notFoundText = "Не найдено";
 
 const quickActions = [
   {
@@ -26,12 +26,6 @@ const quickActions = [
     label: "История",
     description: "Открыть сохраненные кейсы",
     icon: "↺"
-  },
-  {
-    href: "/settings/safety",
-    label: "Безопасность",
-    description: "Проверить правила проекта",
-    icon: "◆"
   }
 ];
 
@@ -47,6 +41,13 @@ const caseStatusLabels: Record<CaseStatus, string> = {
   "action-required": "Требует действия",
   waiting: "Ожидание",
   completed: "Завершено"
+};
+
+const priorityLabels: Record<PriorityLevel, string> = {
+  critical: "Критический",
+  high: "Высокий",
+  medium: "Средний",
+  low: "Низкий"
 };
 
 function getCasePreview(sourceText: string) {
@@ -110,6 +111,7 @@ function countHighRiskCases(history: StoredCase[]) {
 export default function HomePage() {
   const [history, setHistory] = useState<StoredCase[]>([]);
   const lastCase = [...history].sort((firstCase, secondCase) => getCaseTime(secondCase) - getCaseTime(firstCase))[0] ?? null;
+  const lastCasePriority = lastCase ? getPriorityLevel(lastCase) : null;
   const highRiskCount = countHighRiskCases(history);
   const actionRequiredCount = history.filter((historyCase) => getCaseStatus(historyCase) === "action-required").length;
   const waitingCount = history.filter((historyCase) => getCaseStatus(historyCase) === "waiting").length;
@@ -123,7 +125,7 @@ export default function HomePage() {
     <div className="home-dashboard">
       <section className="home-hero" aria-labelledby="home-title">
         <div className="home-hero-copy">
-          <span className="home-eyebrow">MVP · данные в браузере</span>
+          <span className="home-eyebrow">Локальная версия · данные в браузере</span>
           <h1 className="mobile-title" id="home-title">
             Понятный старт для писем и документов
           </h1>
@@ -146,22 +148,22 @@ export default function HomePage() {
         <div className="overview-tile overview-tile-warning">
           <span>Требуют действия</span>
           <strong>{actionRequiredCount}</strong>
-          <small>status</small>
+          <small>по статусу</small>
         </div>
         <div className="overview-tile overview-tile-warning">
           <span>Высокий риск</span>
           <strong>{highRiskCount}</strong>
-          <small>riskLevel</small>
+          <small>по уровню риска</small>
         </div>
         <div className="overview-tile">
           <span>В ожидании</span>
           <strong>{waitingCount}</strong>
-          <small>status</small>
+          <small>по статусу</small>
         </div>
         <div className="overview-tile">
           <span>Завершено</span>
           <strong>{completedCount}</strong>
-          <small>status</small>
+          <small>по статусу</small>
         </div>
       </section>
 
@@ -188,7 +190,9 @@ export default function HomePage() {
               <span className={`case-status-badge case-status-badge-${getCaseStatus(lastCase)}`}>
                 {caseStatusLabels[getCaseStatus(lastCase)]}
               </span>
-              <span className="case-status-chip">Priority: {getPriorityLevel(lastCase) ?? notFoundText}</span>
+              <span className="case-status-chip">
+                Приоритет: {lastCasePriority ? priorityLabels[lastCasePriority] : notFoundText}
+              </span>
             </div>
           </article>
         )}
@@ -197,7 +201,7 @@ export default function HomePage() {
       <section className="dashboard-section">
         <div className="section-heading">
           <h2>Быстрые действия</h2>
-          <p>Основные шаги текущего MVP.</p>
+          <p>Основные шаги текущей версии.</p>
         </div>
 
         <div className="quick-actions">
