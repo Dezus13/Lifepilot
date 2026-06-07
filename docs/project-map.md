@@ -12,6 +12,52 @@
 - `docs/mvp-status.md` — фиксирует Implemented, Planned и Out Of Scope For Current MVP в синхронизации со specs и roadmap.
 - `docs/demo-script.md` — сценарий демонстрации MVP с ожидаемым результатом на каждом шаге.
 
+## Scope Layers
+
+### User Facing MVP
+
+User Facing MVP — текущий пользовательский продуктовый сценарий. Он работает local-first через `localStorage` и включает создание кейса из текстового ввода, локальный анализ, risk level, priority, status, action plan, немецкий черновик, историю и detail view сохраненного кейса.
+
+Основные источники:
+
+- `docs/plans/active/mvp-scope.md`;
+- `docs/specs/mvp-definition.md`;
+- `docs/specs/user-flow.md`;
+- `docs/specs/data-storage.md`;
+- `docs/specs/case-model.md`.
+
+### Technical Foundation
+
+Technical Foundation — подготовленные технические слои, которые существуют в репозитории, но не считаются пользовательскими функциями MVP.
+
+В этот слой входят Supabase Foundation для `public.cases`, Admin Auth Foundation для `/admin/login` и `/admin`, `public.admin_users`, server-side admin validation и Vercel/production-проверки.
+
+Основные источники:
+
+- `docs/specs/auth-spec.md`;
+- `docs/specs/admin-spec.md`;
+- `docs/specs/database-auth-model.md`;
+- `docs/specs/security-model.md`;
+- `docs/architecture/auth-admin-foundation-decision-review.md`;
+- `docs/architecture/auth-ssr-admin-validation-adr.md`;
+- `docs/plans/active/auth-admin-vercel-plan.md`.
+
+### Future Scope
+
+Future Scope — направления после текущего MVP. Они не реализуются без отдельного active plan, обновления specs и явного подтверждения scope.
+
+В этот слой входят user-facing Auth, Supabase как рабочее хранилище пользовательских кейсов, API, экспорт, архив, синхронизация, OCR/PDF, billing и другие расширения из `docs/plans/active/mvp-scope.md`.
+
+Источник scope-решений:
+
+- `docs/plans/active/mvp-scope.md`;
+
+Статусные и навигационные документы, не являющиеся источниками требований:
+
+- `docs/roadmap.md`;
+- `docs/mvp-status.md`;
+- `docs/plans/active/mvp-roadmap.md`.
+
 ## Specs: описание системы
 
 - `docs/specs/business-context.md` — объясняет, почему продукт нужен в Австрии, какую боль решает и чем отличается от обычного чат-бота.
