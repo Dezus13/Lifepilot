@@ -123,6 +123,8 @@ Auth/Admin Foundation реализован отдельно от пользов�
 
 ## Планируемая архитектура после MVP
 
+Эта схема описывает возможный future stage, а не текущую архитектуру приложения. Переход к ней требует отдельного approved active plan, обновления specs, RLS/security review, user ownership model и migration/fallback strategy.
+
 ```text
 Пользователь
 ↓

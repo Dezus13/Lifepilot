@@ -113,8 +113,8 @@ localStorage
 
 - `AGENTS.md` — главный рабочий регламент для ИИ-агентов.
 - `docs/project-map.md` — карта документации, планов и ключевых файлов.
-- `docs/roadmap.md` — краткий roadmap: Completed, Current, Future.
-- `docs/mvp-status.md` — статус функций: Implemented, Planned, Out Of Scope.
+- `docs/roadmap.md` — краткий roadmap: Current MVP, Next Stage, Future.
+- `docs/mvp-status.md` — статус функций: Implemented, Next Stage, Future / Requires Separate Approved Plan, Out Of Scope.
 - `docs/demo-script.md` — сценарий демонстрации MVP.
 - `docs/specs/` — продуктовые и системные требования.
 - `docs/architecture/` — архитектура, data flow, routing, ADR.

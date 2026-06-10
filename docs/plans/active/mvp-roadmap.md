@@ -71,22 +71,24 @@ Technical Foundation не является пользовательской фу
 
 ---
 
-## Этап 3 — Интеграция Supabase
+## Этап 3 — User-facing Supabase stage
 
-Статус: Планируется
+Статус: Future / требует отдельного approved active plan
 
-Что входит:
+Этот этап не входит в Current MVP и не утвержден как текущий implementation scope. Перед началом нужно обновить specs и architecture для user ownership, RLS, migration/fallback strategy, server/client access boundaries и production security review.
+
+Возможный scope будущего этапа:
 
 - Запись кейсов в Supabase
 - Чтение кейсов из Supabase
-- Синхронизация данных
+- Синхронизация данных между устройствами после user-facing Auth
 - Обработка ошибок
 
 ---
 
 ## Этап 4 — User-facing accounts
 
-Статус: Планируется
+Статус: Future / требует отдельного approved active plan
 
 Что входит:
 
@@ -99,7 +101,7 @@ Technical Foundation не является пользовательской фу
 
 ## Этап 5 — Production MVP
 
-Статус: Планируется
+Статус: Next/Future после завершения active Vercel/production-проверок
 
 Что входит:
 
@@ -113,6 +115,9 @@ Technical Foundation не является пользовательской фу
 
 ## Что не входит в текущий MVP
 
+- User-facing Auth
+- Supabase как рабочее хранилище пользовательских кейсов
+- Синхронизация пользовательской истории между устройствами
 - Командная работа
 - Real-time collaboration
 - Платные подписки
@@ -128,6 +133,8 @@ Technical Foundation не является пользовательской фу
 - Политики доступа Supabase
 - Полный переход с LocalStorage
 - Production security review
+
+Эти пункты не являются разрешением на изменение текущей local-first реализации. Они должны быть закрыты отдельными specs, ADR и active plan до начала Supabase implementation.
 
 ---
 

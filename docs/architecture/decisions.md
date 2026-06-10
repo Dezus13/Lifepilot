@@ -30,4 +30,4 @@
 
 Причина: подключение database требует user-facing Auth, RLS review, ownership model, production security review и миграцию local-first flow.
 
-Следствие: `public.cases`, Supabase client и related types остаются foundation-слоем. Переход к Supabase должен быть отдельным этапом после стабилизации MVP.
+Следствие: `public.cases`, Supabase client и related types остаются foundation-слоем. Переход к Supabase должен быть отдельным этапом после стабилизации MVP и отдельного approved active plan с обновленными specs, RLS review, ownership model и migration/fallback strategy.

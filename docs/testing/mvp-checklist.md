@@ -17,7 +17,7 @@
 7. проверить локально определенную категорию, risk level и рекомендации;
 8. открыть немецкий черновик;
 9. вернуться к истории;
-10. открыть сохраненный кейс из истории.
+10. открыть detail view сохраненного кейса из истории или восстановить кейс как текущий через действие `Открыть результат`.
 
 Перед push важно проверять не только happy path, но и пустые состояния, ошибки ввода, поведение `localStorage`, безопасность Supabase foundation layer и мобильную читаемость.
 
@@ -112,8 +112,8 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] Карточка истории показывает risk badge.
 - [ ] Карточка истории показывает статус и приоритет без technical labels.
 - [ ] Карточка истории показывает дату.
-- [ ] Открытие кейса из истории восстанавливает его как текущий кейс.
-- [ ] После открытия из истории пользователь видит экран результата выбранного кейса.
+- [ ] Действие `Открыть кейс` ведет на `/history/[caseId]` и показывает detail view без изменения `lifepilot.currentCase`.
+- [ ] Действие `Открыть результат` восстанавливает выбранный кейс как `lifepilot.currentCase` и ведет на `/case/result`.
 - [ ] Очистка истории удаляет список прошлых кейсов в браузере.
 - [ ] Empty state истории предлагает создать новый кейс.
 
@@ -165,6 +165,7 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 - [ ] Таблица `public.cases` описана в specs и соответствует TypeScript-типам.
 - [ ] RLS для `public.cases` включен, SELECT policy для anon role отсутствует, и это не ломает `localStorage` flow.
 - [ ] Ошибка или отсутствие Supabase-конфигурации не ломает локальный MVP.
+- [ ] User-facing Auth, user ownership, запись кейсов в Supabase и sync не проверяются как реализованные функции Current MVP.
 
 ## Auth/Admin Foundation Checks
 
@@ -227,7 +228,8 @@ Mahnung wegen Schulden. Bei Nichtzahlung drohen Inkasso, Kündigung oder gericht
 ## Regression Checklist перед push
 
 - [ ] Проверен полный happy path: Home -> New Case -> Analysis -> Result -> Draft.
-- [ ] Проверен flow истории: создать кейс -> открыть историю -> открыть результат.
+- [ ] Проверен flow истории: создать кейс -> открыть историю -> `Открыть кейс` -> detail view.
+- [ ] Проверен flow восстановления результата: история -> `Открыть результат` -> `/case/result`.
 - [ ] Проверены low, medium и high risk тексты.
 - [ ] Проверено локальное определение категорий на разных текстах.
 - [ ] Проверен пустой ввод.
@@ -252,7 +254,7 @@ Checklist считается пройденным, если основной с�
 ## Связанные документы
 
 - [../plans/active/mvp-scope.md](../plans/active/mvp-scope.md) фиксирует границы MVP.
-- [../plans/completed/screens-list.md](../plans/completed/screens-list.md) описывает экраны MVP.
+- [../plans/completed/screens-list.md](../plans/completed/screens-list.md) является архивным экранным планом; актуальное поведение проверяется по specs и architecture.
 - [../architecture/data-flow.md](../architecture/data-flow.md) описывает поток данных.
 - [../architecture/state-management.md](../architecture/state-management.md) описывает состояние приложения.
 - [../design/design-system.md](../design/design-system.md) описывает визуальные правила.

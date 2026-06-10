@@ -114,4 +114,4 @@ Auth/Admin Foundation реализован отдельно от пользов�
 - [routing-map.md](./routing-map.md) описывает маршруты и переходы.
 - [screen-data-mapping.md](./screen-data-mapping.md) описывает данные по экранам.
 - [component-map.md](./component-map.md) описывает компоненты по экранам MVP.
-- [../plans/completed/screens-flow.md](../plans/completed/screens-flow.md) описывает UI-поток экранов.
+- [../plans/completed/screens-flow.md](../plans/completed/screens-flow.md) является архивным UI-flow планом экранов.

@@ -239,7 +239,7 @@ Deep-link в MVP рискован, потому что часть экранов
 
 - [frontend-structure.md](./frontend-structure.md) описывает будущую структуру frontend.
 - [component-map.md](./component-map.md) описывает компоненты по экранам.
-- [../plans/completed/screens-flow.md](../plans/completed/screens-flow.md) описывает UI-поток MVP.
+- [../plans/completed/screens-flow.md](../plans/completed/screens-flow.md) является архивным UI-flow планом MVP.
 - [mvp-safety-rules.md](./mvp-safety-rules.md) фиксирует безопасное поведение.
 - [../specs/auth-spec.md](../specs/auth-spec.md) описывает auth routes и auth states.
 - [../specs/admin-spec.md](../specs/admin-spec.md) описывает admin access rules.

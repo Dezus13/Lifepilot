@@ -222,7 +222,7 @@ Dashboard на главной странице читает `lifepilot.caseHisto
 
 Текущий TypeScript-тип `SupabaseCaseRow` должен совпадать со структурой из [case-model.md](./case-model.md). `readSupabaseCases()` содержит подготовленный select-запрос к `public.cases`, но без SELECT policy для anon role этот запрос не является рабочим источником данных. UI пока не использует результат чтения.
 
-Переход от локального MVP к hosted Supabase должен идти постепенно по направлению `localStorage` -> `public.cases`:
+Переход от локального MVP к hosted Supabase является будущим этапом, а не текущей реализацией. Он должен начинаться только после отдельного approved active plan, обновления specs, RLS/security review и решения по user ownership. Ожидаемое направление перехода: `localStorage` -> `public.cases`:
 
 1. сначала перенести case history в Supabase как дополнительный источник хранения;
 2. затем сохранять новые cases в Supabase без отключения локального fallback;

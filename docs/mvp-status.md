@@ -14,12 +14,15 @@
 - Локальный пересчет анализа для старых сохраненных кейсов при наличии `sourceText`.
 - Демонстрационный немецкий черновик.
 - Safety/limitations screen.
-- Supabase Foundation для будущего database stage.
+- Supabase Foundation для будущего database stage: schema/client/type foundation без подключения к пользовательскому flow.
 - Admin Auth Foundation для `/admin/login` и `/admin`.
 
-## Planned
+## Next Stage
 
 - Vercel/production-проверки в рамках `docs/plans/active/auth-admin-vercel-plan.md`.
+
+## Future / Requires Separate Approved Plan
+
 - User-facing Auth.
 - Supabase как рабочее хранилище пользовательских кейсов.
 - API для серверной обработки и интеграций.

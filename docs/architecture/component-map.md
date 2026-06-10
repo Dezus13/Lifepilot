@@ -556,5 +556,5 @@
 
 - [frontend-structure.md](./frontend-structure.md) описывает будущую структуру frontend.
 - [routing-map.md](./routing-map.md) описывает маршруты и переходы.
-- [../plans/completed/screens-flow.md](../plans/completed/screens-flow.md) описывает экраны MVP.
+- [../plans/completed/screens-flow.md](../plans/completed/screens-flow.md) является архивным UI-flow планом MVP.
 - [../design/design-system.md](../design/design-system.md) описывает базовые UI-состояния.

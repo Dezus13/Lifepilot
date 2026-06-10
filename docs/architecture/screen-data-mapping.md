@@ -262,5 +262,5 @@
 - [state-management.md](./state-management.md) описывает уровни состояния.
 - [data-flow.md](./data-flow.md) описывает порядок движения данных.
 - [routing-map.md](./routing-map.md) описывает маршруты экранов.
-- [../plans/completed/screens-list.md](../plans/completed/screens-list.md) описывает назначение экранов.
-- [../plans/completed/screens-flow.md](../plans/completed/screens-flow.md) описывает пользовательский flow.
+- [../plans/completed/screens-list.md](../plans/completed/screens-list.md) является архивным экранным планом.
+- [../plans/completed/screens-flow.md](../plans/completed/screens-flow.md) является архивным UI-flow планом.

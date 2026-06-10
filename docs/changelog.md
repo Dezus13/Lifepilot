@@ -23,13 +23,29 @@ Changelog обновляет тот, кто вносит соответству�
 
 ## Записи
 
+### 2026-06-11
+
+- Проведен docs-only аудит перед проектированием Supabase.
+- `docs/roadmap.md` разделен на Current MVP, Next Stage и Future, чтобы Supabase user storage не выглядел частью текущего MVP.
+- `docs/mvp-status.md`, `docs/plans/active/mvp-roadmap.md` и `docs/testing/mvp-checklist.md` синхронизированы с local-first MVP и разделением `Открыть кейс` / `Открыть результат`.
+- Документ подключения Supabase переименован в `docs/supabase-foundation.md`, чтобы убрать двусмысленность с local Supabase.
+- Архивные screen-планы помечены как completed/archive reference, а не актуальный source of truth.
+- `AGENTS.md` уточнен для docs-only audit-задач, где пользователь явно разрешает markdown-исправления без изменений кода.
+- Создан active plan `docs/plans/active/supabase-user-cases-plan.md` для проектирования следующего после MVP этапа хранения пользовательских кейсов в Supabase без кода, migrations или подключения Supabase.
+- Создан ADR `docs/architecture/adr-supabase-user-case-storage.md` для будущего Supabase user case storage: Supabase, RLS, ownership через `user_id`, localStorage fallback и отдельная миграция.
+- Создан spec `docs/specs/case-ownership-rls.md` для будущей ownership/RLS-модели user-facing Supabase storage без изменений кода, schema или migrations.
+- Создан spec `docs/specs/local-storage-to-supabase-migration.md` для будущего безопасного перехода от localStorage-first MVP к Supabase user-case storage: phases, dual-write, fallback, rollback, idempotency и migration rules.
+- Создан checklist `docs/testing/supabase-checklist.md` как pre-implementation gate для будущего Supabase user-case storage: Auth, Database, RLS, Migration, Fallback, Security и Production Readiness.
+- Создан spec `docs/specs/user-auth-spec.md` для будущего user-facing Auth flow: registration, login, logout, recovery, session lifecycle, protected routes, `auth.uid()`, RLS и отделение от Admin Auth Foundation.
+- Создан runbook `docs/architecture/supabase-production-runbook.md` для будущего Supabase production stage: deployment, environment variables, rollback/recovery, outage handling, monitoring/logging, backup, retention, incident response и RLS verification.
+
 ### 2026-06-07
 
 - Завершен план второй user-facing функции MVP: `saved-case-local-analysis-plan.md` перенесен из `docs/plans/active/` в `docs/plans/completed/` после ручной browser-проверки.
 - Завершен план первой user-facing функции MVP: `case-creation-local-storage-plan.md` перенесен из `docs/plans/active/` в `docs/plans/completed/`.
 - `docs/project-map.md` дополнен основными user-facing implementation files и синхронизирован с active/completed plans.
 - Уточнено fallback-поведение старых кейсов: при наличии `sourceText` локальный анализ может быть пересчитан, а отсутствующие факты показываются как `Не найдено`.
-- Добавлен короткий `docs/roadmap.md` с разделами Completed, Current и Future.
+- Добавлен короткий `docs/roadmap.md`; структура разделов позднее уточнена для Current MVP, Next Stage и Future.
 - Обновлен корневой `README.md` как внешний вход в проект.
 - Добавлены `docs/architecture/decisions.md`, `docs/demo-script.md` и `docs/mvp-status.md`.
 - Выполнен UI-polish user-facing MVP: пользовательские labels унифицированы на русский, result/detail получили более сильный summary, history cards стали легче, empty states приведены к единому стилю.
