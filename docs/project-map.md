@@ -70,6 +70,7 @@ Future Scope — направления после текущего MVP. Они 
 - `docs/specs/case-model.md` — единственный источник правды для модели Case, полей `public.cases`, статусов, жизненного цикла и границ текущего MVP.
 - `docs/specs/user-auth-spec.md` — описывает будущий user-facing authentication flow: registration, login, logout, recovery, session lifecycle, protected routes, связь с `auth.uid()`, RLS и ownership cases.
 - `docs/specs/case-ownership-rls.md` — описывает будущую ownership/RLS-модель для user-facing Supabase storage: `user_id`, `auth.uid()`, policies, service role, admin access и negative tests.
+- `docs/specs/supabase-schema-v1.md` — проектирует целевую Supabase schema v1 для будущего user-case storage: `auth.users`, `public.cases`, `public.admin_users`, ownership через `user_id`, indexes, constraints, timestamps, soft delete и idempotency fields без migrations.
 - `docs/specs/local-storage-to-supabase-migration.md` — описывает будущую migration strategy от Current MVP localStorage-first к Supabase user-case storage: phases, dual-write, fallback, rollback, idempotency и migration rules.
 - `docs/specs/data-storage.md` — описывает данные кейса, объяснения, плана, ответа, границы safety screen, истории и подготовленную таблицу `public.cases`.
 - `docs/specs/auth-spec.md` — описывает login, logout, session validation, protected routes, auth states и error states для Auth Foundation.
@@ -167,6 +168,7 @@ Future Scope — направления после текущего MVP. Они 
 - `case-model.md` фиксирует структуру Case, статусы, жизненный цикл и соответствие таблице `public.cases`.
 - `user-auth-spec.md` фиксирует future user-facing auth flow и отделяет его от реализованного Admin Auth Foundation.
 - `case-ownership-rls.md` фиксирует будущую ownership/RLS-модель для user-facing Supabase storage и не меняет Current MVP.
+- `supabase-schema-v1.md` фиксирует target database design для будущего Supabase user-case storage и не создает migrations.
 - `local-storage-to-supabase-migration.md` фиксирует будущий безопасный переход от localStorage-first MVP к Supabase user-case storage и не запускает миграцию.
 - `supabase-checklist.md` фиксирует pre-implementation testing gate для будущего Supabase user-case storage и не запускает реализацию.
 - `data-storage.md` описывает данные, которые нужны этим функциям.
@@ -203,41 +205,42 @@ Future Scope — направления после текущего MVP. Они 
 15. `docs/specs/case-model.md`
 16. `docs/specs/user-auth-spec.md`
 17. `docs/specs/case-ownership-rls.md`
-18. `docs/specs/local-storage-to-supabase-migration.md`
-19. `docs/testing/supabase-checklist.md`
-20. `docs/specs/data-storage.md`
-21. `docs/architecture/decisions.md`
-22. `docs/architecture/adr-supabase-user-case-storage.md`
-23. `docs/architecture/supabase-production-runbook.md`
-24. `docs/architecture/auth-admin-foundation-decision-review.md`
-25. `docs/architecture/auth-ssr-admin-validation-adr.md`
-26. `docs/specs/auth-spec.md`
-27. `docs/specs/admin-spec.md`
-28. `docs/specs/database-auth-model.md`
-29. `docs/specs/security-model.md`
-30. `docs/architecture/system-design.md`
-31. `docs/architecture/frontend-structure.md`
-32. `docs/architecture/data-flow.md`
-33. `docs/architecture/state-management.md`
-34. `docs/architecture/routing-map.md`
-35. `docs/architecture/screen-data-mapping.md`
-36. `docs/architecture/component-map.md`
-37. `docs/architecture/case-entity.md`
-38. `docs/architecture/mvp-safety-rules.md`
-39. `docs/design/design-system.md`
-40. `docs/design/mobile-layout.md`
-41. `docs/plans/README.md`
-42. `docs/plans/active/mvp-scope.md`
-43. `docs/plans/active/mvp-roadmap.md`
-44. `docs/plans/active/supabase-user-cases-plan.md`
-45. `docs/plans/completed/mvp-plan.md`
-46. `docs/plans/completed/development-stages.md`
-47. `docs/plans/completed/implementation-order.md`
-48. `docs/plans/completed/screens-list.md`
-49. `docs/plans/completed/screens-flow.md`
-50. `docs/plans/completed/admin-users-migration-plan.md`
-51. `docs/plans/completed/case-creation-local-storage-plan.md`
-52. `docs/plans/completed/saved-case-local-analysis-plan.md`
-53. `docs/testing/mvp-checklist.md`
-54. `docs/supabase-foundation.md`
-55. `docs/plans/active/auth-admin-vercel-plan.md`
+18. `docs/specs/supabase-schema-v1.md`
+19. `docs/specs/local-storage-to-supabase-migration.md`
+20. `docs/testing/supabase-checklist.md`
+21. `docs/specs/data-storage.md`
+22. `docs/architecture/decisions.md`
+23. `docs/architecture/adr-supabase-user-case-storage.md`
+24. `docs/architecture/supabase-production-runbook.md`
+25. `docs/architecture/auth-admin-foundation-decision-review.md`
+26. `docs/architecture/auth-ssr-admin-validation-adr.md`
+27. `docs/specs/auth-spec.md`
+28. `docs/specs/admin-spec.md`
+29. `docs/specs/database-auth-model.md`
+30. `docs/specs/security-model.md`
+31. `docs/architecture/system-design.md`
+32. `docs/architecture/frontend-structure.md`
+33. `docs/architecture/data-flow.md`
+34. `docs/architecture/state-management.md`
+35. `docs/architecture/routing-map.md`
+36. `docs/architecture/screen-data-mapping.md`
+37. `docs/architecture/component-map.md`
+38. `docs/architecture/case-entity.md`
+39. `docs/architecture/mvp-safety-rules.md`
+40. `docs/design/design-system.md`
+41. `docs/design/mobile-layout.md`
+42. `docs/plans/README.md`
+43. `docs/plans/active/mvp-scope.md`
+44. `docs/plans/active/mvp-roadmap.md`
+45. `docs/plans/active/supabase-user-cases-plan.md`
+46. `docs/plans/completed/mvp-plan.md`
+47. `docs/plans/completed/development-stages.md`
+48. `docs/plans/completed/implementation-order.md`
+49. `docs/plans/completed/screens-list.md`
+50. `docs/plans/completed/screens-flow.md`
+51. `docs/plans/completed/admin-users-migration-plan.md`
+52. `docs/plans/completed/case-creation-local-storage-plan.md`
+53. `docs/plans/completed/saved-case-local-analysis-plan.md`
+54. `docs/testing/mvp-checklist.md`
+55. `docs/supabase-foundation.md`
+56. `docs/plans/active/auth-admin-vercel-plan.md`

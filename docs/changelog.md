@@ -38,6 +38,7 @@ Changelog обновляет тот, кто вносит соответству�
 - Создан checklist `docs/testing/supabase-checklist.md` как pre-implementation gate для будущего Supabase user-case storage: Auth, Database, RLS, Migration, Fallback, Security и Production Readiness.
 - Создан spec `docs/specs/user-auth-spec.md` для будущего user-facing Auth flow: registration, login, logout, recovery, session lifecycle, protected routes, `auth.uid()`, RLS и отделение от Admin Auth Foundation.
 - Создан runbook `docs/architecture/supabase-production-runbook.md` для будущего Supabase production stage: deployment, environment variables, rollback/recovery, outage handling, monitoring/logging, backup, retention, incident response и RLS verification.
+- Создан spec `docs/specs/supabase-schema-v1.md` для будущей Supabase schema v1: MVP-level таблицы, `user_id` ownership, indexes, constraints, timestamps, soft delete и idempotency fields без кода или migrations.
 
 ### 2026-06-07
 
