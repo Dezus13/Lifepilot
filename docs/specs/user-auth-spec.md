@@ -10,6 +10,7 @@ Current MVP остается localStorage-first. Этот spec не означа
 
 Связанные документы:
 
+- `docs/specs/auth-implementation-decision.md`;
 - `docs/specs/case-ownership-rls.md`;
 - `docs/specs/local-storage-to-supabase-migration.md`;
 - `docs/testing/supabase-checklist.md`;
@@ -67,9 +68,10 @@ Current MVP остается localStorage-first. Этот spec не означа
 - после регистрации local cases остаются локальными, пока пользователь явно не подтвердит migration flow;
 - ошибки регистрации должны быть безопасными и не раскрывать Supabase internals.
 
-Нужно определить до реализации:
+Implementation decision для первого этапа зафиксирован в `docs/specs/auth-implementation-decision.md`: email + password.
 
-- email/password, magic link или другой allowed provider;
+Перед реализацией нужно проверить:
+
 - правила email confirmation;
 - password requirements, если используется password flow;
 - redirect после регистрации;
@@ -269,14 +271,14 @@ User-facing auth spec считается готовым, если:
 - Current MVP остается localStorage-first;
 - документ не требует немедленных code, UI, route, schema, migration или RLS changes.
 
-Будущая implementation-задача не готова к старту, пока:
+Implementation-задача по user-facing Auth может стартовать, когда:
 
-- не утвержден active implementation plan;
-- не выбран auth provider/flow;
-- не обновлены architecture и testing docs;
-- не утверждены SQL-level RLS policies;
-- не утвержден migration/rollback strategy;
-- не определены production monitoring, logging и recovery expectations.
+- утвержден active implementation plan;
+- подтвержден `docs/specs/auth-implementation-decision.md` как source of truth для MVP auth flow;
+- architecture и testing docs привязаны к implementation scope;
+- SQL-level RLS policy contract подтвержден;
+- migration/rollback strategy подтверждена;
+- production monitoring, logging и recovery expectations подтверждены для rollout stage.
 
 ## Risks
 

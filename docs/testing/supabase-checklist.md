@@ -8,6 +8,11 @@ Current MVP остается localStorage-first. Этот checklist не озн�
 
 Связанные документы:
 
+- `docs/plans/active/supabase-implementation-plan.md`;
+- `docs/specs/auth-implementation-decision.md`;
+- `docs/specs/supabase-schema-v1.md`;
+- `docs/specs/sql-rls-policy-spec.md`;
+- `docs/specs/public-cases-migration-plan.md`;
 - `docs/specs/case-ownership-rls.md`;
 - `docs/specs/local-storage-to-supabase-migration.md`;
 - `docs/architecture/adr-supabase-user-case-storage.md`;
@@ -167,14 +172,14 @@ Checklist считается готовым как pre-implementation gate, ес
 - Service role key запрещен во frontend.
 - Документ согласован с Supabase specs, ADR, active plan и Supabase Foundation.
 
-Supabase user-case implementation не готова к старту, пока:
+Supabase user-case implementation может стартовать, когда:
 
-- checklist не привязан к утвержденному implementation plan;
-- final schema/migration plan не утвержден;
-- SQL-level RLS policies не описаны и не reviewed;
-- user-facing Auth scope не утвержден;
-- duplicate/conflict resolution не описан;
-- rollback/recovery/data-retention decisions не утверждены.
+- checklist привязан к `docs/plans/active/supabase-implementation-plan.md`;
+- `docs/specs/auth-implementation-decision.md` подтвержден;
+- `docs/specs/supabase-schema-v1.md` подтвержден как target schema;
+- `docs/specs/sql-rls-policy-spec.md` reviewed как policy contract;
+- `docs/specs/public-cases-migration-plan.md` confirmed как migration source;
+- rollout/recovery gates из `docs/architecture/supabase-production-runbook.md` подтверждены.
 
 ## Risks
 

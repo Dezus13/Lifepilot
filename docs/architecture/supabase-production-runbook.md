@@ -8,6 +8,11 @@ Current MVP остается localStorage-first. Runbook не означает, 
 
 Связанные документы:
 
+- `docs/plans/active/supabase-implementation-plan.md`;
+- `docs/specs/auth-implementation-decision.md`;
+- `docs/specs/supabase-schema-v1.md`;
+- `docs/specs/sql-rls-policy-spec.md`;
+- `docs/specs/public-cases-migration-plan.md`;
 - `docs/specs/user-auth-spec.md`;
 - `docs/specs/case-ownership-rls.md`;
 - `docs/specs/local-storage-to-supabase-migration.md`;
@@ -304,8 +309,8 @@ Implementation stage не готов к production rollout, пока:
 
 - runbook не привязан к approved implementation plan;
 - feature flag/rollout control не определен, если используется staged rollout;
-- final schema/migration plan не утвержден;
-- SQL-level RLS policies не reviewed и не проверены;
+- `docs/specs/public-cases-migration-plan.md` не утвержден для конкретной migration;
+- `docs/specs/sql-rls-policy-spec.md` не reviewed и не проверен через implementation tests;
 - monitoring/logging не настроены;
 - backup/restore procedure не проверена;
 - data retention policy не утверждена;

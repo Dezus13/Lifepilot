@@ -73,9 +73,9 @@ Technical Foundation не является пользовательской фу
 
 ## Этап 3 — User-facing Supabase stage
 
-Статус: Future / требует отдельного approved active plan
+Статус: Next implementation gate / требует явного утверждения active implementation plan
 
-Этот этап не входит в Current MVP и не утвержден как текущий implementation scope. Перед началом нужно обновить specs и architecture для user ownership, RLS, migration/fallback strategy, server/client access boundaries и production security review.
+Этот этап не входит в Current MVP и не меняет localStorage-first пользовательский flow без отдельной реализации. Planning docs созданы: user auth decision, schema v1, SQL RLS policy contract, public cases migration plan, testing checklist и production runbook. Реализация начинается только после явного утверждения `docs/plans/active/supabase-implementation-plan.md`.
 
 Возможный scope будущего этапа:
 
@@ -129,12 +129,12 @@ Technical Foundation не является пользовательской фу
 
 ## Технический долг
 
-- Финальная стратегия хранения данных
-- Политики доступа Supabase
-- Полный переход с LocalStorage
-- Production security review
+- Выполнение утвержденного Supabase implementation plan
+- Применение SQL RLS policies после review
+- Применение `public.cases` migration после review
+- Проверка rollout/rollback и recovery gates
 
-Эти пункты не являются разрешением на изменение текущей local-first реализации. Они должны быть закрыты отдельными specs, ADR и active plan до начала Supabase implementation.
+Эти пункты не являются разрешением на изменение текущей local-first реализации. Изменения кода, schema и migrations возможны только после явного утверждения Supabase implementation plan.
 
 ---
 

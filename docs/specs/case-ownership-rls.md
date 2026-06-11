@@ -9,9 +9,11 @@
 Документ связан с:
 
 - `docs/plans/active/supabase-user-cases-plan.md`;
+- `docs/plans/active/supabase-implementation-plan.md`;
 - `docs/architecture/adr-supabase-user-case-storage.md`;
 - `docs/specs/case-model.md`;
 - `docs/specs/data-storage.md`;
+- `docs/specs/sql-rls-policy-spec.md`;
 - `docs/specs/security-model.md`.
 
 ## Scope
@@ -246,14 +248,14 @@ Ownership/RLS spec считается готовым, если:
 - Rollback considerations описывают сохранение localStorage fallback.
 - Документ не требует немедленных code, schema, migration или RLS changes.
 
-Будущая реализация не готова к старту, пока:
+Будущая реализация ownership/RLS может стартовать, когда:
 
-- `case-model.md` и database specs не обновлены под финальную schema;
-- ADR и active implementation plan не подтверждены;
-- migration plan не утвержден;
-- RLS policies не описаны SQL-level перед применением;
-- testing checklist не обновлен;
-- rollback plan не подтвержден.
+- `docs/plans/active/supabase-implementation-plan.md` утвержден явно;
+- `docs/specs/supabase-schema-v1.md` подтвержден как target schema;
+- `docs/specs/public-cases-migration-plan.md` подтвержден как migration source;
+- `docs/specs/sql-rls-policy-spec.md` подтвержден как SQL-level RLS policy contract;
+- `docs/testing/supabase-checklist.md` привязан к implementation task;
+- rollout/rollback gates из `docs/architecture/supabase-production-runbook.md` подтверждены.
 
 ## Risks
 

@@ -39,6 +39,10 @@ Changelog обновляет тот, кто вносит соответству�
 - Создан spec `docs/specs/user-auth-spec.md` для будущего user-facing Auth flow: registration, login, logout, recovery, session lifecycle, protected routes, `auth.uid()`, RLS и отделение от Admin Auth Foundation.
 - Создан runbook `docs/architecture/supabase-production-runbook.md` для будущего Supabase production stage: deployment, environment variables, rollback/recovery, outage handling, monitoring/logging, backup, retention, incident response и RLS verification.
 - Создан spec `docs/specs/supabase-schema-v1.md` для будущей Supabase schema v1: MVP-level таблицы, `user_id` ownership, indexes, constraints, timestamps, soft delete и idempotency fields без кода или migrations.
+- Создан active implementation plan `docs/plans/active/supabase-implementation-plan.md` для будущего Supabase user-case storage с фазами Auth decision, schema review, SQL RLS policies, migration plan, testing checklist и rollout/rollback.
+- Создан spec `docs/specs/sql-rls-policy-spec.md` с SQL-level RLS policy contract для `public.cases` без executable SQL или migrations.
+- Создан spec `docs/specs/public-cases-migration-plan.md` для migration strategy existing `public.cases` rows без `user_id`, orphan rows, idempotency, duplicate/conflict handling, rollback и backup/restore.
+- Создан spec `docs/specs/auth-implementation-decision.md` с MVP user-facing Auth decision: Supabase Auth email + password, redirects, recovery, session lifecycle и relation to `auth.uid()`.
 
 ### 2026-06-07
 

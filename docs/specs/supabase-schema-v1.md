@@ -12,11 +12,15 @@ Current MVP остается localStorage-first. Пользовательски�
 
 - [case-model.md](./case-model.md);
 - [case-ownership-rls.md](./case-ownership-rls.md);
+- [sql-rls-policy-spec.md](./sql-rls-policy-spec.md);
+- [public-cases-migration-plan.md](./public-cases-migration-plan.md);
+- [auth-implementation-decision.md](./auth-implementation-decision.md);
 - [local-storage-to-supabase-migration.md](./local-storage-to-supabase-migration.md);
 - [user-auth-spec.md](./user-auth-spec.md);
 - [database-auth-model.md](./database-auth-model.md);
 - [../architecture/adr-supabase-user-case-storage.md](../architecture/adr-supabase-user-case-storage.md);
 - [../plans/active/supabase-user-cases-plan.md](../plans/active/supabase-user-cases-plan.md);
+- [../plans/active/supabase-implementation-plan.md](../plans/active/supabase-implementation-plan.md);
 - [../supabase-foundation.md](../supabase-foundation.md).
 
 ## Scope

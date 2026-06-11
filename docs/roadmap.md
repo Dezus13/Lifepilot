@@ -21,8 +21,9 @@ Scope-решения о том, что входит, не входит и пер
 ## Next Stage
 
 - `docs/plans/active/auth-admin-vercel-plan.md` — активный technical foundation-план для Auth/Admin и Vercel/production-проверок. Он не является user-facing MVP-функцией и не подключает Auth или Supabase к пользовательскому flow.
+- `docs/plans/active/supabase-implementation-plan.md` — active implementation plan для будущего Supabase user-case storage. Он закрывает documentation gates для Auth decision, schema review, SQL RLS policy contract, migration plan, testing checklist и rollout/rollback, но реализация начинается только после явного утверждения плана пользователем.
 
-Перед началом user-facing Supabase stage нужно создать отдельный approved active plan, обновить specs по хранению, user ownership, RLS и migration/fallback strategy. Текущий roadmap не утверждает запись пользовательских кейсов в Supabase как часть Current MVP.
+Planning docs для user-facing Supabase stage созданы. Следующий gate — явное утверждение implementation plan и последовательное выполнение фаз без изменения Current MVP localStorage-first поведения.
 
 ## Future
 

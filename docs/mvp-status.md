@@ -20,11 +20,12 @@
 ## Next Stage
 
 - Vercel/production-проверки в рамках `docs/plans/active/auth-admin-vercel-plan.md`.
+- Supabase user-case storage implementation gate в рамках `docs/plans/active/supabase-implementation-plan.md`; реализация начинается только после явного утверждения плана.
 
 ## Future / Requires Separate Approved Plan
 
-- User-facing Auth.
-- Supabase как рабочее хранилище пользовательских кейсов.
+- User-facing Auth implementation.
+- Supabase как рабочее хранилище пользовательских кейсов после утверждения implementation plan.
 - API для серверной обработки и интеграций.
 - Экспорт и архив.
 - Расширение тестирования.

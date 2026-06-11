@@ -6,6 +6,8 @@
 
 Current MVP остается localStorage-first. Этот план не подключает Supabase к пользовательскому flow, не создает migrations, не меняет RLS, не меняет Auth/Admin, не меняет UI и не меняет код. Любая реализация должна начаться только после явного подтверждения scope и обновления релевантных specs/architecture.
 
+Implementation gate для следующего этапа зафиксирован отдельно в `docs/plans/active/supabase-implementation-plan.md`. Этот документ остается planning/reference документом для продуктовой цели, scope, ownership, migration/fallback и rollback overview.
+
 ## Цель этапа
 
 Цель этапа — спроектировать безопасный переход от локальной истории кейсов в браузере к серверному хранению пользовательских кейсов в `public.cases`, сохраняя понятный fallback на `localStorage` и не ломая текущий пользовательский сценарий.
@@ -244,18 +246,18 @@ Rollback должен сохранять возможность вернутьс
 - Обновить testing docs, project map и changelog.
 - Запустить `npm run build`.
 
-## Документы, которые нужно обновить перед реализацией
+## Документы, которые используются перед реализацией
 
-- `docs/specs/data-storage.md`
-- `docs/specs/case-model.md`
-- `docs/specs/security-model.md`
-- `docs/specs/auth-spec.md` или новый user-facing auth spec
-- `docs/specs/database-auth-model.md` или новый case ownership/RLS spec
-- `docs/architecture/decisions.md` или отдельный Supabase user case storage ADR
-- `docs/architecture/data-flow.md`
-- `docs/architecture/state-management.md`
-- `docs/architecture/system-design.md`
-- `docs/testing/mvp-checklist.md` или новый Supabase testing checklist
+- `docs/plans/active/supabase-implementation-plan.md`
+- `docs/specs/auth-implementation-decision.md`
+- `docs/specs/supabase-schema-v1.md`
+- `docs/specs/sql-rls-policy-spec.md`
+- `docs/specs/public-cases-migration-plan.md`
+- `docs/specs/case-ownership-rls.md`
+- `docs/specs/local-storage-to-supabase-migration.md`
+- `docs/testing/supabase-checklist.md`
+- `docs/architecture/adr-supabase-user-case-storage.md`
+- `docs/architecture/supabase-production-runbook.md`
 - `docs/project-map.md`
 - `docs/changelog.md`
 

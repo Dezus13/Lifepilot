@@ -11,8 +11,11 @@ Current MVP остается localStorage-first. Пользовательски�
 - `docs/specs/case-model.md`;
 - `docs/specs/data-storage.md`;
 - `docs/specs/case-ownership-rls.md`;
+- `docs/specs/public-cases-migration-plan.md`;
+- `docs/specs/sql-rls-policy-spec.md`;
 - `docs/architecture/adr-supabase-user-case-storage.md`;
 - `docs/plans/active/supabase-user-cases-plan.md`;
+- `docs/plans/active/supabase-implementation-plan.md`;
 - `docs/supabase-foundation.md`.
 
 ## Scope
@@ -361,15 +364,15 @@ Migration spec считается готовым, если:
 - Out of scope явно запрещает code, UI, routes, schema, migrations и RLS changes.
 - Документ согласован с roadmap, MVP definition, Supabase Foundation, ADR, ownership/RLS spec и active plan.
 
-Будущая implementation-задача не готова к старту, пока:
+Будущая implementation-задача может стартовать, когда:
 
-- не утвержден отдельный active implementation plan;
-- не обновлены specs для final schema и data flow;
-- не утверждены SQL-level RLS policies;
-- не создан testing checklist для Supabase migration stage;
-- не описан duplicate/conflict resolution;
-- не подтвержден rollout/rollback control;
-- не определена privacy/data-retention policy для server rows и local history.
+- утвержден `docs/plans/active/supabase-implementation-plan.md`;
+- подтвержден `docs/specs/public-cases-migration-plan.md`;
+- подтвержден `docs/specs/sql-rls-policy-spec.md`;
+- подтвержден `docs/specs/auth-implementation-decision.md`;
+- `docs/testing/supabase-checklist.md` привязан к implementation task;
+- подтвержден rollout/rollback control;
+- подтвержден initial data retention rule из `docs/specs/public-cases-migration-plan.md`.
 
 ## Risks
 
@@ -386,14 +389,14 @@ Migration spec считается готовым, если:
 - Admin Auth Foundation может быть ошибочно воспринят как доступ к user cases;
 - service role key может попасть в неправильный runtime, если recovery/migration делать через frontend.
 
-## Документы, которые нужно создать или обновить перед реализацией
+## Документы, которые используются перед реализацией
 
-Перед implementation stage нужны:
+Перед implementation stage использовать:
 
-- final schema/migration plan для ownership и idempotency fields;
-- SQL-level RLS policy spec/checklist;
-- user-facing Auth spec или update existing auth docs с четким разделением от Admin Auth Foundation;
-- Supabase migration testing checklist;
-- duplicate/conflict resolution spec;
-- rollout/feature-flag и rollback runbook, если будет использоваться staged rollout;
-- privacy/data-retention decision для migrated server rows и local history.
+- `docs/plans/active/supabase-implementation-plan.md`;
+- `docs/specs/supabase-schema-v1.md`;
+- `docs/specs/public-cases-migration-plan.md`;
+- `docs/specs/sql-rls-policy-spec.md`;
+- `docs/specs/auth-implementation-decision.md`;
+- `docs/testing/supabase-checklist.md`;
+- `docs/architecture/supabase-production-runbook.md`.
