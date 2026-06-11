@@ -25,6 +25,7 @@ Changelog обновляет тот, кто вносит соответству�
 
 ### 2026-06-11
 
+- Исправлены критичные противоречия в specs: `priority_level` в Supabase schema v1 синхронизирован с `critical/high/medium/low`, а privacy-правило локальной истории уточнено для текущего explicit local-first сохранения и будущего server-side подтверждения.
 - Проведен docs-only аудит перед проектированием Supabase.
 - `docs/roadmap.md` разделен на Current MVP, Next Stage и Future, чтобы Supabase user storage не выглядел частью текущего MVP.
 - `docs/mvp-status.md`, `docs/plans/active/mvp-roadmap.md` и `docs/testing/mvp-checklist.md` синхронизированы с local-first MVP и разделением `Открыть кейс` / `Открыть результат`.

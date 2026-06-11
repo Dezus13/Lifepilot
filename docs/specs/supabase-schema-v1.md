@@ -158,7 +158,7 @@ LifePilot не создает ее вручную и не должен опис�
 | Source text | `length(trim(source_text)) > 0` |
 | Status check | `status in ('new', 'analyzed', 'action-required', 'waiting', 'completed')` |
 | Risk level check | `risk_level is null or risk_level in ('low', 'medium', 'high')` |
-| Priority level check | `priority_level is null or priority_level in ('low', 'medium', 'high')` |
+| Priority level check | `priority_level is null or priority_level in ('critical', 'high', 'medium', 'low')` |
 | JSON action plan check | `jsonb_typeof(action_plan) = 'array'` |
 | JSON analysis check | `jsonb_typeof(analysis) = 'object'` |
 | Schema version check | `schema_version >= 1` |
